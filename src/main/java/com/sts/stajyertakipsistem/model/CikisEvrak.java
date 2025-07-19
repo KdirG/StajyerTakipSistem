@@ -1,17 +1,19 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.sts.stajyertakipsistem.model;
 
-
-
-/**
- *
- * @author kadir
- */
 public class CikisEvrak extends Evrak {
-    public CikisEvrak(String tarih, int isgunu, String dosyayolu) {
-        super(tarih, isgunu, dosyayolu);
+
+    // Evrak sınıfının parametre alan constructor'ını çağırır
+    public CikisEvrak(String evrakId, String dosyaYolu) {
+        super(evrakId, dosyaYolu);
+    }
+
+    // Evrak sınıfının parametresiz constructor'ını çağırır
+    public CikisEvrak() {
+        super();
+    }
+
+    @Override
+    public String getEvrakTuruAciklama() {
+        return "Çıkış Evrağı"; // Tek fark bu açıklama olacak
     }
 }
