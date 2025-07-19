@@ -1,12 +1,8 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- */
-
 package com.sts.stajyertakipsistem;
-import com.sts.stajyertakipsistem.GUI.LoginPanel; // LoginPanel'i import ediyoruz
-import javax.swing.JFrame; // JFrame'i import ediyoruz
-import javax.swing.SwingUtilities; 
 
+import com.sts.stajyertakipsistem.GUI.StajyerListForm; // StajyerListForm'u import ediyoruz
+// import javax.swing.JFrame; // Bu satırı artık main metodunuz için ihtiyacınız yoksa kaldırabilirsiniz.
+import javax.swing.SwingUtilities;
 
 /**
  *
@@ -15,22 +11,20 @@ import javax.swing.SwingUtilities;
 public class StajyerTakipSistem {
 
     public static void main(String[] args) {
-        // MainApp'ten alınan LoginPanel başlatma kodları buraya kopyalandı
         SwingUtilities.invokeLater(() -> {
-            JFrame loginFrame = new JFrame("Stajyer Takip Sistemi - Giriş");
-            loginFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            loginFrame.setResizable(false); // Pencere boyutunun değiştirilmesini engelle
+            // Bir JFrame oluşturmak yerine, doğrudan StajyerListForm nesnesini oluşturuyoruz
+            // Çünkü StajyerListForm'un kendisi zaten bir JFrame.
+            StajyerListForm stajyerListForm = new StajyerListForm();
+            
+            // Oluşturduğumuz StajyerListForm JFrame'ini görünür yapıyoruz.
+            stajyerListForm.setVisible(true);
 
-            LoginPanel loginPanel = new LoginPanel();
-            loginPanel.setParentFrame(loginFrame); // LoginPanel'e JFrame referansını ver
-
-            loginFrame.add(loginPanel); // Paneli frame'e ekle
-            loginFrame.pack(); // Bileşenlerin boyutlarına göre frame'i ayarla
-            loginFrame.setLocationRelativeTo(null); // Pencereyi ekranın ortasında aç
-            loginFrame.setVisible(true); // Pencereyi görünür yap
+            // Eski kodunuzda olan ve hataya neden olan 'mainFrame' oluşturma ve 'add()' çağırma satırlarını SİLDİK.
+            // Örneğin:
+            // JFrame mainFrame = new JFrame("..."); // BU SATIRI SİLİN
+            // mainFrame.add(stajyerListForm);       // VE BU SATIRI SİLİN
+            // mainFrame.pack();                     // BU SATIRLAR ARTIK StajyerListForm'un constructor'ında OLMALI
+            // mainFrame.setLocationRelativeTo(null); // BU SATIRLAR ARTIK StajyerListForm'un constructor'ında OLMALI
         });
-
-        // Eğer StajyerTakipSistem'in başka başlangıç mantığı varsa buraya eklenebilir.
-        // Şimdilik sadece LoginPanel'i başlatacak şekilde.
     }
 }

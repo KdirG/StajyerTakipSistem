@@ -6,15 +6,15 @@ import com.sts.stajyertakipsistem.dao.ReferansDAO;
 import com.sts.stajyertakipsistem.dao.EvrakDAO;
 
 import com.sts.stajyertakipsistem.model.Stajyer;
-import com.sts.stajyertakipsistem.model.Okul; // OkulDAO kullanılıyorsa kalsın
-import com.sts.stajyertakipsistem.model.Referans; // ReferansDAO kullanılıyorsa kalsın
+import com.sts.stajyertakipsistem.model.Okul; 
+import com.sts.stajyertakipsistem.model.Referans; 
 import com.sts.stajyertakipsistem.model.Evrak;
 import com.sts.stajyertakipsistem.model.GirisEvrak;
 import com.sts.stajyertakipsistem.model.CikisEvrak;
-import com.sts.stajyertakipsistem.GUI.SpesifikStajyerForm; // EvrakTuru enum'ı için import
+import com.sts.stajyertakipsistem.GUI.SpesifikStajyerForm; 
 
 import java.util.List;
-import java.util.UUID; // Yeni Evrak ID'leri oluşturmak için gerekli
+import java.util.UUID; 
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -62,7 +62,7 @@ public class StajyerService {
             LOGGER.log(Level.WARNING, "Eklenecek stajyer nesnesi null.");
             return false;
         }
-        // Eğer stajyerId dışarıdan gelmiyorsa ve DAO'da otomatik üretilmiyorsa
+        
         if (stajyer.getStajyerId() == null || stajyer.getStajyerId().isEmpty()) {
             stajyer.setStajyerId(UUID.randomUUID().toString());
         }
@@ -70,22 +70,20 @@ public class StajyerService {
             LOGGER.log(Level.WARNING, "Stajyer adı ve soyadı boş olamaz.");
             return false;
         }
-        // TC Kimlik kontrolü Long olduğu varsayılırsa:
+        
         if (stajyer.getTcKimlik() <= 0 || String.valueOf(stajyer.getTcKimlik()).length() != 11) {
             LOGGER.log(Level.WARNING, "TC Kimlik numarası geçersiz (sıfır, negatif veya 11 haneli değil).");
             return false;
         }
 
         try {
-            // Giriş Evrakı Kontrolü ve Kaydetme/Güncelleme
+      
             if (stajyer.getGirisEvrak() != null) {
                 if (!stajyer.getGirisEvrak().isValid()) {
                     LOGGER.log(Level.WARNING, "Giriş evrakı geçerli değil (dosya yolu boş): " + stajyer.getGirisEvrak().getEvrakId());
                     return false;
                 }
-                // Evrakı kaydet veya güncelle, ID'sini geri al (veya Evrak objesini)
-                // Bu kısım EvrakDAO'nuzun addEvrak ve updateEvrak metotlarının nasıl çalıştığına bağlı.
-                // EvrakDAO'nun addEvrak'ı String döndürüyor ve updateEvrak boolean döndürüyorsa:
+                
                 String girisEvrakId = evrakDAO.addEvrak(stajyer.getGirisEvrak()); // Yeni ID'yi alır veya mevcut ID'yi korur.
                 if (girisEvrakId == null) {
                     LOGGER.log(Level.SEVERE, "Giriş evrağı veritabanına kaydedilemedi.");
@@ -138,13 +136,13 @@ public class StajyerService {
         }
 
         try {
-            // Giriş Evrakı Kontrolü ve Kaydetme/Güncelleme
+            
             if (stajyer.getGirisEvrak() != null) {
                 if (!stajyer.getGirisEvrak().isValid()) {
                     LOGGER.log(Level.WARNING, "Giriş evrakı geçerli değil (dosya yolu boş): " + stajyer.getGirisEvrak().getEvrakId());
                     return false;
                 }
-                // Eğer Evrak ID'si varsa güncelle, yoksa ekle
+                
                 if (stajyer.getGirisEvrak().getEvrakId() != null && !stajyer.getGirisEvrak().getEvrakId().isEmpty()) {
                     boolean updated = evrakDAO.updateEvrak(stajyer.getGirisEvrak());
                     if (!updated) {
@@ -160,18 +158,16 @@ public class StajyerService {
                     stajyer.getGirisEvrak().setEvrakId(newEvrakId); // Yeni oluşan ID'yi set et
                 }
             } else {
-                // Eğer stajyerin giriş evrakı daha önce vardı ama şimdi null olarak ayarlanmışsa, sil
-                // Bu senaryoyu ele almak için stajyerDAO'dan mevcut stajyeri çekip evrakını kontrol etmek gerekir.
-                // Şimdilik sadece var olanı güncellediğimizi varsayıyoruz, null gelirse dokunmuyoruz.
+                
             }
 
-            // Çıkış Evrakı Kontrolü ve Kaydetme/Güncelleme
+            
             if (stajyer.getCikisEvrak() != null) {
                 if (!stajyer.getCikisEvrak().isValid()) {
                     LOGGER.log(Level.WARNING, "Çıkış evrakı geçerli değil (dosya yolu boş): " + stajyer.getCikisEvrak().getEvrakId());
                     return false;
                 }
-                // Eğer Evrak ID'si varsa güncelle, yoksa ekle
+                
                 if (stajyer.getCikisEvrak().getEvrakId() != null && !stajyer.getCikisEvrak().getEvrakId().isEmpty()) {
                     boolean updated = evrakDAO.updateEvrak(stajyer.getCikisEvrak());
                     if (!updated) {
@@ -184,13 +180,13 @@ public class StajyerService {
                         LOGGER.log(Level.SEVERE, "Yeni çıkış evrağı veritabanına kaydedilemedi.");
                         return false;
                     }
-                    stajyer.getCikisEvrak().setEvrakId(newEvrakId); // Yeni oluşan ID'yi set et
+                    stajyer.getCikisEvrak().setEvrakId(newEvrakId); 
                 }
             } else {
-                // Aynı şekilde, çıkış evrakı silme senaryosu burada ele alınabilir.
+                
             }
 
-            // En son Stajyer nesnesini güncelle (Evrak referansları dahil)
+            
             boolean result = stajyerDAO.updateStajyer(stajyer);
             if (result) {
                 LOGGER.log(Level.INFO, "Stajyer başarıyla güncellendi: " + stajyer.getAdSoyad() + ", ID: " + stajyer.getStajyerId());
@@ -213,7 +209,7 @@ public class StajyerService {
             Stajyer stajyerToDelete = stajyerDAO.getStajyerById(stajyerId);
             if (stajyerToDelete != null) {
                 if (stajyerToDelete.getGirisEvrak() != null) {
-                    // Evrakı silmeden önce dosya yolunu kontrol etmek isteyebilirsiniz
+                    
                     evrakDAO.deleteEvrak(stajyerToDelete.getGirisEvrak().getEvrakId());
                     LOGGER.log(Level.INFO, "Giriş evrağı silindi: " + stajyerToDelete.getGirisEvrak().getEvrakId());
                 }
@@ -245,13 +241,13 @@ public class StajyerService {
                 return false;
             }
 
-            // Evrakın geçerliliğini kontrol et (dosyayolu boş olmamalı)
+            
             if (evrak == null || !evrak.isValid()) {
                 LOGGER.log(Level.WARNING, "updateStajyerEvrak: Sağlanan evrak nesnesi null veya geçerli değil (dosya yolu boş).");
                 return false;
             }
 
-            // EvrakDAO kullanarak evrakı kaydet/güncelle
+            
             String savedEvrakId;
             if (evrak.getEvrakId() != null && !evrak.getEvrakId().isEmpty()) {
                 // Evrak ID'si varsa, mevcut evrakı güncelle
@@ -269,11 +265,10 @@ public class StajyerService {
                     LOGGER.log(Level.SEVERE, "updateStajyerEvrak: Yeni evrak veritabanına kaydedilemedi.");
                     return false;
                 }
-                evrak.setEvrakId(savedEvrakId); // Yeni oluşan ID'yi evrak nesnesine set et
+                evrak.setEvrakId(savedEvrakId); 
             }
 
-            // Stajyer nesnesinin ilgili evrak alanını güncelle.
-            // Type casting için kontrol (instanceof) önemlidir.
+            
             if (evrakTuru == SpesifikStajyerForm.EvrakTuru.GIRIS) {
                 if (evrak instanceof GirisEvrak) {
                     existingStajyer.setGirisEvrak((GirisEvrak) evrak);
@@ -293,8 +288,7 @@ public class StajyerService {
                 return false;
             }
 
-            // Güncellenmiş stajyer nesnesini veritabanına kaydet (update).
-            // Bu, Stajyer'in evrak referanslarının da veritabanında güncellenmesini sağlar.
+            
             boolean success = stajyerDAO.updateStajyer(existingStajyer);
             if (success) {
                 LOGGER.log(Level.INFO, evrakTuru + " evrakı stajyere başarıyla bağlandı ve güncellendi: Stajyer ID=" + stajyerId);

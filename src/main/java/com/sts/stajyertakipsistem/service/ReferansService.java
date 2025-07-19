@@ -23,13 +23,7 @@ public class ReferansService {
             LOGGER.log(Level.WARNING, "Referans nesnesi, Ad Soyad veya Kurum boş olamaz.");
             return false;
         }
-        // Eğer benzersizlik kontrolü yapmak isterseniz:
-        // referansId boşsa yeni bir UUID DAO içinde atanacak.
-        // Ancak ad soyad ve kurum kombinasyonunun benzersiz olmasını istiyorsanız burada kontrol edebilirsiniz.
-        // if (referansDAO.searchReferanslar(referans.getAdSoyad()).stream().anyMatch(r -> r.getKurum().equals(referans.getKurum()))) {
-        //     LOGGER.log(Level.WARNING, "Bu ad soyad ve kurum kombinasyonuna sahip referans zaten mevcut.");
-        //     return false;
-        // }
+      
 
         try {
             boolean success = referansDAO.addReferans(referans);
@@ -98,8 +92,7 @@ public class ReferansService {
             LOGGER.log(Level.WARNING, "Silinecek referans ID'si geçerli değil: " + referansId);
             return false;
         }
-        // Silme öncesi ilişkili kayıtların kontrolü (örn. bu referansa bağlı stajyer var mı)
-        // StajyerService'in deleteStajyer metodunda bu tür bağımlılıkların yönetimi yapılabilir.
+        
 
         try {
             boolean success = referansDAO.deleteReferans(referansId);

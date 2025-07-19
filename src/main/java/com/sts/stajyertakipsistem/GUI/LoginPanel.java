@@ -17,7 +17,7 @@ import javax.swing.SwingUtilities;
 public class LoginPanel extends javax.swing.JPanel {
     private JFrame parentFrame;
     /**
-     * Creates new form LoginPanel
+     * 
      */
     public LoginPanel() {
         initComponents();
@@ -132,37 +132,40 @@ public class LoginPanel extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-         String username = jTextField1.getText().trim(); // Kullanıcı adını al ve boşlukları temizle
-        char[] passwordChars = jPasswordField1.getPassword(); // Parolayı char dizisi olarak al (daha güvenli)
-        String password = new String(passwordChars); // TODO add your handling code here:
-         if (username.isEmpty() || password.isEmpty()) {
+         String username = jTextField1.getText().trim(); 
+        char[] passwordChars = jPasswordField1.getPassword(); 
+        String password = new String(passwordChars); 
+          
+        if (username.isEmpty() || password.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Kullanıcı adı ve şifre boş bırakılamaz!", "Giriş Hatası", JOptionPane.WARNING_MESSAGE);
-            jPasswordField1.setText(""); // Parola alanını temizle
-            java.util.Arrays.fill(passwordChars, '0'); // Char dizisini temizle
-            return; // Metottan çık
+            jPasswordField1.setText(""); 
+            java.util.Arrays.fill(passwordChars, '0'); 
+            return; 
         }
-          UserManager userManager = new UserManager();
-         if (userManager.authUser(username, password)) {
+          
+        UserManager userManager = new UserManager();
+        if (userManager.authUser(username, password)) {
             JOptionPane.showMessageDialog(this, "Giriş Başarılı!", "Giriş", JOptionPane.INFORMATION_MESSAGE);
 
-            // Giriş başarılıysa mevcut giriş penceresini kapat (eğer bir JFrame içinde ise)
+            
             if (parentFrame != null) {
                 parentFrame.dispose(); 
             }
-            //SwingUtilities.invokeLater(() -> {
-               // StajyerListForm stajyerListForm = new StajyerListForm();
-               // stajyerListForm.setVisible(true);
-            //});
+            
+            
+            SwingUtilities.invokeLater(() -> {
+                StajyerListForm stajyerListForm = new StajyerListForm();
+                stajyerListForm.setVisible(true);
+            });
 
         } else {
-            // Giriş başarısızsa hata mesajı göster
+          
             JOptionPane.showMessageDialog(this, "Kullanıcı adı veya parola hatalı!", "Giriş Hatası", JOptionPane.ERROR_MESSAGE);
-            jPasswordField1.setText(""); // Parola alanını temizle
+            jPasswordField1.setText(""); 
         }
 
-        // Güvenlik için char dizisini her durumda temizle
-        java.util.Arrays.fill(passwordChars, '0'); 
-          
+        java.util.Arrays.fill(passwordChars, '0');  
+    
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed

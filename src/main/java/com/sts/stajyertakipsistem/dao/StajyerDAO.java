@@ -65,7 +65,7 @@ public class StajyerDAO {
         }
 
         stajyer.setBolum(rs.getString("BOLUM"));
-        stajyer.setSinif(rs.getString("SINIF"));
+        stajyer.setSinif(rs.getInt("SINIF"));
 
         return stajyer;
     }
@@ -124,7 +124,7 @@ public class StajyerDAO {
             ps.setString(paramIndex++, girisEvrakDbId);
             ps.setString(paramIndex++, cikisEvrakDbId);
             ps.setString(paramIndex++, stajyer.getBolum());
-            ps.setString(paramIndex++, stajyer.getSinif());
+            ps.setInt(paramIndex++, stajyer.getSinif());
             ps.setDate(paramIndex++, stajyer.getStajBaslangicTarihi() != null ? Date.valueOf(stajyer.getStajBaslangicTarihi()) : null);
             ps.setDate(paramIndex++, stajyer.getStajBitisTarihi() != null ? Date.valueOf(stajyer.getStajBitisTarihi()) : null);
 
@@ -187,7 +187,7 @@ public class StajyerDAO {
             ps.setString(paramIndex++, girisEvrakDbId);
             ps.setString(paramIndex++, cikisEvrakDbId);
             ps.setString(paramIndex++, stajyer.getBolum());
-            ps.setString(paramIndex++, stajyer.getSinif());
+            ps.setInt(paramIndex++, stajyer.getSinif());
             ps.setDate(paramIndex++, stajyer.getStajBaslangicTarihi() != null ? Date.valueOf(stajyer.getStajBaslangicTarihi()) : null);
             ps.setDate(paramIndex++, stajyer.getStajBitisTarihi() != null ? Date.valueOf(stajyer.getStajBitisTarihi()) : null);
 

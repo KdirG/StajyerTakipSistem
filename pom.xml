@@ -17,5 +17,10 @@
     <artifactId>jaybird</artifactId>
     <version>5.0.2.java11</version> <!-- veya java8 ya da java17 varyantları -->
 </dependency>
+        <dependency>
+            <groupId>org.netbeans.external</groupId>
+            <artifactId>AbsoluteLayout</artifactId>
+            <version>RELEASE260</version>
+        </dependency>
     </dependencies>
 </project>
