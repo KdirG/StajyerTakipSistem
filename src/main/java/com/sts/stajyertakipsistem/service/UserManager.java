@@ -7,29 +7,32 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import javax.swing.JOptionPane;
 
+/**
+ *
+ * @author kadir
+ */
 public class UserManager {
 
     public boolean authUser(String username, String password) {
-        String query = "SELECT COUNT(*) FROM KULLANICI WHERE KULLANICI_ADI = ? AND SIFRE = ?";
-
+        String sql = "SELECT SIFRE FROM KULLANICI WHERE KULLANICI_ADI = ?";
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(query)) {
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setString(1, username);
-            pstmt.setString(2, password);
-
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
-                    int count = rs.getInt(1);
-                    return count > 0;
+                    String dbPassword = rs.getString("SIFRE");
+                    // Burada parola karşılaştırması yapılacak.
+                    // Güvenli bir uygulama için parolaların hash'lenerek saklanması ve
+                    // hash'lenmiş değerlerin karşılaştırılması gerekir.
+                    // Şimdilik basit bir eşleştirme yapıyoruz.
+                    return password.equals(dbPassword);
                 }
             }
-            return false;
-
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Veritabanı bağlantı hatası veya sorgu hatası: " + e.getMessage(), "Giriş Hatası", JOptionPane.ERROR_MESSAGE);
+            System.err.println("Kullanıcı doğrulanırken veritabanı hatası: " + e.getMessage());
             e.printStackTrace();
-            return false;
         }
+        return false;
     }
 }

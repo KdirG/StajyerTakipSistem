@@ -2,84 +2,118 @@ package com.sts.stajyertakipsistem.GUI;
 
 import com.sts.stajyertakipsistem.model.Stajyer;
 import com.sts.stajyertakipsistem.service.StajyerService;
-import java.awt.Component; // getTableCellRendererComponent için
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.table.DefaultTableCellRenderer; // Tarih renderer için
 import javax.swing.table.TableRowSorter;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class StajyerListForm extends javax.swing.JFrame {
 
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(StajyerListForm.class.getName());
+    private static final Logger logger = Logger.getLogger(StajyerListForm.class.getName());
 
     private StajyerTableModel stajyerTableModel;
     private StajyerService stajyerService;
     private TableRowSorter<StajyerTableModel> sorter;
 
-    /**
-     * StajyerListForm'un constructor'ı
-     * Bu metodun doğru şekilde tanımlandığından emin olmalıyız.
-     */
     public StajyerListForm() {
-        // JFrame'in varsayılan kapanma davranışını ayarla
-        // Bu satır initComponents() içinde de olabilir, ancak burada olması daha iyi.
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE); // Uygulamayı kapatınca tüm pencereler kapansın
-        
-        // GUI bileşenlerini başlat (GUI Builder tarafından oluşturulan kısım)
         initComponents();
-        
-        // Kendi özel bileşen başlatma ve mantık kodlarımızı çağır
-        // Bu metodda stajyerTableModel ve stajyerService başlatılıyor olmalı
-        initializeCustomComponents(); 
-        
-        // StajyerService nesnesini burada veya initializeCustomComponents içinde başlatın
-        // Genellikle initializeCustomComponents içinde yapmak daha iyidir.
-        stajyerService = new StajyerService(); // StajyerService'i burada başlatın
+        initializeCustomComponents();
+        loadStajyerTableData();
+        this.setLocationRelativeTo(null);
+    }
 
-        // Tabloya veriyi yükle
-        loadStajyerTableData(); 
-        
-        // jTextField1'e DocumentListener ekle
+    private void initializeCustomComponents() {
+        stajyerTableModel = new StajyerTableModel();
+        jTable1.setModel(stajyerTableModel);
+        sorter = new TableRowSorter<>(stajyerTableModel);
+        jTable1.setRowSorter(sorter);
+        stajyerService = new StajyerService();
+
         jTextField1.getDocument().addDocumentListener(new DocumentListener() {
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                filterTable();
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                filterTable();
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                filterTable(); // Genellikle düz metin alanları için çağrılmaz
-            }
+            public void changedUpdate(DocumentEvent e) { filterTable(); }
+            public void removeUpdate(DocumentEvent e) { filterTable(); }
+            public void insertUpdate(DocumentEvent e) { filterTable(); }
         });
 
-        // JFrame'in boyutunu ve konumunu ayarla
-        // initComponents() sonunda pack() çağrılmış görünüyor, bu yeterli.
-        // setLocationRelativeTo(null) bu constructor'da olmalı
-        this.setLocationRelativeTo(null); // Pencereyi ekranın ortasında aç
+        jTable1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                if (evt.getClickCount() == 2) {
+                    int selectedRow = jTable1.getSelectedRow();
+                    if (selectedRow != -1) {
+                        int modelRow = jTable1.convertRowIndexToModel(selectedRow);
+                        int stajyerId = stajyerTableModel.getStajyerAt(modelRow).getStajyerId();
+                        openSpesifikStajyerForm(stajyerId);
+                    }
+                }
+            }
+        });
+    }
 
-        // Diğer button action listenerları initComponents() içinde zaten tanımlı
+    private void loadStajyerTableData() {
+        try {
+            List<Stajyer> stajyerler = stajyerService.getAllStajyerler();
+            stajyerTableModel.setStajyerList(stajyerler);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Stajyer verileri yüklenirken hata.", e);
+            JOptionPane.showMessageDialog(this, "Veriler yüklenemedi.", "Hata", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void filterTable() {
+        String searchText = jTextField1.getText().trim();
+        if (searchText.length() == 0) {
+            sorter.setRowFilter(null);
+        } else {
+            sorter.setRowFilter(RowFilter.regexFilter("(?i)" + searchText));
+        }
     }
     
+    // --- DÜZELTİLMİŞ METOT ---
+    // Artık yeni bir çerçeve (JFrame) oluşturmuyor, doğrudan SpesifikStajyerForm'u gösteriyor.
+    private void openSpesifikStajyerForm(int stajyerId) {
+        Runnable onSaveCallback = this::loadStajyerTableData;
+        
+        // SpesifikStajyerForm zaten bir pencere (JFrame) olduğu için onu oluşturuyoruz.
+        SpesifikStajyerForm spesifikForm = new SpesifikStajyerForm(stajyerId, onSaveCallback);
+        
+        // Başlığını ayarlıyoruz.
+        spesifikForm.setTitle(stajyerId == 0 ? "Yeni Stajyer Ekle" : "Stajyer Bilgilerini Düzenle");
+        
+        // Ana formun ortasında görünmesini sağlıyoruz.
+        spesifikForm.setLocationRelativeTo(this);
+        
+        // Ve doğrudan onu görünür yapıyoruz.
+        spesifikForm.setVisible(true);
+    }
+    
+    private void deleteSelectedStajyer() {
+        int selectedRow = jTable1.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Lütfen silmek istediğiniz stajyeri seçin.", "Uyarı", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        int confirm = JOptionPane.showConfirmDialog(this, "Seçili stajyeri silmek istediğinizden emin misiniz?", "Silme Onayı", JOptionPane.YES_NO_OPTION);
+        if (confirm == JOptionPane.YES_OPTION) {
+            int modelRow = jTable1.convertRowIndexToModel(selectedRow);
+            int stajyerId = stajyerTableModel.getStajyerAt(modelRow).getStajyerId();
+            
+            if (stajyerId > 0) {
+                if (stajyerService.deleteStajyer(stajyerId)) {
+                    JOptionPane.showMessageDialog(this, "Stajyer başarıyla silindi.", "Başarılı", JOptionPane.INFORMATION_MESSAGE);
+                    loadStajyerTableData();
+                } else {
+                    JOptionPane.showMessageDialog(this, "Stajyer silinirken bir hata oluştu.", "Hata", JOptionPane.ERROR_MESSAGE);
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Seçilen stajyerin ID'si geçersiz.", "Hata", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
 
-
-    /**
-     * This method is called from within the constructor to initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is always
-     * regenerated by the Form Editor.
-     */
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -175,7 +209,7 @@ public class StajyerListForm extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(77, 77, 77)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel1)
                         .addGap(18, 18, 18)
@@ -190,11 +224,10 @@ public class StajyerListForm extends javax.swing.JFrame {
                         .addComponent(jButton4)
                         .addGap(18, 18, 18)
                         .addComponent(jButton5))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 1619, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 803, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(732, 732, 732)
+                .addComponent(jScrollBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(179, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -208,95 +241,19 @@ public class StajyerListForm extends javax.swing.JFrame {
                     .addComponent(jButton3)
                     .addComponent(jButton4)
                     .addComponent(jButton5))
-                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 859, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jScrollBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 859, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(18, 18, 18)
+                        .addComponent(jScrollBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 859, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(88, 88, 88)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 334, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
- private void initializeCustomComponents() {
-        // stajyerTableModel'ı boş liste ile başlatma
-        stajyerTableModel = new StajyerTableModel(); // Sadece parametresiz constructor'ı çağırıyoruz.
-
-        // JTable'ın modelini set ediyoruz (initComponents'de de olabilir, ama burada olması daha güvenli)
-        jTable1.setModel(stajyerTableModel); 
-
-        // Tablo sıralayıcı (TableRowSorter)
-        sorter = new TableRowSorter<>(stajyerTableModel); 
-        jTable1.setRowSorter(sorter);
-
-        // Tarih formatlama için özel renderer
-        DateTimeFormatter displayFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-        jTable1.setDefaultRenderer(LocalDate.class, new DefaultTableCellRenderer() {
-            @Override
-            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-                if (value instanceof LocalDate) {
-                    value = ((LocalDate) value).format(displayFormatter);
-                }
-                return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-            }
-        });
-        
-        // Veritabanı hizmetini (service) burada başlatmak en uygun yerdir
-        stajyerService = new StajyerService(); // <--- Bu satır önemli!
-
-        // Tabloya çift tıklama dinleyicisi ekle (Detay/Düzenle için)
-        // Bu kısım zaten var ve doğru görünüyor.
-        jTable1.addMouseListener(new java.awt.event.MouseAdapter() {
-            @Override
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                if (evt.getClickCount() == 2) { // Çift tıklama algılandı
-                    int selectedRow = jTable1.getSelectedRow();
-                    if (selectedRow != -1) {
-                        int modelRow = jTable1.convertRowIndexToModel(selectedRow);
-                        Stajyer selectedStajyer = stajyerTableModel.getStajyerAt(modelRow);
-                        if (selectedStajyer != null && selectedStajyer.getStajyerId() != null) {
-                            openSpesifikStajyerForm(selectedStajyer.getStajyerId());
-                        } else {
-                            JOptionPane.showMessageDialog(StajyerListForm.this,
-                                    "Seçilen stajyerin detayları yüklenemedi (ID bulunamadı).",
-                                    "Hata",
-                                    JOptionPane.ERROR_MESSAGE);
-                        }
-                    }
-                }
-            }
-        });
-    }
-
-    private void loadStajyerTableData() {
-        try {
-            List<Stajyer> stajyerler = stajyerService.getAllStajyerler();
-            stajyerTableModel.setStajyerList(stajyerler);
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, "Stajyer verileri yüklenirken hata.", e);
-            JOptionPane.showMessageDialog(this, "Stajyer verileri yüklenirken bir hata oluştu: " + e.getMessage(), "Hata", JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
-   private void filterTable() {
-        String searchText = jTextField1.getText().trim();
-        
-        // Sorter'ın null kontrolünü kaldırabiliriz çünkü initializeCustomComponents'de başlatıldı.
-        // Ancak yine de hata oluşması ihtimaline karşı defensive programlama iyidir.
-        if (sorter == null) {
-            sorter = new TableRowSorter<>(stajyerTableModel);
-            jTable1.setRowSorter(sorter);
-        }
-
-        if (searchText.length() == 0) {
-            sorter.setRowFilter(null);
-        } else {
-            // RowFilter.regexFilter() Object.toString() üzerinden çalıştığı için çoğu tipli sütunda işe yarar.
-            // Integer veya Long sütunlarında sayısal değil, string olarak arama yapar.
-            RowFilter<StajyerTableModel, Object> rowFilter = RowFilter.regexFilter("(?i)" + searchText); // Case-insensitive arama
-            sorter.setRowFilter(rowFilter);
-        }
-    
-}
+ 
     private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
        filterTable();
     }//GEN-LAST:event_jTextField1ActionPerformed
@@ -306,67 +263,19 @@ public class StajyerListForm extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-         openSpesifikStajyerForm(null);
+          openSpesifikStajyerForm(0);
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-                                   
-        int selectedRow = jTable1.getSelectedRow();
-        if (selectedRow != -1) {
-            int confirm = JOptionPane.showConfirmDialog(this, "Seçili stajyeri silmek istediğinizden emin misiniz?", "Silme Onayı", JOptionPane.YES_NO_OPTION);
-            if (confirm == JOptionPane.YES_OPTION) {
-                int modelRow = jTable1.convertRowIndexToModel(selectedRow);
-                Stajyer selectedStajyer = stajyerTableModel.getStajyerAt(modelRow);
-                if (selectedStajyer != null && selectedStajyer.getStajyerId() != null) {
-                    try {
-                        boolean success = stajyerService.deleteStajyer(selectedStajyer.getStajyerId());
-                        if (success) {
-                            JOptionPane.showMessageDialog(this, "Stajyer başarıyla silindi.", "Başarılı", JOptionPane.INFORMATION_MESSAGE);
-                            loadStajyerTableData(); // Tabloyu yenile
-                        } else {
-                            JOptionPane.showMessageDialog(this, "Stajyer silinirken bir hata oluştu.", "Hata", JOptionPane.ERROR_MESSAGE);
-                        }
-                    } catch (Exception ex) {
-                        logger.log(Level.SEVERE, "Stajyer silme sırasında beklenmeyen hata.", ex);
-                        JOptionPane.showMessageDialog(this, "Stajyer silinirken bir hata oluştu: " + ex.getMessage(), "Hata", JOptionPane.ERROR_MESSAGE);
-                    }
-                } else {
-                    JOptionPane.showMessageDialog(this, "Seçilen stajyerin ID'si bulunamadı.", "Hata", JOptionPane.ERROR_MESSAGE);
-                }
-            }
-        } else {
-            JOptionPane.showMessageDialog(this, "Lütfen silmek istediğiniz stajyeri seçin.", "Uyarı", JOptionPane.WARNING_MESSAGE);
-        }
+                         deleteSelectedStajyer();          
+        
     }//GEN-LAST:event_jButton4ActionPerformed
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
          loadStajyerTableData(); 
     }//GEN-LAST:event_jButton5ActionPerformed
 
-    private void openSpesifikStajyerForm(String stajyerId) {
-        JFrame detailFrame = new JFrame(stajyerId == null ? "Yeni Stajyer Ekle" : "Stajyer Detayları");
-        detailFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-
-        // Form kapatıldığında tabloyu yenilemek için callback
-        Runnable onSaveCallback = () -> {
-            loadStajyerTableData(); // Veri güncellendiğinde tabloyu yenile
-            detailFrame.dispose(); // Formu kapat
-        };
-
-        SpesifikStajyerForm spesifikForm;
-        if (stajyerId == null) {
-            // Yeni stajyer ekleme modu
-            spesifikForm = new SpesifikStajyerForm(onSaveCallback);
-        } else {
-            // Mevcut stajyer bilgilerini düzenleme modu (EvrakTuru null)
-            spesifikForm = new SpesifikStajyerForm(stajyerId, null, onSaveCallback);
-        }
-
-        detailFrame.getContentPane().add(spesifikForm);
-        detailFrame.pack();
-        detailFrame.setLocationRelativeTo(this); // Ana JFrame'in ortasında aç
-        detailFrame.setVisible(true);
-    }
+   
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
