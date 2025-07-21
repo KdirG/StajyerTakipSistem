@@ -5,6 +5,7 @@ com\sts\stajyertakipsistem\GUI\StajyerListForm.class
 com\sts\stajyertakipsistem\dao\EvrakDAO.class
 com\sts\stajyertakipsistem\GUI\StajyerListForm$1.class
 com\sts\stajyertakipsistem\service\OkulService.class
+com\sts\stajyertakipsistem\GUI\SpesifikStajyerForm$10.class
 com\sts\stajyertakipsistem\GUI\StajyerListForm$3.class
 com\sts\stajyertakipsistem\dao\StajyerDAO.class
 com\sts\stajyertakipsistem\service\ReferansService.class
