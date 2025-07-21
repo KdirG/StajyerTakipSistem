@@ -71,22 +71,29 @@ public class StajyerListForm extends javax.swing.JFrame {
         }
     }
     
-    // --- DÜZELTİLMİŞ METOT ---
-    // Artık yeni bir çerçeve (JFrame) oluşturmuyor, doğrudan SpesifikStajyerForm'u gösteriyor.
+    // --- YENİ VE DOĞRU ÇAĞIRMA YÖNTEMİ ---
     private void openSpesifikStajyerForm(int stajyerId) {
+        // Formu gösterecek yeni bir pencere (JFrame) oluşturulur.
+        JFrame detailFrame = new JFrame(stajyerId == 0 ? "Yeni Stajyer Ekle" : "Stajyer Bilgilerini Düzenle");
+        detailFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        
+        // Kaydetme sonrası listeyi yenilemek için callback metodu oluşturulur.
         Runnable onSaveCallback = this::loadStajyerTableData;
         
-        // SpesifikStajyerForm zaten bir pencere (JFrame) olduğu için onu oluşturuyoruz.
-        SpesifikStajyerForm spesifikForm = new SpesifikStajyerForm(stajyerId, onSaveCallback);
+        // SpesifikStajyerForm (artık bir JPanel) oluşturulur.
+        SpesifikStajyerForm spesifikFormPanel = new SpesifikStajyerForm(stajyerId, onSaveCallback);
         
-        // Başlığını ayarlıyoruz.
-        spesifikForm.setTitle(stajyerId == 0 ? "Yeni Stajyer Ekle" : "Stajyer Bilgilerini Düzenle");
+        // Panel, pencerenin içine eklenir.
+        detailFrame.getContentPane().add(spesifikFormPanel);
         
-        // Ana formun ortasında görünmesini sağlıyoruz.
-        spesifikForm.setLocationRelativeTo(this);
+        // Pencerenin boyutu, içindeki panele göre ayarlanır.
+        detailFrame.pack();
         
-        // Ve doğrudan onu görünür yapıyoruz.
-        spesifikForm.setVisible(true);
+        // Pencere, ana formun ortasında açılır.
+        detailFrame.setLocationRelativeTo(this);
+        
+        // Ve pencere görünür yapılır.
+        detailFrame.setVisible(true);
     }
     
     private void deleteSelectedStajyer() {
@@ -138,28 +145,28 @@ public class StajyerListForm extends javax.swing.JFrame {
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null}
+                {null, null, null, null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null, null, null, null}
             },
             new String [] {
-                "Ad Soyad", "Adres", "Telefon No", "IBAN No", "Doğum Tarihi", "Okul", "Referans", "T.C. Kimlik No", "Başlangıç Tarihi", "Bitiş Tarihi", "Bölüm", "Sınıf"
+                "Ad Soyad", "Adres", "Telefon No", "IBAN No", "Doğum Tarihi", "Okul", "Referans", "T.C. Kimlik No", "Başlangıç Tarihi", "Bitiş Tarihi", "Bölüm", "Sınıf", "Okul Türü"
             }
         ));
         jTable1.setColumnSelectionAllowed(true);
@@ -209,7 +216,7 @@ public class StajyerListForm extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(77, 77, 77)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel1)
                         .addGap(18, 18, 18)
@@ -246,7 +253,7 @@ public class StajyerListForm extends javax.swing.JFrame {
                         .addGap(18, 18, 18)
                         .addComponent(jScrollBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 859, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(88, 88, 88)
+                        .addGap(85, 85, 85)
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 334, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
