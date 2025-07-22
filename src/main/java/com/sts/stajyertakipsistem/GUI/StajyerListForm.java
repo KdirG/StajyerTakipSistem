@@ -7,8 +7,13 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.TableRowSorter;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.HashSet; // Benzersiz değerler için
+import java.util.Set;     // Benzersiz değerler için
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.time.LocalDate; // LocalDate import edin
+
 
 public class StajyerListForm extends javax.swing.JFrame {
 
@@ -18,10 +23,25 @@ public class StajyerListForm extends javax.swing.JFrame {
     private StajyerService stajyerService;
     private TableRowSorter<StajyerTableModel> sorter;
 
+    private List<Stajyer> allStajyerler; // Tüm stajyer verilerini tutmak için
+
+    // Filtre değerlerini tutmak için alanlar (StajyerFilterDialog'dan dönecek değerler)
+    private String currentBolumFilter = null;
+    private String currentOkulTuruFilter = null;
+    private String currentStajDurumuFilter = null; // Stajyer modelinizde stajDurumu alanı yoksa bu kullanılmaz
+    private LocalDate currentBaslangicTarihiMin = null;
+    private LocalDate currentBaslangicTarihiMax = null;
+    private LocalDate currentBitisTarihiMin = null;
+    private LocalDate currentBitisTarihiMax = null;
+
+    
+
+
     public StajyerListForm() {
         initComponents();
         initializeCustomComponents();
-        loadStajyerTableData();
+        loadAllStajyerData(); // Başlangıçta tüm veriyi yükler
+        applyFilters(); // Yüklenen tüm veriyi başlangıç filtreleriyle gösterir (şu an boş filtreler)
         this.setLocationRelativeTo(null);
     }
 
@@ -50,18 +70,54 @@ public class StajyerListForm extends javax.swing.JFrame {
                 }
             }
         });
+
+        filterbutton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                openFilterDialog();
+            }
+        });
+
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton4ActionPerformed(evt);
+            }
+        });
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton5ActionPerformed(evt);
+            }
+        });
     }
 
-    private void loadStajyerTableData() {
+    /**
+     * Tüm stajyer verilerini StajyerService'den çeker ve allStajyerler listesine kaydeder.
+     */
+    private void loadAllStajyerData() {
         try {
-            List<Stajyer> stajyerler = stajyerService.getAllStajyerler();
-            stajyerTableModel.setStajyerList(stajyerler);
+            allStajyerler = stajyerService.getAllStajyerler();
+            if (allStajyerler == null) {
+                allStajyerler = new ArrayList<>();
+            }
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "Stajyer verileri yüklenirken hata.", e);
-            JOptionPane.showMessageDialog(this, "Veriler yüklenemedi.", "Hata", JOptionPane.ERROR_MESSAGE);
+            logger.log(Level.SEVERE, "Tüm stajyer verileri yüklenirken hata.", e);
+            JOptionPane.showMessageDialog(this, "Tüm veriler yüklenemedi: " + e.getMessage(), "Hata", JOptionPane.ERROR_MESSAGE);
+            allStajyerler = new ArrayList<>();
         }
     }
 
+    /**
+     * Tabloda görünen veriler üzerinde anlık arama yapar.
+     */
     private void filterTable() {
         String searchText = jTextField1.getText().trim();
         if (searchText.length() == 0) {
@@ -70,48 +126,159 @@ public class StajyerListForm extends javax.swing.JFrame {
             sorter.setRowFilter(RowFilter.regexFilter("(?i)" + searchText));
         }
     }
-    
-    // --- YENİ VE DOĞRU ÇAĞIRMA YÖNTEMİ ---
+
+    /**
+     * StajyerFilterDialog'u açar ve filtre sonuçlarını işler.
+     */
+    private void openFilterDialog() {
+        // ComboBox'ları doldurmak için benzersiz değerleri topla
+        Set<String> uniqueBolumler = new HashSet<>();
+        Set<String> uniqueStajDurumlari = new HashSet<>();
+        // Okul Türü sabit olduğu için burada toplamaya gerek yok.
+
+        for (Stajyer stajyer : allStajyerler) {
+            if (stajyer.getBolum() != null && !stajyer.getBolum().isEmpty()) {
+                uniqueBolumler.add(stajyer.getBolum());
+            }
+            // Stajyer modelinizde getStajDurumu() metodu varsa bu kısmı aktif edin.
+            // if (stajyer.getStajDurumu() != null && !stajyer.getStajDurumu().isEmpty()) {
+            //     uniqueStajDurumlari.add(stajyer.getStajDurumu());
+            // }
+        }
+
+        // StajyerFilterDialog'a benzersiz listeleri ve servisi gönder
+        StajyerFilterDialog filterDialog = new StajyerFilterDialog(this, stajyerService,
+                                                                    new ArrayList<>(uniqueBolumler),
+                                                                    new ArrayList<>(uniqueStajDurumlari));
+
+        // Diyalog açılmadan önce, mevcut filtre değerlerini diyaloga gönderir
+        filterDialog.setInitialFilters(currentBolumFilter, currentOkulTuruFilter, currentStajDurumuFilter,
+                                        currentBaslangicTarihiMin, currentBaslangicTarihiMax, currentBitisTarihiMin, currentBitisTarihiMax);
+
+        filterDialog.setVisible(true); // Diyaloğu göster (modal olduğu için burada kod bloklanır)
+
+        // Diyalog kapandıktan sonra bu kod çalışır.
+        if (filterDialog.isApplyFilterConfirmed()) {
+            // Diyalogdan filtre değerlerini alır
+            currentBolumFilter = filterDialog.getBolumFilter();
+            currentOkulTuruFilter = filterDialog.getOkulTuruFilter();
+            currentStajDurumuFilter = filterDialog.getStajDurumuFilter();
+            currentBaslangicTarihiMin = filterDialog.getBaslangicTarihiMin();
+            currentBaslangicTarihiMax = filterDialog.getBaslangicTarihiMax();
+            currentBitisTarihiMin = filterDialog.getBitisTarihiMin();
+            currentBitisTarihiMax = filterDialog.getBitisTarihiMax();
+
+            applyFilters(); // Yeni filtrelerle tabloyu günceller
+        }
+    }
+
+    /**
+     * Dahili allStajyerler listesini, mevcut filtre kriterlerine göre filtreler
+     * ve filtrelenmiş listeyi tablo modeline atar.
+     */
+    private void applyFilters() {
+        List<Stajyer> filteredList = new ArrayList<>();
+
+        for (Stajyer stajyer : allStajyerler) {
+            boolean matches = true;
+
+            // Bölüm Filtresi
+            if (currentBolumFilter != null && !currentBolumFilter.equals("Tüm Bölümler")) {
+                if (stajyer.getBolum() == null || !stajyer.getBolum().equalsIgnoreCase(currentBolumFilter)) {
+                    matches = false;
+                }
+            }
+
+            // Okul Türü Filtresi (GÜNCELLENDİ - Locale.TURKISH kaldırıldı)
+            if (matches && currentOkulTuruFilter != null && !currentOkulTuruFilter.equals("Tümü")) {
+                if (stajyer.getOkul() == null || stajyer.getOkul().getOkulTuru() == null) {
+                    matches = false;
+                } else {
+                    String okulTuru = stajyer.getOkul().getOkulTuru().toLowerCase(); // toLowerCase() kullanıldı
+                    String filter = currentOkulTuruFilter.toLowerCase(); // toLowerCase() kullanıldı
+
+                    if (filter.equals("üniversite")) {
+                        // "Üniversite" filtresi seçiliyse, "üniversite", "üni", "uni", "u.n.i." gibi varyasyonları kontrol et
+                        if (!(okulTuru.contains("üniversite") || okulTuru.contains("üni") || okulTuru.contains("uni") || okulTuru.contains("u.n.i."))) {
+                            matches = false;
+                        }
+                    } else if (!okulTuru.equalsIgnoreCase(filter)) {
+                        // Diğer filtreler (örn: "Lise") için doğrudan karşılaştırma yap
+                        matches = false;
+                    }
+                }
+            }
+
+
+            // Staj Durumu Filtresi (Stajyer modelinizde getStajDurumu() metodu varsa bu kısmı aktif edin.)
+            // if (matches && currentStajDurumuFilter != null && !currentStajDurumuFilter.equals("Tümü")) {
+            //     if (stajyer.getStajDurumu() == null || !stajyer.getStajDurumu().equalsIgnoreCase(currentStajDurumuFilter)) {
+            //         matches = false;
+            //     }
+            // }
+
+            // Başlangıç Tarihi Aralığı Filtresi
+            if (matches && currentBaslangicTarihiMin != null) {
+                if (stajyer.getStajBaslangicTarihi() == null || stajyer.getStajBaslangicTarihi().isBefore(currentBaslangicTarihiMin)) {
+                    matches = false;
+                }
+            }
+            if (matches && currentBaslangicTarihiMax != null) {
+                if (stajyer.getStajBaslangicTarihi() == null || stajyer.getStajBaslangicTarihi().isAfter(currentBaslangicTarihiMax)) {
+                    matches = false;
+                }
+            }
+
+            // Bitiş Tarihi Aralığı Filtresi
+            if (matches && currentBitisTarihiMin != null) {
+                if (stajyer.getStajBitisTarihi() == null || stajyer.getStajBitisTarihi().isBefore(currentBitisTarihiMin)) {
+                    matches = false;
+                }
+            }
+            if (matches && currentBitisTarihiMax != null) {
+                if (stajyer.getStajBitisTarihi() == null || stajyer.getStajBitisTarihi().isAfter(currentBitisTarihiMax)) {
+                    matches = false;
+                }
+            }
+
+            if (matches) {
+                filteredList.add(stajyer);
+            }
+        }
+        stajyerTableModel.setStajyerList(filteredList);
+        filterTable();
+    }
+
     private void openSpesifikStajyerForm(int stajyerId) {
-        // Formu gösterecek yeni bir pencere (JFrame) oluşturulur.
         JFrame detailFrame = new JFrame(stajyerId == 0 ? "Yeni Stajyer Ekle" : "Stajyer Bilgilerini Düzenle");
         detailFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        
-        // Kaydetme sonrası listeyi yenilemek için callback metodu oluşturulur.
-        Runnable onSaveCallback = this::loadStajyerTableData;
-        
-        // SpesifikStajyerForm (artık bir JPanel) oluşturulur.
+
+        Runnable onSaveCallback = this::loadAllStajyerDataAndApplyFilters;
+
         SpesifikStajyerForm spesifikFormPanel = new SpesifikStajyerForm(stajyerId, onSaveCallback);
-        
-        // Panel, pencerenin içine eklenir.
+
         detailFrame.getContentPane().add(spesifikFormPanel);
-        
-        // Pencerenin boyutu, içindeki panele göre ayarlanır.
         detailFrame.pack();
-        
-        // Pencere, ana formun ortasında açılır.
         detailFrame.setLocationRelativeTo(this);
-        
-        // Ve pencere görünür yapılır.
         detailFrame.setVisible(true);
     }
-    
+
     private void deleteSelectedStajyer() {
         int selectedRow = jTable1.getSelectedRow();
         if (selectedRow == -1) {
             JOptionPane.showMessageDialog(this, "Lütfen silmek istediğiniz stajyeri seçin.", "Uyarı", JOptionPane.WARNING_MESSAGE);
             return;
         }
-        
+
         int confirm = JOptionPane.showConfirmDialog(this, "Seçili stajyeri silmek istediğinizden emin misiniz?", "Silme Onayı", JOptionPane.YES_NO_OPTION);
         if (confirm == JOptionPane.YES_OPTION) {
             int modelRow = jTable1.convertRowIndexToModel(selectedRow);
             int stajyerId = stajyerTableModel.getStajyerAt(modelRow).getStajyerId();
-            
+
             if (stajyerId > 0) {
                 if (stajyerService.deleteStajyer(stajyerId)) {
                     JOptionPane.showMessageDialog(this, "Stajyer başarıyla silindi.", "Başarılı", JOptionPane.INFORMATION_MESSAGE);
-                    loadStajyerTableData();
+                    loadAllStajyerDataAndApplyFilters();
                 } else {
                     JOptionPane.showMessageDialog(this, "Stajyer silinirken bir hata oluştu.", "Hata", JOptionPane.ERROR_MESSAGE);
                 }
@@ -119,6 +286,11 @@ public class StajyerListForm extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(this, "Seçilen stajyerin ID'si geçersiz.", "Hata", JOptionPane.ERROR_MESSAGE);
             }
         }
+    }
+
+    private void loadAllStajyerDataAndApplyFilters() {
+        loadAllStajyerData(); // Tüm veriyi yeniden çek
+        applyFilters(); // Mevcut filtrelere göre uygula
     }
 
     @SuppressWarnings("unchecked")
@@ -135,6 +307,7 @@ public class StajyerListForm extends javax.swing.JFrame {
         jButton3 = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
         jButton5 = new javax.swing.JButton();
+        filterbutton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -209,6 +382,8 @@ public class StajyerListForm extends javax.swing.JFrame {
             }
         });
 
+        filterbutton.setText("Filtrele");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -216,25 +391,28 @@ public class StajyerListForm extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(77, 77, 77)
+                        .addGap(21, 21, 21)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 1240, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jScrollBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGap(155, 155, 155)
                         .addComponent(jLabel1)
                         .addGap(18, 18, 18)
                         .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jButton2)
-                        .addGap(18, 18, 18)
-                        .addComponent(jButton3)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jButton4)
-                        .addGap(18, 18, 18)
-                        .addComponent(jButton5))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(21, 21, 21)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 1240, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(filterbutton)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(jButton2)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jButton3)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jButton4)
+                                .addGap(18, 18, 18)
+                                .addComponent(jButton5)))))
                 .addContainerGap(25, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -249,7 +427,9 @@ public class StajyerListForm extends javax.swing.JFrame {
                     .addComponent(jButton3)
                     .addComponent(jButton4)
                     .addComponent(jButton5))
-                .addGap(104, 104, 104)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(filterbutton)
+                .addGap(93, 93, 93)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 334, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 334, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -277,12 +457,20 @@ public class StajyerListForm extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton4ActionPerformed
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
-         loadStajyerTableData(); 
+          currentBolumFilter = null;
+        currentOkulTuruFilter = null;
+        currentStajDurumuFilter = null;
+        currentBaslangicTarihiMin = null;
+        currentBaslangicTarihiMax = null;
+        currentBitisTarihiMin = null;
+        currentBitisTarihiMax = null;
+        loadAllStajyerDataAndApplyFilters();
     }//GEN-LAST:event_jButton5ActionPerformed
 
    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton filterbutton;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
