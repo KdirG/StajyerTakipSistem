@@ -18,9 +18,9 @@ public class ChangePasswordPanel extends javax.swing.JPanel {
      */
     public ChangePasswordPanel() {
         initComponents();
-        oldpasswordfield.setText("");
-        newpasswordfield.setText("");
-        newpasswordfieldagain.setText("");
+        oldpasswordfield.setText("                      ");
+        newpasswordfield.setText("                      ");
+        newpasswordfieldagain.setText("                      ");
     }
 public ChangePasswordPanel(String username) {
         this(); // Parametresiz constructor'ı çağırarak initComponents vb. işlemleri yapar
@@ -76,19 +76,19 @@ public ChangePasswordPanel(String username) {
         jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 14, -1, -1));
 
         oldpasswordfield.setText("jPasswordField3");
-        jPanel1.add(oldpasswordfield, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 11, -1, -1));
+        jPanel1.add(oldpasswordfield, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 10, -1, -1));
 
         jLabel4.setText("Yeni Şifre:");
         jPanel1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 42, -1, -1));
 
         newpasswordfield.setText("jPasswordField1");
-        jPanel1.add(newpasswordfield, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 39, -1, -1));
+        jPanel1.add(newpasswordfield, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 40, -1, -1));
 
         jLabel5.setText("Yeni Şifre Tekrar:");
         jPanel1.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 70, -1, -1));
 
         newpasswordfieldagain.setText("jPasswordField1");
-        jPanel1.add(newpasswordfieldagain, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 67, -1, -1));
+        jPanel1.add(newpasswordfieldagain, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 70, -1, -1));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -97,7 +97,7 @@ public ChangePasswordPanel(String username) {
             .addComponent(jSeparator2, javax.swing.GroupLayout.Alignment.TRAILING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGap(14, 14, 14)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 213, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(confirmitbutton)
                 .addGap(2, 2, 2)
@@ -124,7 +124,7 @@ public ChangePasswordPanel(String username) {
                 .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 45, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 42, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(confirmitbutton)
