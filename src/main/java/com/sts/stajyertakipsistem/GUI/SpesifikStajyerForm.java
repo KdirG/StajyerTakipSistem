@@ -1,35 +1,35 @@
 package com.sts.stajyertakipsistem.GUI;
 
-import com.sts.stajyertakipsistem.model.Evrak;
-import com.sts.stajyertakipsistem.model.Okul;
-import com.sts.stajyertakipsistem.model.Referans;
-import com.sts.stajyertakipsistem.model.Stajyer;
-import com.sts.stajyertakipsistem.service.StajyerService;
-import java.awt.datatransfer.UnsupportedFlavorException;
-       
 import javax.swing.*;
 import java.awt.*;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.dnd.DnDConstants;
-import java.awt.dnd.DropTarget;
-import java.awt.dnd.DropTargetDropEvent;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
+import java.nio.file.Files; // java.nio.file.Files import'u eklendi
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.HashMap; // Map için
 import java.util.List;
+import java.util.Map; // Map için
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.URL; // URL sınıfını import ettik
+import java.awt.datatransfer.DataFlavor; // DataFlavor için
+import java.awt.datatransfer.UnsupportedFlavorException; // UnsupportedFlavorException için
+import java.awt.dnd.DnDConstants; // DnDConstants için
+import java.awt.dnd.DropTarget; // DropTarget için
+import java.awt.dnd.DropTargetDropEvent; // DropTargetDropEvent için
+import com.sts.stajyertakipsistem.model.Evrak;
+import com.sts.stajyertakipsistem.model.Referans;
+import com.sts.stajyertakipsistem.model.Stajyer; // Stajyer sınıfı için de aynı pakette olduğunu varsayıyorum
+import com.sts.stajyertakipsistem.model.Okul;     // Okul sınıfı için de aynı pakette olduğunu varsayıyorum
+import com.sts.stajyertakipsistem.service.StajyerService; 
 
-// DEĞİŞİKLİK: JFrame yerine JPanel'den kalıtım alınıyor.
 public class SpesifikStajyerForm extends javax.swing.JPanel {
 
     private static final Logger LOGGER = Logger.getLogger(SpesifikStajyerForm.class.getName());
@@ -37,17 +37,45 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
     private Stajyer currentStajyer;
     private final Runnable onSaveCallback;
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-    
+
     private boolean isEditMode = false;
+
+    // YENİ: PDF ikonlarını tutacak map
+    private Map<String, ImageIcon> pdfIcons;
+    // YENİ: Eklenen tüm dosyaları ve onların GUI panellerini takip etmek için map
+    // (Aynı dosya birden fazla kez eklenmesini engellemek ve açma kolaylığı için)
+    private Map<File, JPanel> addedFilePanelsMap;
+
+    // YENİ: Giriş ve Çıkış evrakları için asıl listeleme panelleri
+    // Bu paneller GUI Builder'da eklediğiniz JScrollPane'lerin içine yerleştirilecek.
+    private JPanel girisFileListPanel;
+    private JPanel cikisFileListPanel;
+
+    // YENİ: İkon boyutu sabiti
+    private static final int ICON_SIZE = 24; // Örneğin 24x24 piksel
+
+    // Not: girisEvrakScrollPane ve cikisEvrakScrollPane GUI Builder tarafından
+    // initComponents() metodunda tanımlanıp başlatılmalıdır.
+    // Eğer butonlarınız varsa, onların isimlerini de kontrol edin ve ActionPerformed metodlarına bağlayın.
+    // Örneğin: btnGirisEvrakSec (JButton) ve btnCikisEvrakSec (JButton)
 
     public SpesifikStajyerForm(int stajyerId, Runnable onSaveCallback) {
         this.stajyerService = new StajyerService();
         this.onSaveCallback = onSaveCallback;
-        initComponents();
+        initComponents(); // GUI Builder tarafından oluşturulan bileşenleri başlatır
+
+        // YENİ: Özel bileşenleri başlat (panelleri oluştur ve scroll panellere bağla)
+        initializeCustomComponents();
+        // YENİ: PDF ikonlarını yükle (artık tek bir scaled ikon yüklenecek)
+        loadPdfIcons();
+        // YENİ: AddedFilesMap'i başlat
+        addedFilePanelsMap = new HashMap<>();
+
+        // Drag-and-drop kurulumu
         setupDragAndDrop();
-        setupIconClickListeners(); // YENİ: İkon tıklama dinleyicilerini kur
-        loadPdfIcons(); // YENİ: PDF ikonlarını yükle
-        
+
+        //setupIconClickListeners(); // ESKİ: Bu artık her dosya paneli için dinamik olarak eklenecek.
+
         if (stajyerId > 0) {
             isEditMode = true;
             loadStajyerData(stajyerId);
@@ -59,13 +87,43 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
         }
     }
 
+    // YENİ METOT: Özel GUI bileşenlerini başlatır
+    private void initializeCustomComponents() {
+        // Giriş Evrakları için panel oluştur ve girisEvrakScrollPane'e bağla
+        girisFileListPanel = new JPanel();
+        girisFileListPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 10)); // Yatayda 10, dikeyde 10 boşluk
+        // **ÖNEMLİ:** Buradaki `girisEvrakScrollPane` ve `cikisEvrakScrollPane` adları
+        // sizin GUI Builder'da verdiğiniz adlarla eşleşmeli!
+        girisEvrakScrollPane.setViewportView(girisFileListPanel);
+
+        // Çıkış Evrakları için panel oluştur ve cikisEvrakScrollPane'e bağla
+        cikisFileListPanel = new JPanel();
+        cikisFileListPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 10)); // Yatayda 10, dikeyde 10 boşluk
+        cikisEvrakScrollPane.setViewportView(cikisFileListPanel);
+    }
+
     private void loadStajyerData(int stajyerId) {
         this.currentStajyer = stajyerService.getStajyerById(stajyerId);
         if (currentStajyer != null) {
             if (currentStajyer.getOkul() == null) currentStajyer.setOkul(new Okul());
             if (currentStajyer.getReferans() == null) currentStajyer.setReferans(new Referans());
-            
+
             populateFormFields();
+
+            // YENİ: Mevcut evrakları GUI listelerine yükle
+            if (currentStajyer.getGirisEvrak() != null && currentStajyer.getGirisEvrak().getDosyaYolu() != null && !currentStajyer.getGirisEvrak().getDosyaYolu().isEmpty()) {
+                File file = new File(currentStajyer.getGirisEvrak().getDosyaYolu());
+                if (file.exists()) {
+                    addPdfFile(file, girisFileListPanel);
+                }
+            }
+            if (currentStajyer.getCikisEvrak() != null && currentStajyer.getCikisEvrak().getDosyaYolu() != null && !currentStajyer.getCikisEvrak().getDosyaYolu().isEmpty()) {
+                File file = new File(currentStajyer.getCikisEvrak().getDosyaYolu());
+                if (file.exists()) {
+                    addPdfFile(file, cikisFileListPanel);
+                }
+            }
+
         } else {
             JOptionPane.showMessageDialog(this, "Stajyer bilgileri yüklenemedi.", "Hata", JOptionPane.ERROR_MESSAGE);
             SwingUtilities.getWindowAncestor(this).dispose();
@@ -83,26 +141,27 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
         jTextField7.setText(currentStajyer.getDogumTarihi() != null ? currentStajyer.getDogumTarihi().format(formatter) : "");
         jTextField3.setText(currentStajyer.getStajBaslangicTarihi() != null ? currentStajyer.getStajBaslangicTarihi().format(formatter) : "");
         jTextField2.setText(currentStajyer.getStajBitisTarihi() != null ? currentStajyer.getStajBitisTarihi().format(formatter) : "");
-        
+
         jTextField6.setText(currentStajyer.getOkul().getOkulAdi());
         jTextField11.setText(currentStajyer.getOkul().getOkulTuru());
         jTextField5.setText(currentStajyer.getReferans().getAdSoyad());
-         if (currentStajyer.getReferans() != null) {
+        if (currentStajyer.getReferans() != null) {
             jTextField14.setText(currentStajyer.getReferans().getTelefonNo());
             jTextField15.setText(currentStajyer.getReferans().getKurum());
-        }    
-        if (currentStajyer.getGirisEvrak() != null && currentStajyer.getGirisEvrak().getDosyaYolu() != null) {
-            girisEvrakPathLabel.setText(currentStajyer.getGirisEvrak().getDosyaYolu());
-        } else {
-            girisEvrakPathLabel.setText("Dosya Seçilmedi"); // YENİ: Varsayılan metin
         }
-        if (currentStajyer.getCikisEvrak() != null && currentStajyer.getCikisEvrak().getDosyaYolu() != null) {
-            cikisEvrakPathLabel.setText(currentStajyer.getCikisEvrak().getDosyaYolu());
-        } else {
-            cikisEvrakPathLabel.setText("Dosya Seçilmedi"); // YENİ: Varsayılan metin
-        }
+        // ESKİ: girisEvrakPathLabel ve cikisEvrakPathLabel artık kullanılmıyor
+        // if (currentStajyer.getGirisEvrak() != null && currentStajyer.getGirisEvrak().getDosyaYolu() != null) {
+        //     girisEvrakPathLabel.setText(currentStajyer.getGirisEvrak().getDosyaYolu());
+        // } else {
+        //     girisEvrakPathLabel.setText("Dosya Seçilmedi");
+        // }
+        // if (currentStajyer.getCikisEvrak() != null && currentStajyer.getCikisEvrak().getDosyaYolu() != null) {
+        //     cikisEvrakPathLabel.setText(currentStajyer.getCikisEvrak().getDosyaYolu());
+        // } else {
+        //     cikisEvrakPathLabel.setText("Dosya Seçilmedi");
+        // }
     }
-    
+
     private boolean validateAndCollectFormData() {
         String adSoyad = jTextField1.getText();
         if (adSoyad == null || adSoyad.trim().isEmpty()) {
@@ -118,7 +177,7 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
         currentStajyer.setBolum(jTextField12.getText());
 
         try {
-            if(!jTextField13.getText().trim().isEmpty()) currentStajyer.setSinif(Integer.parseInt(jTextField13.getText()));
+            if (!jTextField13.getText().trim().isEmpty()) currentStajyer.setSinif(Integer.parseInt(jTextField13.getText()));
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(this, "Sınıf alanı geçerli bir sayı olmalıdır.", "Hatalı Giriş", JOptionPane.ERROR_MESSAGE);
             return false;
@@ -136,13 +195,13 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
         currentStajyer.getOkul().setOkulAdi(jTextField6.getText());
         currentStajyer.getOkul().setOkulTuru(jTextField11.getText());
         String referansAdSoyad = jTextField5.getText();
-        String referansTel = jTextField14.getText(); 
+        String referansTel = jTextField14.getText();
         String referansKurum = jTextField15.getText();
 
-          boolean referansBilgisiGirildi = (referansAdSoyad != null && !referansAdSoyad.trim().isEmpty()) ||
-                                         (referansTel != null && !referansTel.trim().isEmpty()) ||
-                                         (referansKurum != null && !referansKurum.trim().isEmpty());
-          if (referansBilgisiGirildi) {
+        boolean referansBilgisiGirildi = (referansAdSoyad != null && !referansAdSoyad.trim().isEmpty()) ||
+                (referansTel != null && !referansTel.trim().isEmpty()) ||
+                (referansKurum != null && !referansKurum.trim().isEmpty());
+        if (referansBilgisiGirildi) {
             if (referansAdSoyad == null || referansAdSoyad.trim().isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Referans Ad Soyad alanı boş bırakılamaz.", "Zorunlu Alan", JOptionPane.WARNING_MESSAGE);
                 jTextField5.requestFocus();
@@ -157,7 +216,7 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
             if (currentStajyer.getReferans() == null) {
                 currentStajyer.setReferans(new Referans());
             }
-            
+
             currentStajyer.getReferans().setAdSoyad(referansAdSoyad);
             currentStajyer.getReferans().setTelefonNo(referansTel);
             currentStajyer.getReferans().setKurum(referansKurum);
@@ -165,25 +224,47 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
         } else {
             currentStajyer.setReferans(null);
         }
-        String girisEvrakYolu = girisEvrakPathLabel.getText();
-        if (girisEvrakYolu != null && !girisEvrakYolu.trim().isEmpty() && !girisEvrakYolu.equals("Dosya Seçilmedi")) { // DEĞİŞİKLİK: "..." yerine "Dosya Seçilmedi" kontrolü
+
+        // YENİ: Evrak yolu toplama mantığı güncellendi
+        // Eğer Stajyer modeli tek bir evrak tutuyorsa, ilk eklenen dosyayı alıyoruz.
+        // Eğer birden fazla evrak tutuyorsa (List<Evrak>), bu kısım buna göre revize edilmeli.
+        File girisFile = getFirstFileInPanel(girisFileListPanel);
+        if (girisFile != null) {
             if (currentStajyer.getGirisEvrak() == null) currentStajyer.setGirisEvrak(new Evrak());
-            currentStajyer.getGirisEvrak().setDosyaYolu(girisEvrakYolu);
+            currentStajyer.getGirisEvrak().setDosyaYolu(girisFile.getAbsolutePath());
         } else {
-            currentStajyer.setGirisEvrak(null); // YENİ: Evrak yolu boşsa evrağı null yap
+            currentStajyer.setGirisEvrak(null);
         }
 
-        String cikisEvrakYolu = cikisEvrakPathLabel.getText();
-        if (cikisEvrakYolu != null && !cikisEvrakYolu.trim().isEmpty() && !cikisEvrakYolu.equals("Dosya Seçilmedi")) { // DEĞİŞİKLİK: "..." yerine "Dosya Seçilmedi" kontrolü
+        File cikisFile = getFirstFileInPanel(cikisFileListPanel);
+        if (cikisFile != null) {
             if (currentStajyer.getCikisEvrak() == null) currentStajyer.setCikisEvrak(new Evrak());
-            currentStajyer.getCikisEvrak().setDosyaYolu(cikisEvrakYolu);
+            currentStajyer.getCikisEvrak().setDosyaYolu(cikisFile.getAbsolutePath());
         } else {
-            currentStajyer.setCikisEvrak(null); // YENİ: Evrak yolu boşsa evrağı null yap
+            currentStajyer.setCikisEvrak(null);
         }
-        
+
         return true;
     }
     
+    // YENİ METOT: Bir paneldeki ilk dosyanın File nesnesini döndürür
+    private File getFirstFileInPanel(JPanel panel) {
+        // panel.getComponents() içinde JPanel'ler var (her biri bir dosya girişi)
+        // her bir JPanel'in UserData'sına File nesnesini saklayacağız (aşağıda addPdfFile metodunda)
+        for (Component comp : panel.getComponents()) {
+            if (comp instanceof JPanel) {
+                JPanel fileEntryPanel = (JPanel) comp;
+                // Bu paneli oluştururken File nesnesini bir client property olarak sakladığımızı varsayalım
+                File file = (File) fileEntryPanel.getClientProperty("file");
+                if (file != null) {
+                    return file;
+                }
+            }
+        }
+        return null;
+    }
+
+
     private void saveStajyerAndEvrak() {
         if (!validateAndCollectFormData()) {
             return;
@@ -201,7 +282,6 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
             if (onSaveCallback != null) {
                 onSaveCallback.run();
             }
-            // Pencereyi kapatma
             SwingUtilities.getWindowAncestor(this).dispose();
 
         } catch (Exception e) {
@@ -209,57 +289,52 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
             JOptionPane.showMessageDialog(this, "Stajyer kaydedilirken bir hata oluştu: " + e.getMessage(), "Kayıt Hatası", JOptionPane.ERROR_MESSAGE);
         }
     }
-    
-    private void setupDragAndDrop() {
-        // DropTarget dtGiris = new DropTarget() { // Bu kısım NetBeans tarafından zaten oluşturulmuş olabilir, kontrol edin
-        //     public synchronized void drop(DropTargetDropEvent evt) {
-        //         handleDrop(evt, girisEvrakPathLabel);
-        //     }
-        // };
-        // girisEvrakPanel.setDropTarget(dtGiris);
 
-        // DropTarget dtCikis = new DropTarget() { // Bu kısım NetBeans tarafından zaten oluşturulmuş olabilir, kontrol edin
-        //     public synchronized void drop(DropTargetDropEvent evt) {
-        //         handleDrop(evt, cikisEvrakPathLabel);
-        //     }
-        // };
-        // cikisEvrakPanel.setDropTarget(dtCikis);
-        
-        // NetBeans GUI Builder ile oluşturulan panellerin DropTarget'larını set edelim
-        girisEvrakPanel.setDropTarget(new DropTarget() {
+    private void setupDragAndDrop() {
+        // YENİ: girisEvrakIconPanel ve cikisEvrakIconPanel'e DropTarget ekle
+        // Bu panellerin zaten GUI Builder'da var olduğunu varsayıyoruz.
+        girisEvrakIconPanel.setDropTarget(new DropTarget() {
+            @Override
             public synchronized void drop(DropTargetDropEvent evt) {
-                handleDrop(evt, girisEvrakPathLabel);
+                // handleDrop metodunu dosyanın ekleneceği paneli belirterek çağır
+                handleDrop(evt, girisFileListPanel);
             }
         });
 
-        cikisEvrakPanel.setDropTarget(new DropTarget() {
+        cikisEvrakIconPanel.setDropTarget(new DropTarget() {
+            @Override
             public synchronized void drop(DropTargetDropEvent evt) {
-                handleDrop(evt, cikisEvrakPathLabel);
+                // handleDrop metodunu dosyanın ekleneceği paneli belirterek çağır
+                handleDrop(evt, cikisFileListPanel);
             }
         });
     }
 
-    private void handleDrop(DropTargetDropEvent evt, JLabel pathLabel) {
+    // handleDrop metodunu güncelledik: pathLabel yerine hedef paneli alıyor
+    private void handleDrop(DropTargetDropEvent evt, JPanel targetListPanel) {
         try {
             evt.acceptDrop(DnDConstants.ACTION_COPY);
             List<File> droppedFiles = (List<File>) evt.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
             if (!droppedFiles.isEmpty()) {
-                File file = droppedFiles.get(0);
-                
-                // Sadece PDF dosyalarını kabul et
-                if (!file.getName().toLowerCase().endsWith(".pdf")) {
-                    JOptionPane.showMessageDialog(this, "Lütfen sadece PDF dosyaları sürükleyip bırakın.", "Geçersiz Dosya", JOptionPane.WARNING_MESSAGE);
-                    return;
+                for (File file : droppedFiles) { // Sürüklenen tüm dosyaları işle
+                    // Sadece PDF dosyalarını kabul et
+                    if (!file.getName().toLowerCase().endsWith(".pdf")) {
+                        JOptionPane.showMessageDialog(this, "Lütfen sadece PDF dosyaları sürükleyip bırakın.", "Geçersiz Dosya", JOptionPane.WARNING_MESSAGE);
+                        continue; // Bir sonraki dosyaya geç
+                    }
+
+                    // Dosyayı 'evraklar' klasörüne kopyala
+                    Path targetDir = Paths.get("evraklar");
+                    if (!Files.exists(targetDir)) {
+                        Files.createDirectories(targetDir);
+                    }
+                    Path targetPath = targetDir.resolve(file.getName());
+                    Files.copy(file.toPath(), targetPath, StandardCopyOption.REPLACE_EXISTING);
+
+                    // YENİ: Kopyalanan dosyayı GUI listesine ekle
+                    addPdfFile(targetPath.toFile(), targetListPanel);
+                    JOptionPane.showMessageDialog(this, "Dosya başarıyla kaydedildi: " + targetPath.getFileName(), "Dosya Kaydedildi", JOptionPane.INFORMATION_MESSAGE);
                 }
-                
-                Path targetDir = Paths.get("evraklar");
-                if (!Files.exists(targetDir)) {
-                    Files.createDirectories(targetDir);
-                }
-                Path targetPath = targetDir.resolve(file.getName());
-                Files.copy(file.toPath(), targetPath, StandardCopyOption.REPLACE_EXISTING);
-                pathLabel.setText(targetPath.toString());
-                JOptionPane.showMessageDialog(this, "Dosya başarıyla kaydedildi: " + targetPath.getFileName(), "Dosya Kaydedildi", JOptionPane.INFORMATION_MESSAGE);
             }
         } catch (UnsupportedFlavorException | IOException ex) {
             LOGGER.log(Level.SEVERE, "Dosya sürükle bırak hatası", ex);
@@ -267,82 +342,205 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
         }
     }
 
-    /**
-     * YENİ METOT: PDF ikonlarını yükler ve ilgili JLabel'lara atar.
-     */
+    // YENİ METOT: PDF ikonlarını yükler ve ilgili JLabel'lara atar.
+    // Artık bu metod sadece tek bir ölçeklenmiş PDF ikonu oluşturup map'e koyuyor.
     private void loadPdfIcons() {
+        pdfIcons = new HashMap<>(); // Haritayı başlat
         try {
             // Kaynak klasördeki PDF ikonunun URL'sini al
-            // Bu, .jar dosyası içinde veya IDE'de çalışırken doğru yolu bulacaktır.
-            URL pdfIconURL = getClass().getResource("/pdf_icon.png");
+            URL pdfIconURL = getClass().getResource("/icon/pdf.png"); // "/icon/pdf.png" ikonunuzun yolu olmalı
             if (pdfIconURL != null) {
-                ImageIcon pdfIcon = new ImageIcon(pdfIconURL);
-                
-                // İkonları labellara atayın
-                // Eğer ikonlarınız çok büyükse boyutlandırma yapabilirsiniz:
-                // Image image = pdfIcon.getImage();
-                // Image scaledImage = image.getScaledInstance(50, 50, Image.SCALE_SMOOTH); // Örnek boyut: 50x50
-                // ImageIcon scaledPdfIcon = new ImageIcon(scaledImage);
-                // girisEvrakIconLabel.setIcon(scaledPdfIcon);
-                // cikisEvrakIconLabel.setIcon(scaledPdfIcon);
-
-                girisEvrakIconLabel.setIcon(pdfIcon);
-                cikisEvrakIconLabel.setIcon(pdfIcon);
-
-                // İkonun üzerine tıklandığında imlecin el şekline gelmesini sağlayın (opsiyonel)
-                girisEvrakIconLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
-                cikisEvrakIconLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+                ImageIcon originalIcon = new ImageIcon(pdfIconURL);
+                // Orijinal ikonu istenen boyuta ölçekle
+                Image scaledImage = originalIcon.getImage().getScaledInstance(ICON_SIZE, ICON_SIZE, Image.SCALE_SMOOTH);
+                pdfIcons.put("pdf", new ImageIcon(scaledImage)); // Ölçeklenmiş ikonu map'e kaydet
             } else {
-                LOGGER.log(Level.WARNING, "pdf_icon.png dosyası kaynaklarda bulunamadı.");
+                LOGGER.log(Level.WARNING, "pdf.png dosyası kaynaklarda bulunamadı.");
             }
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "PDF ikonları yüklenirken hata oluştu.", e);
         }
     }
 
-    /**
-     * YENİ METOT: İkonlara tıklama dinleyicilerini ekler.
-     */
-    private void setupIconClickListeners() {
-        girisEvrakIconPanel.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                openPdfFile(girisEvrakPathLabel.getText());
-            }
-        });
+    // ESKİ METOT: setupIconClickListeners() artık kullanılmıyor,
+    // tıklama dinleyicileri her bir dosya paneline (fileEntryPanel) ekleniyor.
+    // private void setupIconClickListeners() { ... }
 
-        cikisEvrakIconPanel.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                openPdfFile(cikisEvrakPathLabel.getText());
-            }
-        });
-    }
-
-    /**
-     * YENİ METOT: Belirtilen yoldaki PDF dosyasını varsayılan uygulama ile açar.
-     * @param filePath Açılacak PDF dosyasının yolu.
-     */
-    private void openPdfFile(String filePath) {
-        if (filePath == null || filePath.trim().isEmpty() || filePath.equals("Dosya Seçilmedi")) {
-            JOptionPane.showMessageDialog(this, "Açılacak bir PDF dosyası bulunamadı.", "Hata", JOptionPane.WARNING_MESSAGE);
+    // YENİ METOT: Belirtilen yoldaki PDF dosyasını varsayılan uygulama ile açar.
+    private void openPdfFile(File file) { // filePath yerine doğrudan File nesnesi alıyor
+        if (file == null || !file.exists()) {
+            JOptionPane.showMessageDialog(this, "Açılacak bir PDF dosyası bulunamadı veya geçersiz.", "Hata", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-        File pdfFile = new File(filePath);
-        if (pdfFile.exists() && !pdfFile.isDirectory()) {
-            if (Desktop.isDesktopSupported()) {
-                try {
-                    Desktop.getDesktop().open(pdfFile);
-                } catch (IOException ex) {
-                    LOGGER.log(Level.SEVERE, "PDF dosyası açılırken hata oluştu: " + filePath, ex);
-                    JOptionPane.showMessageDialog(this, "PDF dosyası açılamadı. Lütfen sisteminizde bir PDF okuyucu yüklü olduğundan emin olun ve dosya yolunu kontrol edin.", "Açma Hatası", JOptionPane.ERROR_MESSAGE);
-                }
-            } else {
-                JOptionPane.showMessageDialog(this, "Masaüstü işlemleri bu sistemde desteklenmiyor.", "Uyarı", JOptionPane.WARNING_MESSAGE);
+        if (Desktop.isDesktopSupported()) {
+            try {
+                Desktop.getDesktop().open(file);
+            } catch (IOException ex) {
+                LOGGER.log(Level.SEVERE, "PDF dosyası açılırken hata oluştu: " + file.getAbsolutePath(), ex);
+                JOptionPane.showMessageDialog(this, "PDF dosyası açılamadı. Lütfen sisteminizde bir PDF okuyucu yüklü olduğundan emin olun ve dosya yolunu kontrol edin.", "Açma Hatası", JOptionPane.ERROR_MESSAGE);
             }
         } else {
-            JOptionPane.showMessageDialog(this, "Belirtilen dosya bulunamadı veya geçersiz: " + filePath, "Dosya Bulunamadı", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Masaüstü işlemleri bu sistemde desteklenmiyor.", "Uyarı", JOptionPane.WARNING_MESSAGE);
+        }
+    }
+
+    // YENİ METOT: Dosyayı listeye ekler ve GUI'de gösterir
+    // targetPanel: Dosyanın ekleneceği JPanel (girisFileListPanel veya cikisFileListPanel)
+    private void addPdfFile(File file, JPanel targetPanel) {
+        if (file == null || !file.exists()) {
+            return;
+        }
+
+        // Zaten eklenmişse tekrar ekleme (dosya yolu aynıysa)
+        // Not: Bu kontrol sadece tam dosya yoluna bakar. İçerik değişse bile aynı yol aynı dosya sayılır.
+        if (addedFilePanelsMap.containsKey(file)) {
+            // Aynı dosyanın zaten eklendiği listede olup olmadığını kontrol et
+            if (targetPanel.getComponents().length > 0) { // Check if the target panel has components
+                for (Component comp : targetPanel.getComponents()) {
+                    if (comp instanceof JPanel) {
+                        JPanel existingPanel = (JPanel) comp;
+                        File existingFile = (File) existingPanel.getClientProperty("file");
+                        if (existingFile != null && existingFile.equals(file)) {
+                            JOptionPane.showMessageDialog(this, "Bu dosya zaten bu listeye eklenmiş: " + file.getName(), "Uyarı", JOptionPane.WARNING_MESSAGE);
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+
+
+        // Her dosya için özel bir panel oluştur
+        JPanel fileEntryPanel = new JPanel();
+        fileEntryPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 0)); // İkon ve isim arasında boşluk
+        fileEntryPanel.setBorder(BorderFactory.createEtchedBorder()); // Hafif bir çerçeve ekleyebiliriz
+
+        // İkon ekle
+        JLabel iconLabel = new JLabel(pdfIcons.get("pdf")); // Yüklediğimiz ölçeklenmiş ikonu kullan
+        fileEntryPanel.add(iconLabel);
+
+        // Dosya adını ekle
+        JLabel fileNameLabel = new JLabel(file.getName());
+        fileNameLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12)); // Yazı tipini küçültebiliriz
+        fileEntryPanel.add(fileNameLabel);
+
+        // Kapatma butonu ekle (isteğe bağlı)
+        JButton removeButton = new JButton("X");
+        removeButton.setFont(new Font("Segoe UI", Font.BOLD, 10));
+        removeButton.setMargin(new Insets(1, 4, 1, 4)); // Butonun kenar boşluklarını ayarla
+        removeButton.setFocusPainted(false); // Odak çizgisini kapat
+        removeButton.setBackground(Color.RED);
+        removeButton.setForeground(Color.WHITE);
+        removeButton.addActionListener(e -> {
+            targetPanel.remove(fileEntryPanel);
+            addedFilePanelsMap.remove(file); // Map'ten de kaldır
+            targetPanel.revalidate();
+            targetPanel.repaint();
+        });
+        fileEntryPanel.add(removeButton);
+
+
+        // Panel tıklama dinleyicisini ekle
+        fileEntryPanel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 1) { // Tek tıklama
+                    openPdfFile(file); // Doğrudan File nesnesini aç
+                }
+            }
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                fileEntryPanel.setBackground(new Color(220, 230, 240)); // Üzerine gelince renk değiştir
+            }
+            @Override
+            public void mouseExited(MouseEvent e) {
+                fileEntryPanel.setBackground(UIManager.getColor("Panel.background")); // Ayrılınca varsayılan renge dön
+            }
+        });
+
+        // Dosya nesnesini JPanel'e bir Client Property olarak bağla
+        // Bu, daha sonra hangi dosyanın hangi panele ait olduğunu anlamamızı sağlar.
+        fileEntryPanel.putClientProperty("file", file);
+
+
+        // Ana listeleme paneline bu dosya panelini ekle
+        targetPanel.add(fileEntryPanel);
+        addedFilePanelsMap.put(file, fileEntryPanel); // Dosyayı genel takip haritasına ekle
+        targetPanel.revalidate(); // Bileşenleri yeniden düzenle
+        targetPanel.repaint(); // Yeniden çiz
+    }
+
+
+    // YENİ: Giriş Evrakları için dosya seçme butonu ActionListener'ı
+    // Bu metodu, GUI Builder'da "Giriş Evrakları" ile ilgili butonun ActionPerformed olayına bağlamalısınız.
+    private void btnSelectGirisEvrakActionPerformed(java.awt.event.ActionEvent evt) {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        fileChooser.setMultiSelectionEnabled(true); // Çoklu dosya seçimine izin ver
+
+        int result = fileChooser.showOpenDialog(this);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            File[] selectedFiles = fileChooser.getSelectedFiles();
+            for (File file : selectedFiles) {
+                // PDF kontrolü yap
+                if (!file.getName().toLowerCase().endsWith(".pdf")) {
+                    JOptionPane.showMessageDialog(this, "Sadece PDF dosyaları seçilebilir: " + file.getName(), "Geçersiz Dosya", JOptionPane.WARNING_MESSAGE);
+                    continue; // Bir sonraki dosyaya geç
+                }
+
+                // Dosyayı 'evraklar' klasörüne kopyala
+                try {
+                    Path targetDir = Paths.get("evraklar");
+                    if (!Files.exists(targetDir)) {
+                        Files.createDirectories(targetDir);
+                    }
+                    Path targetPath = targetDir.resolve(file.getName());
+                    Files.copy(file.toPath(), targetPath, StandardCopyOption.REPLACE_EXISTING);
+
+                    addPdfFile(targetPath.toFile(), girisFileListPanel); // Giriş paneline kopyalanan dosyayı ekle
+                    JOptionPane.showMessageDialog(this, "Dosya başarıyla kaydedildi: " + targetPath.getFileName(), "Dosya Kaydedildi", JOptionPane.INFORMATION_MESSAGE);
+                } catch (IOException ex) {
+                    LOGGER.log(Level.SEVERE, "Dosya kopyalama hatası: " + file.getName(), ex);
+                    JOptionPane.showMessageDialog(this, "Dosya kopyalanırken bir hata oluştu: " + ex.getMessage(), "Hata", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        }
+    }
+
+    // YENİ: Çıkış Evrakları için dosya seçme butonu ActionListener'ı
+    // Bu metodu, GUI Builder'da "Çıkış Evrakları" ile ilgili butonun ActionPerformed olayına bağlamalısınız.
+    private void btnSelectCikisEvrakActionPerformed(java.awt.event.ActionEvent evt) {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        fileChooser.setMultiSelectionEnabled(true); // Çoklu dosya seçimine izin ver
+
+        int result = fileChooser.showOpenDialog(this);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            File[] selectedFiles = fileChooser.getSelectedFiles();
+            for (File file : selectedFiles) {
+                // PDF kontrolü yap
+                if (!file.getName().toLowerCase().endsWith(".pdf")) {
+                    JOptionPane.showMessageDialog(this, "Sadece PDF dosyaları seçilebilir: " + file.getName(), "Geçersiz Dosya", JOptionPane.WARNING_MESSAGE);
+                    continue; // Bir sonraki dosyaya geç
+                }
+
+                // Dosyayı 'evraklar' klasörüne kopyala
+                try {
+                    Path targetDir = Paths.get("evraklar");
+                    if (!Files.exists(targetDir)) {
+                        Files.createDirectories(targetDir);
+                    }
+                    Path targetPath = targetDir.resolve(file.getName());
+                    Files.copy(file.toPath(), targetPath, StandardCopyOption.REPLACE_EXISTING);
+
+                    addPdfFile(targetPath.toFile(), cikisFileListPanel); // Çıkış paneline kopyalanan dosyayı ekle
+                    JOptionPane.showMessageDialog(this, "Dosya başarıyla kaydedildi: " + targetPath.getFileName(), "Dosya Kaydedildi", JOptionPane.INFORMATION_MESSAGE);
+                } catch (IOException ex) {
+                    LOGGER.log(Level.SEVERE, "Dosya kopyalama hatası: " + file.getName(), ex);
+                    JOptionPane.showMessageDialog(this, "Dosya kopyalanırken bir hata oluştu: " + ex.getMessage(), "Hata", JOptionPane.ERROR_MESSAGE);
+                }
+            }
         }
     }
 
