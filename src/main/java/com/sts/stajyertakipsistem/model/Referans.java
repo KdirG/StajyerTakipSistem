@@ -4,11 +4,11 @@ import java.io.Serializable;
 
 public class Referans implements Serializable {
 
-    private int referansId; // Değişiklik: String -> int
+    private int referansId;
     private String adSoyad;
     private String telefonNo;
     private String kurum;
-    
+
     public Referans() {
     }
 
@@ -18,8 +18,7 @@ public class Referans implements Serializable {
         this.telefonNo = telefonNo;
         this.kurum = kurum;
     }
-    
-    // Getter ve Setter'lar güncellendi
+
     public int getReferansId() { return referansId; }
     public void setReferansId(int referansId) { this.referansId = referansId; }
 
@@ -31,4 +30,11 @@ public class Referans implements Serializable {
 
     public String getKurum() { return kurum; }
     public void setKurum(String kurum) { this.kurum = kurum; }
+
+    @Override
+    public String toString() {
+        // Tabloda referansın ad-soyadının görünmesini istediğinizi varsayıyorum
+        // İsterseniz kurum bilgisini de ekleyebilirsiniz: return adSoyad + " (" + kurum + ")";
+        return adSoyad;
+    }
 }
