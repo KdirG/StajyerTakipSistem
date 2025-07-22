@@ -30,6 +30,7 @@ com\sts\stajyertakipsistem\GUI\StajyerListForm$12.class
 com\sts\stajyertakipsistem\GUI\SpesifikStajyerForm$1.class
 com\sts\stajyertakipsistem\GUI\LoginPanel$2.class
 com\sts\stajyertakipsistem\GUI\SpesifikStajyerForm$6.class
+com\sts\stajyertakipsistem\GUI\StajyerFilterDialog$5.class
 com\sts\stajyertakipsistem\GUI\StajyerListForm$1.class
 com\sts\stajyertakipsistem\dao\StajyerDAO.class
 com\sts\stajyertakipsistem\GUI\StajyerListForm$11.class
