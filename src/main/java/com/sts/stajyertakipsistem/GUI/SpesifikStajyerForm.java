@@ -5,6 +5,8 @@ import com.sts.stajyertakipsistem.model.Okul;
 import com.sts.stajyertakipsistem.model.Referans;
 import com.sts.stajyertakipsistem.model.Stajyer;
 import com.sts.stajyertakipsistem.service.StajyerService;
+import java.awt.datatransfer.UnsupportedFlavorException;
+       
 import javax.swing.*;
 import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
@@ -12,6 +14,7 @@ import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetDropEvent;
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -22,6 +25,9 @@ import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.net.URL; // URL sınıfını import ettik
 
 // DEĞİŞİKLİK: JFrame yerine JPanel'den kalıtım alınıyor.
 public class SpesifikStajyerForm extends javax.swing.JPanel {
@@ -39,6 +45,8 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
         this.onSaveCallback = onSaveCallback;
         initComponents();
         setupDragAndDrop();
+        setupIconClickListeners(); // YENİ: İkon tıklama dinleyicilerini kur
+        loadPdfIcons(); // YENİ: PDF ikonlarını yükle
         
         if (stajyerId > 0) {
             isEditMode = true;
@@ -85,9 +93,13 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
         }    
         if (currentStajyer.getGirisEvrak() != null && currentStajyer.getGirisEvrak().getDosyaYolu() != null) {
             girisEvrakPathLabel.setText(currentStajyer.getGirisEvrak().getDosyaYolu());
+        } else {
+            girisEvrakPathLabel.setText("Dosya Seçilmedi"); // YENİ: Varsayılan metin
         }
         if (currentStajyer.getCikisEvrak() != null && currentStajyer.getCikisEvrak().getDosyaYolu() != null) {
             cikisEvrakPathLabel.setText(currentStajyer.getCikisEvrak().getDosyaYolu());
+        } else {
+            cikisEvrakPathLabel.setText("Dosya Seçilmedi"); // YENİ: Varsayılan metin
         }
     }
     
@@ -124,14 +136,13 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
         currentStajyer.getOkul().setOkulAdi(jTextField6.getText());
         currentStajyer.getOkul().setOkulTuru(jTextField11.getText());
         String referansAdSoyad = jTextField5.getText();
-        String referansTel = jTextField14.getText(); // Bu alanın referansın telefon numarası olduğu varsayılıyor
+        String referansTel = jTextField14.getText(); 
         String referansKurum = jTextField15.getText();
 
-         boolean referansBilgisiGirildi = (referansAdSoyad != null && !referansAdSoyad.trim().isEmpty()) ||
-                                       (referansTel != null && !referansTel.trim().isEmpty()) ||
-                                       (referansKurum != null && !referansKurum.trim().isEmpty());
+          boolean referansBilgisiGirildi = (referansAdSoyad != null && !referansAdSoyad.trim().isEmpty()) ||
+                                         (referansTel != null && !referansTel.trim().isEmpty()) ||
+                                         (referansKurum != null && !referansKurum.trim().isEmpty());
           if (referansBilgisiGirildi) {
-            // Eğer herhangi bir referans bilgisi girildiyse, Ad Soyad ve Telefon No alanları zorunludur.
             if (referansAdSoyad == null || referansAdSoyad.trim().isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Referans Ad Soyad alanı boş bırakılamaz.", "Zorunlu Alan", JOptionPane.WARNING_MESSAGE);
                 jTextField5.requestFocus();
@@ -143,31 +154,31 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
                 return false;
             }
 
-            // Stajyerin referans nesnesi null ise (daha önce boş kaydedilmiş olabilir), yeniden oluştur.
             if (currentStajyer.getReferans() == null) {
                 currentStajyer.setReferans(new Referans());
             }
             
-            // Varsayım: Referans modelinde setTelefonNo() ve setKurum() metodları var.
             currentStajyer.getReferans().setAdSoyad(referansAdSoyad);
             currentStajyer.getReferans().setTelefonNo(referansTel);
             currentStajyer.getReferans().setKurum(referansKurum);
 
         } else {
-            // Hiç referans bilgisi girilmediyse, stajyerin referansını null yap.
-            // Bu, veritabanına boş/hatalı bir referans kaydı eklemeye çalışmayı önler.
             currentStajyer.setReferans(null);
         }
         String girisEvrakYolu = girisEvrakPathLabel.getText();
-        if (girisEvrakYolu != null && !girisEvrakYolu.trim().isEmpty() && !girisEvrakYolu.equals("...")) {
+        if (girisEvrakYolu != null && !girisEvrakYolu.trim().isEmpty() && !girisEvrakYolu.equals("Dosya Seçilmedi")) { // DEĞİŞİKLİK: "..." yerine "Dosya Seçilmedi" kontrolü
             if (currentStajyer.getGirisEvrak() == null) currentStajyer.setGirisEvrak(new Evrak());
             currentStajyer.getGirisEvrak().setDosyaYolu(girisEvrakYolu);
+        } else {
+            currentStajyer.setGirisEvrak(null); // YENİ: Evrak yolu boşsa evrağı null yap
         }
 
         String cikisEvrakYolu = cikisEvrakPathLabel.getText();
-        if (cikisEvrakYolu != null && !cikisEvrakYolu.trim().isEmpty() && !cikisEvrakYolu.equals("...")) {
+        if (cikisEvrakYolu != null && !cikisEvrakYolu.trim().isEmpty() && !cikisEvrakYolu.equals("Dosya Seçilmedi")) { // DEĞİŞİKLİK: "..." yerine "Dosya Seçilmedi" kontrolü
             if (currentStajyer.getCikisEvrak() == null) currentStajyer.setCikisEvrak(new Evrak());
             currentStajyer.getCikisEvrak().setDosyaYolu(cikisEvrakYolu);
+        } else {
+            currentStajyer.setCikisEvrak(null); // YENİ: Evrak yolu boşsa evrağı null yap
         }
         
         return true;
@@ -200,19 +211,32 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
     }
     
     private void setupDragAndDrop() {
-        DropTarget dtGiris = new DropTarget() {
+        // DropTarget dtGiris = new DropTarget() { // Bu kısım NetBeans tarafından zaten oluşturulmuş olabilir, kontrol edin
+        //     public synchronized void drop(DropTargetDropEvent evt) {
+        //         handleDrop(evt, girisEvrakPathLabel);
+        //     }
+        // };
+        // girisEvrakPanel.setDropTarget(dtGiris);
+
+        // DropTarget dtCikis = new DropTarget() { // Bu kısım NetBeans tarafından zaten oluşturulmuş olabilir, kontrol edin
+        //     public synchronized void drop(DropTargetDropEvent evt) {
+        //         handleDrop(evt, cikisEvrakPathLabel);
+        //     }
+        // };
+        // cikisEvrakPanel.setDropTarget(dtCikis);
+        
+        // NetBeans GUI Builder ile oluşturulan panellerin DropTarget'larını set edelim
+        girisEvrakPanel.setDropTarget(new DropTarget() {
             public synchronized void drop(DropTargetDropEvent evt) {
                 handleDrop(evt, girisEvrakPathLabel);
             }
-        };
-        girisEvrakPanel.setDropTarget(dtGiris);
+        });
 
-        DropTarget dtCikis = new DropTarget() {
+        cikisEvrakPanel.setDropTarget(new DropTarget() {
             public synchronized void drop(DropTargetDropEvent evt) {
                 handleDrop(evt, cikisEvrakPathLabel);
             }
-        };
-        cikisEvrakPanel.setDropTarget(dtCikis);
+        });
     }
 
     private void handleDrop(DropTargetDropEvent evt, JLabel pathLabel) {
@@ -221,6 +245,13 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
             List<File> droppedFiles = (List<File>) evt.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
             if (!droppedFiles.isEmpty()) {
                 File file = droppedFiles.get(0);
+                
+                // Sadece PDF dosyalarını kabul et
+                if (!file.getName().toLowerCase().endsWith(".pdf")) {
+                    JOptionPane.showMessageDialog(this, "Lütfen sadece PDF dosyaları sürükleyip bırakın.", "Geçersiz Dosya", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+                
                 Path targetDir = Paths.get("evraklar");
                 if (!Files.exists(targetDir)) {
                     Files.createDirectories(targetDir);
@@ -228,11 +259,93 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
                 Path targetPath = targetDir.resolve(file.getName());
                 Files.copy(file.toPath(), targetPath, StandardCopyOption.REPLACE_EXISTING);
                 pathLabel.setText(targetPath.toString());
+                JOptionPane.showMessageDialog(this, "Dosya başarıyla kaydedildi: " + targetPath.getFileName(), "Dosya Kaydedildi", JOptionPane.INFORMATION_MESSAGE);
             }
-        } catch (Exception ex) {
+        } catch (UnsupportedFlavorException | IOException ex) {
             LOGGER.log(Level.SEVERE, "Dosya sürükle bırak hatası", ex);
+            JOptionPane.showMessageDialog(this, "Dosya sürükle bırak işleminde bir hata oluştu: " + ex.getMessage(), "Hata", JOptionPane.ERROR_MESSAGE);
         }
     }
+
+    /**
+     * YENİ METOT: PDF ikonlarını yükler ve ilgili JLabel'lara atar.
+     */
+    private void loadPdfIcons() {
+        try {
+            // Kaynak klasördeki PDF ikonunun URL'sini al
+            // Bu, .jar dosyası içinde veya IDE'de çalışırken doğru yolu bulacaktır.
+            URL pdfIconURL = getClass().getResource("/pdf_icon.png");
+            if (pdfIconURL != null) {
+                ImageIcon pdfIcon = new ImageIcon(pdfIconURL);
+                
+                // İkonları labellara atayın
+                // Eğer ikonlarınız çok büyükse boyutlandırma yapabilirsiniz:
+                // Image image = pdfIcon.getImage();
+                // Image scaledImage = image.getScaledInstance(50, 50, Image.SCALE_SMOOTH); // Örnek boyut: 50x50
+                // ImageIcon scaledPdfIcon = new ImageIcon(scaledImage);
+                // girisEvrakIconLabel.setIcon(scaledPdfIcon);
+                // cikisEvrakIconLabel.setIcon(scaledPdfIcon);
+
+                girisEvrakIconLabel.setIcon(pdfIcon);
+                cikisEvrakIconLabel.setIcon(pdfIcon);
+
+                // İkonun üzerine tıklandığında imlecin el şekline gelmesini sağlayın (opsiyonel)
+                girisEvrakIconLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+                cikisEvrakIconLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+            } else {
+                LOGGER.log(Level.WARNING, "pdf_icon.png dosyası kaynaklarda bulunamadı.");
+            }
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "PDF ikonları yüklenirken hata oluştu.", e);
+        }
+    }
+
+    /**
+     * YENİ METOT: İkonlara tıklama dinleyicilerini ekler.
+     */
+    private void setupIconClickListeners() {
+        girisEvrakIconPanel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                openPdfFile(girisEvrakPathLabel.getText());
+            }
+        });
+
+        cikisEvrakIconPanel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                openPdfFile(cikisEvrakPathLabel.getText());
+            }
+        });
+    }
+
+    /**
+     * YENİ METOT: Belirtilen yoldaki PDF dosyasını varsayılan uygulama ile açar.
+     * @param filePath Açılacak PDF dosyasının yolu.
+     */
+    private void openPdfFile(String filePath) {
+        if (filePath == null || filePath.trim().isEmpty() || filePath.equals("Dosya Seçilmedi")) {
+            JOptionPane.showMessageDialog(this, "Açılacak bir PDF dosyası bulunamadı.", "Hata", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        File pdfFile = new File(filePath);
+        if (pdfFile.exists() && !pdfFile.isDirectory()) {
+            if (Desktop.isDesktopSupported()) {
+                try {
+                    Desktop.getDesktop().open(pdfFile);
+                } catch (IOException ex) {
+                    LOGGER.log(Level.SEVERE, "PDF dosyası açılırken hata oluştu: " + filePath, ex);
+                    JOptionPane.showMessageDialog(this, "PDF dosyası açılamadı. Lütfen sisteminizde bir PDF okuyucu yüklü olduğundan emin olun ve dosya yolunu kontrol edin.", "Açma Hatası", JOptionPane.ERROR_MESSAGE);
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Masaüstü işlemleri bu sistemde desteklenmiyor.", "Uyarı", JOptionPane.WARNING_MESSAGE);
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Belirtilen dosya bulunamadı veya geçersiz: " + filePath, "Dosya Bulunamadı", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -281,6 +394,12 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
         jTextField15 = new javax.swing.JTextField();
         jLabel18 = new javax.swing.JLabel();
         jLabel19 = new javax.swing.JLabel();
+        cikisEvrakIconPanel = new javax.swing.JPanel();
+        cikisEvrakIconLabel = new javax.swing.JLabel();
+        cikisEvrakScrollPane = new javax.swing.JScrollPane();
+        girisEvrakIconPanel = new javax.swing.JPanel();
+        girisEvrakIconLabel = new javax.swing.JLabel();
+        girisEvrakScrollPane = new javax.swing.JScrollPane();
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         jLabel2.setText("STAJYER TAKİP SİSTEMİ");
@@ -295,14 +414,14 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
             .addGroup(girisEvrakPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(girisEvrakPathLabel)
-                .addContainerGap(114, Short.MAX_VALUE))
+                .addContainerGap(105, Short.MAX_VALUE))
         );
         girisEvrakPanelLayout.setVerticalGroup(
             girisEvrakPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(girisEvrakPanelLayout.createSequentialGroup()
                 .addGap(24, 24, 24)
                 .addComponent(girisEvrakPathLabel)
-                .addContainerGap(15, Short.MAX_VALUE))
+                .addContainerGap(27, Short.MAX_VALUE))
         );
 
         jLabel1.setText("Evrakları Buraya Sürükleyip Bırakabilirsiniz");
@@ -394,23 +513,8 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
         jTextField13.setHorizontalAlignment(javax.swing.JTextField.CENTER);
 
         cikisEvrakPanel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-
-        javax.swing.GroupLayout cikisEvrakPanelLayout = new javax.swing.GroupLayout(cikisEvrakPanel);
-        cikisEvrakPanel.setLayout(cikisEvrakPanelLayout);
-        cikisEvrakPanelLayout.setHorizontalGroup(
-            cikisEvrakPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(cikisEvrakPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(cikisEvrakPathLabel)
-                .addContainerGap(96, Short.MAX_VALUE))
-        );
-        cikisEvrakPanelLayout.setVerticalGroup(
-            cikisEvrakPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(cikisEvrakPanelLayout.createSequentialGroup()
-                .addGap(19, 19, 19)
-                .addComponent(cikisEvrakPathLabel)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
+        cikisEvrakPanel.setLayout(new javax.swing.BoxLayout(cikisEvrakPanel, javax.swing.BoxLayout.LINE_AXIS));
+        cikisEvrakPanel.add(cikisEvrakPathLabel);
 
         jLabel15.setText("Okul Türü:");
 
@@ -433,25 +537,33 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
 
         jLabel19.setText("Çıkış Evrakları");
 
+        cikisEvrakIconPanel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        cikisEvrakIconPanel.setLayout(new javax.swing.BoxLayout(cikisEvrakIconPanel, javax.swing.BoxLayout.LINE_AXIS));
+        cikisEvrakIconPanel.add(cikisEvrakIconLabel);
+        cikisEvrakIconPanel.add(cikisEvrakScrollPane);
+
+        girisEvrakIconPanel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        girisEvrakIconPanel.setLayout(new javax.swing.BoxLayout(girisEvrakIconPanel, javax.swing.BoxLayout.LINE_AXIS));
+        girisEvrakIconPanel.add(girisEvrakIconLabel);
+        girisEvrakIconPanel.add(girisEvrakScrollPane);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(jLabel2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton2)
-                        .addGap(62, 62, 62))
-                    .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                         .addGap(10, 10, 10)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 366, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                                 .addComponent(jLabel12)
-                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addContainerGap())
+                            .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                                     .addComponent(jLabel8, javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
@@ -466,7 +578,6 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
                                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                             .addComponent(jTextField15)
                                             .addComponent(jTextField14)))
-                                    .addComponent(jTextField1, javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(layout.createSequentialGroup()
                                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                             .addComponent(jLabel11)
@@ -500,22 +611,37 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
                                             .addComponent(jTextField11, javax.swing.GroupLayout.Alignment.TRAILING)
                                             .addComponent(jTextField5)
                                             .addComponent(jTextField7))))
-                                .addGap(0, 18, Short.MAX_VALUE)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(layout.createSequentialGroup()
-                                        .addGap(40, 40, 40)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(jLabel1)
                                             .addGroup(layout.createSequentialGroup()
-                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                    .addComponent(girisEvrakPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                    .addComponent(jLabel18))
-                                                .addGap(28, 28, 28)
-                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                    .addComponent(jLabel19)
-                                                    .addComponent(cikisEvrakPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                                    .addComponent(jButton1, javax.swing.GroupLayout.Alignment.TRAILING))
-                                .addGap(249, 249, 249))))))
+                                                .addComponent(jLabel18)
+                                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                            .addGroup(layout.createSequentialGroup()
+                                                .addComponent(jLabel1)
+                                                .addGap(0, 0, Short.MAX_VALUE))
+                                            .addGroup(layout.createSequentialGroup()
+                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                                    .addComponent(girisEvrakIconPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                    .addComponent(girisEvrakPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 83, Short.MAX_VALUE)
+                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                                    .addGroup(layout.createSequentialGroup()
+                                                        .addComponent(jLabel19)
+                                                        .addGap(28, 28, 28))
+                                                    .addComponent(cikisEvrakIconPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                    .addComponent(cikisEvrakPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                                .addGap(210, 210, 210))))
+                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(jButton1)
+                                        .addGap(244, 244, 244))))))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButton2)
+                        .addGap(164, 164, 164))))
             .addComponent(jSeparator3)
         );
         layout.setVerticalGroup(
@@ -524,23 +650,24 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
                 .addGap(31, 31, 31)
                 .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel2)
                     .addComponent(jButton2))
-                .addGap(47, 47, 47)
+                .addGap(48, 48, 48)
                 .addComponent(jLabel12)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(24, 24, 24)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel11)
-                    .addComponent(jTextField10))
-                .addGap(10, 10, 10)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel10)
-                    .addComponent(jTextField9))
+                    .addComponent(jTextField10)
+                    .addComponent(jLabel1))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
+                        .addGap(10, 10, 10)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel10)
+                            .addComponent(jTextField9))
                         .addGap(10, 10, 10)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel9)
@@ -556,8 +683,8 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
                         .addGap(10, 10, 10)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(jTextField11, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jTextField11, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(jLabel15))
                                 .addGap(10, 10, 10)
                                 .addComponent(jLabel6))
@@ -568,8 +695,10 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
                             .addComponent(jTextField14, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(10, 10, 10))
                     .addGroup(layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jLabel1)
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(cikisEvrakIconPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(girisEvrakIconPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(girisEvrakPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -582,33 +711,28 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel17)
                     .addComponent(jTextField15))
+                .addGap(10, 10, 10)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel5)
+                    .addComponent(jTextField4))
+                .addGap(10, 10, 10)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel4)
+                    .addComponent(jTextField3)
+                    .addComponent(jButton1))
+                .addGap(9, 9, 9)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3)
+                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(10, 10, 10)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel13)
+                    .addComponent(jTextField12, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(10, 10, 10)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(54, 54, 54)
-                        .addComponent(jButton1)
-                        .addGap(47, 47, 47))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(10, 10, 10)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel5)
-                            .addComponent(jTextField4))
-                        .addGap(10, 10, 10)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel4)
-                            .addComponent(jTextField3))
-                        .addGap(10, 10, 10)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel3)
-                            .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(10, 10, 10)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel13)
-                            .addComponent(jTextField12, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(10, 10, 10)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel14)
-                            .addComponent(jTextField13, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(64, 64, 64))))
+                    .addComponent(jLabel14)
+                    .addComponent(jTextField13, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(64, 64, 64))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -649,10 +773,16 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel cikisEvrakIconLabel;
+    private javax.swing.JPanel cikisEvrakIconPanel;
     private javax.swing.JPanel cikisEvrakPanel;
     private javax.swing.JLabel cikisEvrakPathLabel;
+    private javax.swing.JScrollPane cikisEvrakScrollPane;
+    private javax.swing.JLabel girisEvrakIconLabel;
+    private javax.swing.JPanel girisEvrakIconPanel;
     private javax.swing.JPanel girisEvrakPanel;
     private javax.swing.JLabel girisEvrakPathLabel;
+    private javax.swing.JScrollPane girisEvrakScrollPane;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
