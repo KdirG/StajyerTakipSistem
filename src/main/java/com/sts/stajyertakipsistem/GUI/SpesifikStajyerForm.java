@@ -91,14 +91,14 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
     private void initializeCustomComponents() {
         // Giriş Evrakları için panel oluştur ve girisEvrakScrollPane'e bağla
         girisFileListPanel = new JPanel();
-        girisFileListPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 10)); // Yatayda 10, dikeyde 10 boşluk
+        girisFileListPanel.setLayout(new BoxLayout(girisFileListPanel, BoxLayout.Y_AXIS));
         // **ÖNEMLİ:** Buradaki `girisEvrakScrollPane` ve `cikisEvrakScrollPane` adları
         // sizin GUI Builder'da verdiğiniz adlarla eşleşmeli!
         girisEvrakScrollPane.setViewportView(girisFileListPanel);
 
         // Çıkış Evrakları için panel oluştur ve cikisEvrakScrollPane'e bağla
         cikisFileListPanel = new JPanel();
-        cikisFileListPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 10)); // Yatayda 10, dikeyde 10 boşluk
+         cikisFileListPanel.setLayout(new BoxLayout(cikisFileListPanel, BoxLayout.Y_AXIS)); // Yatayda 10, dikeyde 10 boşluk
         cikisEvrakScrollPane.setViewportView(cikisFileListPanel);
     }
 
@@ -419,12 +419,12 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
         // İkon ekle
         JLabel iconLabel = new JLabel(pdfIcons.get("pdf")); // Yüklediğimiz ölçeklenmiş ikonu kullan
         fileEntryPanel.add(iconLabel);
-
+        fileEntryPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, ICON_SIZE + 10));
         // Dosya adını ekle
         JLabel fileNameLabel = new JLabel(file.getName());
         fileNameLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12)); // Yazı tipini küçültebiliriz
         fileEntryPanel.add(fileNameLabel);
-
+        fileEntryPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
         // Kapatma butonu ekle (isteğe bağlı)
         JButton removeButton = new JButton("X");
         removeButton.setFont(new Font("Segoe UI", Font.BOLD, 10));
@@ -552,8 +552,6 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
         jSeparator8 = new javax.swing.JSeparator();
         jSeparator12 = new javax.swing.JSeparator();
         jLabel2 = new javax.swing.JLabel();
-        girisEvrakPanel = new javax.swing.JPanel();
-        girisEvrakPathLabel = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
         jSeparator3 = new javax.swing.JSeparator();
         jButton2 = new javax.swing.JButton();
@@ -582,8 +580,6 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
         jLabel13 = new javax.swing.JLabel();
         jLabel14 = new javax.swing.JLabel();
         jTextField13 = new javax.swing.JTextField();
-        cikisEvrakPanel = new javax.swing.JPanel();
-        cikisEvrakPathLabel = new javax.swing.JLabel();
         jLabel15 = new javax.swing.JLabel();
         jTextField11 = new javax.swing.JTextField();
         jLabel16 = new javax.swing.JLabel();
@@ -592,35 +588,14 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
         jTextField15 = new javax.swing.JTextField();
         jLabel18 = new javax.swing.JLabel();
         jLabel19 = new javax.swing.JLabel();
-        cikisEvrakIconPanel = new javax.swing.JPanel();
-        cikisEvrakIconLabel = new javax.swing.JLabel();
-        cikisEvrakScrollPane = new javax.swing.JScrollPane();
         girisEvrakIconPanel = new javax.swing.JPanel();
         girisEvrakIconLabel = new javax.swing.JLabel();
         girisEvrakScrollPane = new javax.swing.JScrollPane();
+        cikisEvrakIconPanel = new javax.swing.JPanel();
+        cikisEvrakScrollPane = new javax.swing.JScrollPane();
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         jLabel2.setText("STAJYER TAKİP SİSTEMİ");
-
-        girisEvrakPanel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        girisEvrakPanel.setForeground(new java.awt.Color(153, 153, 0));
-
-        javax.swing.GroupLayout girisEvrakPanelLayout = new javax.swing.GroupLayout(girisEvrakPanel);
-        girisEvrakPanel.setLayout(girisEvrakPanelLayout);
-        girisEvrakPanelLayout.setHorizontalGroup(
-            girisEvrakPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(girisEvrakPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(girisEvrakPathLabel)
-                .addContainerGap(105, Short.MAX_VALUE))
-        );
-        girisEvrakPanelLayout.setVerticalGroup(
-            girisEvrakPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(girisEvrakPanelLayout.createSequentialGroup()
-                .addGap(24, 24, 24)
-                .addComponent(girisEvrakPathLabel)
-                .addContainerGap(27, Short.MAX_VALUE))
-        );
 
         jLabel1.setText("Evrakları Buraya Sürükleyip Bırakabilirsiniz");
 
@@ -710,10 +685,6 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
 
         jTextField13.setHorizontalAlignment(javax.swing.JTextField.CENTER);
 
-        cikisEvrakPanel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        cikisEvrakPanel.setLayout(new javax.swing.BoxLayout(cikisEvrakPanel, javax.swing.BoxLayout.LINE_AXIS));
-        cikisEvrakPanel.add(cikisEvrakPathLabel);
-
         jLabel15.setText("Okul Türü:");
 
         jTextField11.setHorizontalAlignment(javax.swing.JTextField.CENTER);
@@ -735,15 +706,14 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
 
         jLabel19.setText("Çıkış Evrakları");
 
-        cikisEvrakIconPanel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        cikisEvrakIconPanel.setLayout(new javax.swing.BoxLayout(cikisEvrakIconPanel, javax.swing.BoxLayout.LINE_AXIS));
-        cikisEvrakIconPanel.add(cikisEvrakIconLabel);
-        cikisEvrakIconPanel.add(cikisEvrakScrollPane);
-
         girisEvrakIconPanel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         girisEvrakIconPanel.setLayout(new javax.swing.BoxLayout(girisEvrakIconPanel, javax.swing.BoxLayout.LINE_AXIS));
         girisEvrakIconPanel.add(girisEvrakIconLabel);
         girisEvrakIconPanel.add(girisEvrakScrollPane);
+
+        cikisEvrakIconPanel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        cikisEvrakIconPanel.setLayout(new javax.swing.BoxLayout(cikisEvrakIconPanel, javax.swing.BoxLayout.LINE_AXIS));
+        cikisEvrakIconPanel.add(cikisEvrakScrollPane);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -760,7 +730,7 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
                                 .addGap(0, 0, Short.MAX_VALUE))
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                                 .addComponent(jLabel12)
-                                .addContainerGap())
+                                .addContainerGap(1031, Short.MAX_VALUE))
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                                     .addComponent(jLabel8, javax.swing.GroupLayout.Alignment.LEADING)
@@ -811,30 +781,22 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
                                             .addComponent(jTextField7))))
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(layout.createSequentialGroup()
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, 128, Short.MAX_VALUE)
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                            .addComponent(jButton1)
                                             .addGroup(layout.createSequentialGroup()
-                                                .addComponent(jLabel18)
-                                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                            .addGroup(layout.createSequentialGroup()
-                                                .addComponent(jLabel1)
-                                                .addGap(0, 0, Short.MAX_VALUE))
-                                            .addGroup(layout.createSequentialGroup()
-                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                                    .addComponent(girisEvrakIconPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                    .addComponent(girisEvrakPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 83, Short.MAX_VALUE)
-                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                                    .addGroup(layout.createSequentialGroup()
-                                                        .addComponent(jLabel19)
-                                                        .addGap(28, 28, 28))
-                                                    .addComponent(cikisEvrakIconPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                    .addComponent(cikisEvrakPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                                .addGap(210, 210, 210))))
-                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(jButton1)
-                                        .addGap(244, 244, 244))))))
+                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                    .addComponent(girisEvrakIconPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                    .addComponent(jLabel18))
+                                                .addGap(50, 50, 50)
+                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                    .addComponent(jLabel19)
+                                                    .addComponent(cikisEvrakIconPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                        .addGap(329, 329, 329))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGap(128, 128, 128)
+                                        .addComponent(jLabel1)
+                                        .addContainerGap())))))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -855,11 +817,16 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
                 .addComponent(jLabel12)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(24, 24, 24)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel11)
-                    .addComponent(jTextField10)
-                    .addComponent(jLabel1))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(24, 24, 24)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel11)
+                            .addComponent(jTextField10)))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel1)
+                        .addGap(11, 11, 11)))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(10, 10, 10)
@@ -891,46 +858,43 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel16)
                             .addComponent(jTextField14, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(10, 10, 10))
+                        .addGap(17, 17, 17)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel17)
+                            .addComponent(jTextField15))
+                        .addGap(10, 10, 10)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel5)
+                            .addComponent(jTextField4))
+                        .addGap(10, 10, 10)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel4)
+                            .addComponent(jTextField3))
+                        .addGap(10, 10, 10)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel3)
+                            .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(10, 10, 10)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel13)
+                            .addComponent(jTextField12, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(10, 10, 10)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel14)
+                            .addComponent(jTextField13, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(64, 64, 64))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(cikisEvrakIconPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(girisEvrakIconPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(girisEvrakPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(cikisEvrakPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                            .addComponent(cikisEvrakIconPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(girisEvrakIconPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 243, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel18)
-                            .addComponent(jLabel19))
-                        .addGap(33, 33, 33)))
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel17)
-                    .addComponent(jTextField15))
-                .addGap(10, 10, 10)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel5)
-                    .addComponent(jTextField4))
-                .addGap(10, 10, 10)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel4)
-                    .addComponent(jTextField3)
-                    .addComponent(jButton1))
-                .addGap(9, 9, 9)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3)
-                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(10, 10, 10)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel13)
-                    .addComponent(jTextField12, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(10, 10, 10)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel14)
-                    .addComponent(jTextField13, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(64, 64, 64))
+                            .addComponent(jLabel19, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addComponent(jButton1)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -971,15 +935,10 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel cikisEvrakIconLabel;
     private javax.swing.JPanel cikisEvrakIconPanel;
-    private javax.swing.JPanel cikisEvrakPanel;
-    private javax.swing.JLabel cikisEvrakPathLabel;
     private javax.swing.JScrollPane cikisEvrakScrollPane;
     private javax.swing.JLabel girisEvrakIconLabel;
     private javax.swing.JPanel girisEvrakIconPanel;
-    private javax.swing.JPanel girisEvrakPanel;
-    private javax.swing.JLabel girisEvrakPathLabel;
     private javax.swing.JScrollPane girisEvrakScrollPane;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
