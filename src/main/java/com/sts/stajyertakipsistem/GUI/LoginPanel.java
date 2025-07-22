@@ -21,7 +21,7 @@ public class LoginPanel extends javax.swing.JPanel {
      */
     public LoginPanel() {
         initComponents();
-        jTextField1.setText("");
+        usernamefield.setText("");
         jPasswordField1.setText("");
     }
      public void setParentFrame(JFrame frame) {
@@ -39,7 +39,7 @@ public class LoginPanel extends javax.swing.JPanel {
 
         jTextField2 = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
+        usernamefield = new javax.swing.JTextField();
         jPasswordField1 = new javax.swing.JPasswordField();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
@@ -47,14 +47,14 @@ public class LoginPanel extends javax.swing.JPanel {
         jSeparator2 = new javax.swing.JSeparator();
         jSeparator3 = new javax.swing.JSeparator();
         jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        changepasswordbutton = new javax.swing.JButton();
 
         jTextField2.setText("jTextField2");
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         jLabel1.setText("STAJYER TAKİP SİSTEMİ");
 
-        jTextField1.setText("jTextField1");
+        usernamefield.setText("jTextField1");
 
         jPasswordField1.setText("jPasswordField1");
 
@@ -69,10 +69,10 @@ public class LoginPanel extends javax.swing.JPanel {
             }
         });
 
-        jButton2.setText("Şifre Değiştir");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        changepasswordbutton.setText("Şifre Değiştir");
+        changepasswordbutton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                changepasswordbuttonActionPerformed(evt);
             }
         });
 
@@ -93,7 +93,7 @@ public class LoginPanel extends javax.swing.JPanel {
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
-                                .addComponent(jButton2))
+                                .addComponent(changepasswordbutton))
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                 .addGroup(layout.createSequentialGroup()
                                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -101,7 +101,7 @@ public class LoginPanel extends javax.swing.JPanel {
                                         .addComponent(jLabel3))
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                        .addComponent(jTextField1)
+                                        .addComponent(usernamefield)
                                         .addComponent(jPasswordField1, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE)))
                                 .addComponent(jSeparator2)
                                 .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, 212, javax.swing.GroupLayout.PREFERRED_SIZE)))))
@@ -117,7 +117,7 @@ public class LoginPanel extends javax.swing.JPanel {
                 .addGap(36, 36, 36)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jLabel2)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(usernamefield, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(5, 5, 5)
                 .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(3, 3, 3)
@@ -129,13 +129,13 @@ public class LoginPanel extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton1)
-                    .addComponent(jButton2))
+                    .addComponent(changepasswordbutton))
                 .addContainerGap(114, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-         String username = jTextField1.getText().trim(); 
+         String username = usernamefield.getText().trim(); 
         char[] passwordChars = jPasswordField1.getPassword(); 
         String password = new String(passwordChars); 
           
@@ -171,14 +171,43 @@ public class LoginPanel extends javax.swing.JPanel {
     
     }//GEN-LAST:event_jButton1ActionPerformed
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        JOptionPane.showMessageDialog(this, "Şifre değiştirme özelliği henüz uygulanmadı.", "Bilgi", JOptionPane.INFORMATION_MESSAGE);
-    }//GEN-LAST:event_jButton2ActionPerformed
+    private void changepasswordbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_changepasswordbuttonActionPerformed
+ // Kullanıcı adını login panelindeki alandan al
+        // 'usernamefield' sizin kullanıcı adı giriş alanınızın değişken adı olmalı.
+        String username = usernamefield.getText();
+
+        // Eğer kullanıcı adı boşsa, uyarı ver ve işlemi durdur
+        if (username == null || username.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Şifresini değiştirmek istediğiniz kullanıcı adını giriniz.", "Kullanıcı Adı Eksik", JOptionPane.WARNING_MESSAGE);
+            return; // İşlemi durdur
+        }
+
+        // Yeni bir JFrame oluştur
+        JFrame changePasswordFrame = new JFrame("Şifre Değiştir");
+        changePasswordFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // Sadece bu pencereyi kapatır
+
+        // ChangePasswordPanel'in bir örneğini oluştur ve kullanıcı adını constructor'a ilet
+        ChangePasswordPanel changePasswordPanel = new ChangePasswordPanel(username);
+
+        changePasswordFrame.getContentPane().add(changePasswordPanel); // Paneli frame'e ekle
+        changePasswordFrame.pack(); // Panelin içeriğine göre frame boyutunu ayarla
+        changePasswordFrame.setLocationRelativeTo(this); // Login paneline göre ortala
+        changePasswordFrame.setVisible(true); // Frame'i görünür yap
+
+        // İsteğe bağlı: Şifre değiştirme penceresi açıldığında mevcut login penceresini gizle
+        // Bu, eğer login paneliniz kendi başına bir JFrame ise işe yarar.
+        // Eğer login paneliniz başka bir ana JFrame'in içindeyse, ana frame'i gizlemeniz gerekir.
+        // JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
+        // if (parentFrame != null) {
+        //     parentFrame.setVisible(false);
+        // }
+    
+    }//GEN-LAST:event_changepasswordbuttonActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton changepasswordbutton;
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -186,7 +215,7 @@ public class LoginPanel extends javax.swing.JPanel {
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
-    private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField2;
+    private javax.swing.JTextField usernamefield;
     // End of variables declaration//GEN-END:variables
 }

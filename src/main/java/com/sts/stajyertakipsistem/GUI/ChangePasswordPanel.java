@@ -3,18 +3,28 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
  */
 package com.sts.stajyertakipsistem.GUI;
-
+import javax.swing.SwingUtilities;
+import com.sts.stajyertakipsistem.service.UserManager; // UserManager sınıfını import edin
+import javax.swing.JOptionPane;
+import javax.swing.JFrame;
 /**
  *
  * @author kadir
  */
 public class ChangePasswordPanel extends javax.swing.JPanel {
-
+    private String currentLoggedInUsername;
     /**
      * Creates new form ChangePasswordPanel
      */
     public ChangePasswordPanel() {
         initComponents();
+        oldpasswordfield.setText("");
+        newpasswordfield.setText("");
+        newpasswordfieldagain.setText("");
+    }
+public ChangePasswordPanel(String username) {
+        this(); // Parametresiz constructor'ı çağırarak initComponents vb. işlemleri yapar
+        this.currentLoggedInUsername = username;
     }
 
     /**
@@ -30,14 +40,15 @@ public class ChangePasswordPanel extends javax.swing.JPanel {
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jSeparator2 = new javax.swing.JSeparator();
+        confirmitbutton = new javax.swing.JButton();
+        gobacktotheloginpanelbutton = new javax.swing.JButton();
+        jPanel1 = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
+        oldpasswordfield = new javax.swing.JPasswordField();
         jLabel4 = new javax.swing.JLabel();
+        newpasswordfield = new javax.swing.JPasswordField();
         jLabel5 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
-        jPasswordField1 = new javax.swing.JPasswordField();
-        jPasswordField2 = new javax.swing.JPasswordField();
-        jButton2 = new javax.swing.JButton();
-        jPasswordField3 = new javax.swing.JPasswordField();
+        newpasswordfieldagain = new javax.swing.JPasswordField();
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         jLabel1.setText("STAJYER TAKİP SİSTEMİ");
@@ -45,31 +56,39 @@ public class ChangePasswordPanel extends javax.swing.JPanel {
         jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel2.setText("ŞİFRE DEĞİŞTİRME PANELİ");
 
+        confirmitbutton.setText("Değişikliği Onayla");
+        confirmitbutton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                confirmitbuttonActionPerformed(evt);
+            }
+        });
+
+        gobacktotheloginpanelbutton.setText("Geri Dön");
+        gobacktotheloginpanelbutton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                gobacktotheloginpanelbuttonActionPerformed(evt);
+            }
+        });
+
+        jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
         jLabel3.setText("Eski Şifreniz:");
+        jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 14, -1, -1));
+
+        oldpasswordfield.setText("jPasswordField3");
+        jPanel1.add(oldpasswordfield, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 11, -1, -1));
 
         jLabel4.setText("Yeni Şifre:");
+        jPanel1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 42, -1, -1));
+
+        newpasswordfield.setText("jPasswordField1");
+        jPanel1.add(newpasswordfield, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 39, -1, -1));
 
         jLabel5.setText("Yeni Şifre Tekrar:");
+        jPanel1.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 70, -1, -1));
 
-        jButton1.setText("Değişikliği Onayla");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
-            }
-        });
-
-        jPasswordField1.setText("jPasswordField1");
-
-        jPasswordField2.setText("jPasswordField1");
-
-        jButton2.setText("Geri Dön");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
-            }
-        });
-
-        jPasswordField3.setText("jPasswordField3");
+        newpasswordfieldagain.setText("jPasswordField1");
+        jPanel1.add(newpasswordfieldagain, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 67, -1, -1));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -77,29 +96,19 @@ public class ChangePasswordPanel extends javax.swing.JPanel {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jSeparator2, javax.swing.GroupLayout.Alignment.TRAILING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButton1)
+                .addGap(14, 14, 14)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(confirmitbutton)
                 .addGap(2, 2, 2)
-                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(gobacktotheloginpanelbutton, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel5)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jPasswordField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel3)
-                            .addComponent(jLabel4))
-                        .addGap(29, 29, 29)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jPasswordField3)
-                            .addComponent(jPasswordField1)))
                     .addComponent(jLabel2)
                     .addComponent(jLabel1))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(198, Short.MAX_VALUE))
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 409, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 44, Short.MAX_VALUE))
@@ -115,47 +124,86 @@ public class ChangePasswordPanel extends javax.swing.JPanel {
                 .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(27, 27, 27)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3)
-                    .addComponent(jPasswordField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(6, 6, 6)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel4)
-                    .addComponent(jPasswordField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(6, 6, 6)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel5)
-                    .addComponent(jPasswordField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1)
-                    .addComponent(jButton2))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 45, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(confirmitbutton)
+                        .addComponent(gobacktotheloginpanelbutton))
+                    .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(72, 72, 72))
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton1ActionPerformed
+    private void confirmitbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_confirmitbuttonActionPerformed
+         String oldPassword = String.valueOf(oldpasswordfield.getPassword());
+        String newPassword = String.valueOf(newpasswordfield.getPassword());
+        String newPasswordAgain = String.valueOf(newpasswordfieldagain.getPassword());
+if (currentLoggedInUsername == null || currentLoggedInUsername.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Şifresini değiştirmek istediğiniz kullanıcı bilgisi eksik. Lütfen kullanıcı adı ile giriş yapıp tekrar deneyin.", "Hata", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton2ActionPerformed
+        // Girdi alanlarının boş olup olmadığını kontrol et
+        if (oldPassword.isEmpty() || newPassword.isEmpty() || newPasswordAgain.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Tüm alanları doldurunuz.", "Hata", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Yeni şifrelerin birbiriyle eşleşip eşleşmediğini kontrol et
+        if (!newPassword.equals(newPasswordAgain)) {
+            JOptionPane.showMessageDialog(this, "Yeni şifreler eşleşmiyor.", "Hata", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Yeni şifre eski şifre ile aynı mı kontrolü (isteğe bağlı)
+        if (oldPassword.equals(newPassword)) {
+            JOptionPane.showMessageDialog(this, "Yeni şifre eski şifre ile aynı olamaz.", "Uyarı", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        // UserManager örneği oluştur
+        UserManager userManager = new UserManager();
+
+        // Şifre değiştirme işlemini çağır
+        if (userManager.changePassword(currentLoggedInUsername, oldPassword, newPassword)) {
+            JOptionPane.showMessageDialog(this, "Şifre başarıyla değiştirildi!", "Başarılı", JOptionPane.INFORMATION_MESSAGE);
+            // Başarılı olduktan sonra alanları temizle
+            oldpasswordfield.setText("");
+            newpasswordfield.setText("");
+            newpasswordfieldagain.setText("");
+            // Şifre değiştirme başarılı olduktan sonra paneli kapat ve giriş ekranına dön
+            gobacktotheloginpanelbuttonActionPerformed(evt); // "Geri Dön" butonunun metodunu çağırarak paneli kapat
+        } else {
+            // UserManager içinde zaten hata mesajları gösterildiği için burada ek bir hata mesajı yazmaya gerek yok.
+            // Örneğin: JOptionPane.showMessageDialog(this, "Şifre değiştirilemedi. Lütfen bilgileri kontrol edin.", "Hata", JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_confirmitbuttonActionPerformed
+
+    private void gobacktotheloginpanelbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_gobacktotheloginpanelbuttonActionPerformed
+       // Bu paneli içeren en üst seviye pencereyi (JFrame, JDialog vb.) bul ve kapat.
+        // Bu, ChangePasswordPanel bir JFrame içinde gösteriliyorsa doğru çalışır.
+        java.awt.Window window = SwingUtilities.getWindowAncestor(this);
+        if (window instanceof JFrame) {
+            ((JFrame) window).dispose();
+        } else if (window instanceof javax.swing.JDialog) {
+            ((javax.swing.JDialog) window).dispose();
+        }
+    }//GEN-LAST:event_gobacktotheloginpanelbuttonActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
+    private javax.swing.JButton confirmitbutton;
+    private javax.swing.JButton gobacktotheloginpanelbutton;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
-    private javax.swing.JPasswordField jPasswordField1;
-    private javax.swing.JPasswordField jPasswordField2;
-    private javax.swing.JPasswordField jPasswordField3;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
+    private javax.swing.JPasswordField newpasswordfield;
+    private javax.swing.JPasswordField newpasswordfieldagain;
+    private javax.swing.JPasswordField oldpasswordfield;
     // End of variables declaration//GEN-END:variables
 }
