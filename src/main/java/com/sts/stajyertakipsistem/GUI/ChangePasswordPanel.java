@@ -76,18 +76,21 @@ public ChangePasswordPanel(String username) {
         jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 14, -1, -1));
 
         oldpasswordfield.setText("jPasswordField3");
+        oldpasswordfield.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         jPanel1.add(oldpasswordfield, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 10, -1, -1));
 
         jLabel4.setText("Yeni Şifre:");
         jPanel1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 42, -1, -1));
 
         newpasswordfield.setText("jPasswordField1");
+        newpasswordfield.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         jPanel1.add(newpasswordfield, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 40, -1, -1));
 
         jLabel5.setText("Yeni Şifre Tekrar:");
         jPanel1.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 70, -1, -1));
 
         newpasswordfieldagain.setText("jPasswordField1");
+        newpasswordfieldagain.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         jPanel1.add(newpasswordfieldagain, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 70, -1, -1));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -124,7 +127,7 @@ public ChangePasswordPanel(String username) {
                 .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 42, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 46, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(confirmitbutton)
@@ -180,14 +183,7 @@ if (currentLoggedInUsername == null || currentLoggedInUsername.trim().isEmpty())
     }//GEN-LAST:event_confirmitbuttonActionPerformed
 
     private void gobacktotheloginpanelbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_gobacktotheloginpanelbuttonActionPerformed
-       // Bu paneli içeren en üst seviye pencereyi (JFrame, JDialog vb.) bul ve kapat.
-        // Bu, ChangePasswordPanel bir JFrame içinde gösteriliyorsa doğru çalışır.
-        java.awt.Window window = SwingUtilities.getWindowAncestor(this);
-        if (window instanceof JFrame) {
-            ((JFrame) window).dispose();
-        } else if (window instanceof javax.swing.JDialog) {
-            ((javax.swing.JDialog) window).dispose();
-        }
+
     }//GEN-LAST:event_gobacktotheloginpanelbuttonActionPerformed
 
 
