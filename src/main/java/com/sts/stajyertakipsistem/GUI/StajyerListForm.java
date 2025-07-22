@@ -8,31 +8,37 @@ import javax.swing.event.DocumentListener;
 import javax.swing.table.TableRowSorter;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.HashSet; // Benzersiz değerler için
-import java.util.Set;     // Benzersiz değerler için
+import java.util.HashSet;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.time.LocalDate; // LocalDate import edin
-
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter; // Eğer kullanılıyorsa
+import java.time.format.DateTimeParseException; // Eğer kullanılıyorsa
+import java.util.Locale;
 
 public class StajyerListForm extends javax.swing.JFrame {
 
     private static final Logger logger = Logger.getLogger(StajyerListForm.class.getName());
+    // Lütfen tarih formatınızın "YYYY.MM.DD" olduğundan emin olun ve bu satırı buna göre düzeltin.
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy.MM.dd");
+
 
     private StajyerTableModel stajyerTableModel;
     private StajyerService stajyerService;
     private TableRowSorter<StajyerTableModel> sorter;
 
-    private List<Stajyer> allStajyerler; // Tüm stajyer verilerini tutmak için
+    private List<Stajyer> allStajyerler;
 
     // Filtre değerlerini tutmak için alanlar (StajyerFilterDialog'dan dönecek değerler)
     private String currentBolumFilter = null;
     private String currentOkulTuruFilter = null;
-    private String currentStajDurumuFilter = null; // Stajyer modelinizde stajDurumu alanı yoksa bu kullanılmaz
+    private String currentStajDurumuFilter = null;
     private LocalDate currentBaslangicTarihiMin = null;
     private LocalDate currentBaslangicTarihiMax = null;
     private LocalDate currentBitisTarihiMin = null;
     private LocalDate currentBitisTarihiMax = null;
+    private LocalDate currentActiveDateFilter = null; // Yeni: Aktif tarih filtresi değişkeni
 
     
 
@@ -40,8 +46,8 @@ public class StajyerListForm extends javax.swing.JFrame {
     public StajyerListForm() {
         initComponents();
         initializeCustomComponents();
-        loadAllStajyerData(); // Başlangıçta tüm veriyi yükler
-        applyFilters(); // Yüklenen tüm veriyi başlangıç filtreleriyle gösterir (şu an boş filtreler)
+        loadAllStajyerData();
+        applyFilters();
         this.setLocationRelativeTo(null);
     }
 
@@ -99,9 +105,6 @@ public class StajyerListForm extends javax.swing.JFrame {
         });
     }
 
-    /**
-     * Tüm stajyer verilerini StajyerService'den çeker ve allStajyerler listesine kaydeder.
-     */
     private void loadAllStajyerData() {
         try {
             allStajyerler = stajyerService.getAllStajyerler();
@@ -115,21 +118,50 @@ public class StajyerListForm extends javax.swing.JFrame {
         }
     }
 
-    /**
-     * Tabloda görünen veriler üzerinde anlık arama yapar.
-     */
+    // Bu metodun içeriği önceki yanıtımda verdiğim "active date" filtreleme mantığıyla güncel kalmalıdır.
     private void filterTable() {
         String searchText = jTextField1.getText().trim();
-        if (searchText.length() == 0) {
-            sorter.setRowFilter(null);
+        LocalDate filterDate = null;
+
+        if (!searchText.isEmpty()) {
+            try {
+                // jTextField1'deki metni tarih olarak ayrıştırmayı dene
+                filterDate = LocalDate.parse(searchText, DATE_FORMATTER);
+            } catch (DateTimeParseException e) {
+                // Metin geçerli bir tarih değil, genel metin aramasına devam et
+                filterDate = null;
+            }
+        }
+
+        if (filterDate != null) {
+            // Geçerli bir tarih girildiyse, aktif staj filtrelemesini uygula
+            final LocalDate finalFilterDate = filterDate; // Lambda ifadesi içinde kullanabilmek için final olmalı
+            sorter.setRowFilter(new RowFilter<StajyerTableModel, Integer>() {
+                @Override
+                public boolean include(RowFilter.Entry<? extends StajyerTableModel, ? extends Integer> entry) {
+                    Stajyer stajyer = entry.getModel().getStajyerAt(entry.getIdentifier());
+
+                    LocalDate baslangic = stajyer.getStajBaslangicTarihi();
+                    LocalDate bitis = stajyer.getStajBitisTarihi();
+
+                    // Bir staj, verilen tarihte (finalFilterDate) aktifse:
+                    // 1. Başlangıç tarihi null değil VE verilen tarihten sonra değil (yani eşit veya önce)
+                    // 2. Bitiş tarihi null değil VE verilen tarihten önce değil (yani eşit veya sonra)
+                    return baslangic != null && !baslangic.isAfter(finalFilterDate) &&
+                           bitis != null && !bitis.isBefore(finalFilterDate);
+                }
+            });
         } else {
-            sorter.setRowFilter(RowFilter.regexFilter("(?i)" + searchText));
+            // Geçerli bir tarih girilmediyse, mevcut metin bazlı filtrelemeyi uygula
+            if (searchText.length() == 0) {
+                sorter.setRowFilter(null); // Arama kutusu boşsa tüm filtreyi kaldır
+            } else {
+                sorter.setRowFilter(RowFilter.regexFilter("(?i)" + searchText)); // Büyük/küçük harf duyarsız metin arama
+            }
         }
     }
 
-    /**
-     * StajyerFilterDialog'u açar ve filtre sonuçlarını işler.
-     */
+    // BURADA İSTEDİĞİNİZ DEĞİŞİKLİK YAPILDI: openFilterDialog() metodunun yeni hali
     private void openFilterDialog() {
         // ComboBox'ları doldurmak için benzersiz değerleri topla
         Set<String> uniqueBolumler = new HashSet<>();
@@ -152,8 +184,11 @@ public class StajyerListForm extends javax.swing.JFrame {
                                                                     new ArrayList<>(uniqueStajDurumlari));
 
         // Diyalog açılmadan önce, mevcut filtre değerlerini diyaloga gönderir
+        // Yeni 'currentActiveDateFilter' parametresi eklendi
         filterDialog.setInitialFilters(currentBolumFilter, currentOkulTuruFilter, currentStajDurumuFilter,
-                                        currentBaslangicTarihiMin, currentBaslangicTarihiMax, currentBitisTarihiMin, currentBitisTarihiMax);
+                                        currentBaslangicTarihiMin, currentBaslangicTarihiMax,
+                                        currentBitisTarihiMin, currentBitisTarihiMax,
+                                        currentActiveDateFilter); // <-- BURAYA YENİ PARAMETRE EKLENDİ
 
         filterDialog.setVisible(true); // Diyaloğu göster (modal olduğu için burada kod bloklanır)
 
@@ -163,19 +198,29 @@ public class StajyerListForm extends javax.swing.JFrame {
             currentBolumFilter = filterDialog.getBolumFilter();
             currentOkulTuruFilter = filterDialog.getOkulTuruFilter();
             currentStajDurumuFilter = filterDialog.getStajDurumuFilter();
-            currentBaslangicTarihiMin = filterDialog.getBaslangicTarihiMin();
-            currentBaslangicTarihiMax = filterDialog.getBaslangicTarihiMax();
-            currentBitisTarihiMin = filterDialog.getBitisTarihiMin();
-            currentBitisTarihiMax = filterDialog.getBitisTarihiMax();
+
+            // Yeni aktif tarih filtresini al
+            currentActiveDateFilter = filterDialog.getActiveDateFilter();
+
+            // Eğer aktif tarih filtresi ayarlandıysa, diğer tarih aralıklarını sıfırla
+            if (currentActiveDateFilter != null) {
+                currentBaslangicTarihiMin = null;
+                currentBaslangicTarihiMax = null;
+                currentBitisTarihiMin = null;
+                currentBitisTarihiMax = null;
+            } else {
+                // Aktif tarih filtresi yoksa, diğer tarih aralıklarını al
+                currentBaslangicTarihiMin = filterDialog.getBaslangicTarihiMin();
+                currentBaslangicTarihiMax = filterDialog.getBaslangicTarihiMax();
+                currentBitisTarihiMin = filterDialog.getBitisTarihiMin();
+                currentBitisTarihiMax = filterDialog.getBitisTarihiMax();
+            }
 
             applyFilters(); // Yeni filtrelerle tabloyu günceller
         }
     }
 
-    /**
-     * Dahili allStajyerler listesini, mevcut filtre kriterlerine göre filtreler
-     * ve filtrelenmiş listeyi tablo modeline atar.
-     */
+    // Bu metodun içeriği önceki yanıtımda verdiğim "active date" filtreleme mantığıyla güncel kalmalıdır.
     private void applyFilters() {
         List<Stajyer> filteredList = new ArrayList<>();
 
@@ -189,26 +234,23 @@ public class StajyerListForm extends javax.swing.JFrame {
                 }
             }
 
-            // Okul Türü Filtresi (GÜNCELLENDİ - Locale.TURKISH kaldırıldı)
+            // Okul Türü Filtresi
             if (matches && currentOkulTuruFilter != null && !currentOkulTuruFilter.equals("Tümü")) {
                 if (stajyer.getOkul() == null || stajyer.getOkul().getOkulTuru() == null) {
                     matches = false;
                 } else {
-                    String okulTuru = stajyer.getOkul().getOkulTuru().toLowerCase(); // toLowerCase() kullanıldı
-                    String filter = currentOkulTuruFilter.toLowerCase(); // toLowerCase() kullanıldı
+                    String okulTuru = stajyer.getOkul().getOkulTuru().toLowerCase(Locale.getDefault());
+                    String filter = currentOkulTuruFilter.toLowerCase(Locale.getDefault());
 
                     if (filter.equals("üniversite")) {
-                        // "Üniversite" filtresi seçiliyse, "üniversite", "üni", "uni", "u.n.i." gibi varyasyonları kontrol et
                         if (!(okulTuru.contains("üniversite") || okulTuru.contains("üni") || okulTuru.contains("uni") || okulTuru.contains("u.n.i."))) {
                             matches = false;
                         }
                     } else if (!okulTuru.equalsIgnoreCase(filter)) {
-                        // Diğer filtreler (örn: "Lise") için doğrudan karşılaştırma yap
                         matches = false;
                     }
                 }
             }
-
 
             // Staj Durumu Filtresi (Stajyer modelinizde getStajDurumu() metodu varsa bu kısmı aktif edin.)
             // if (matches && currentStajDurumuFilter != null && !currentStajDurumuFilter.equals("Tümü")) {
@@ -217,36 +259,49 @@ public class StajyerListForm extends javax.swing.JFrame {
             //     }
             // }
 
-            // Başlangıç Tarihi Aralığı Filtresi
-            if (matches && currentBaslangicTarihiMin != null) {
-                if (stajyer.getStajBaslangicTarihi() == null || stajyer.getStajBaslangicTarihi().isBefore(currentBaslangicTarihiMin)) {
+            // YENİ: Aktif Tarih Filtresi öncelikli
+            if (matches && currentActiveDateFilter != null) {
+                LocalDate baslangic = stajyer.getStajBaslangicTarihi();
+                LocalDate bitis = stajyer.getStajBitisTarihi();
+
+                if (!(baslangic != null && !baslangic.isAfter(currentActiveDateFilter) &&
+                      bitis != null && !bitis.isBefore(currentActiveDateFilter))) {
                     matches = false;
                 }
-            }
-            if (matches && currentBaslangicTarihiMax != null) {
-                if (stajyer.getStajBaslangicTarihi() == null || stajyer.getStajBaslangicTarihi().isAfter(currentBaslangicTarihiMax)) {
-                    matches = false;
+            } else {
+                // Sadece Aktif Tarih Filtresi AYARLI DEĞİLSE, diğer tarih aralığı filtrelerini uygula
+                // Başlangıç Tarihi Aralığı Filtresi
+                if (matches && currentBaslangicTarihiMin != null) {
+                    if (stajyer.getStajBaslangicTarihi() == null || stajyer.getStajBaslangicTarihi().isBefore(currentBaslangicTarihiMin)) {
+                        matches = false;
+                    }
+                }
+                if (matches && currentBaslangicTarihiMax != null) {
+                    if (stajyer.getStajBaslangicTarihi() == null || stajyer.getStajBaslangicTarihi().isAfter(currentBaslangicTarihiMax)) {
+                        matches = false;
+                    }
+                }
+
+                // Bitiş Tarihi Aralığı Filtresi
+                if (matches && currentBitisTarihiMin != null) {
+                    if (stajyer.getStajBitisTarihi() == null || stajyer.getStajBitisTarihi().isBefore(currentBitisTarihiMin)) {
+                        matches = false;
+                    }
+                }
+                if (matches && currentBitisTarihiMax != null) {
+                    if (stajyer.getStajBitisTarihi() == null || stajyer.getStajBitisTarihi().isAfter(currentBitisTarihiMax)) {
+                        matches = false;
+                    }
                 }
             }
 
-            // Bitiş Tarihi Aralığı Filtresi
-            if (matches && currentBitisTarihiMin != null) {
-                if (stajyer.getStajBitisTarihi() == null || stajyer.getStajBitisTarihi().isBefore(currentBitisTarihiMin)) {
-                    matches = false;
-                }
-            }
-            if (matches && currentBitisTarihiMax != null) {
-                if (stajyer.getStajBitisTarihi() == null || stajyer.getStajBitisTarihi().isAfter(currentBitisTarihiMax)) {
-                    matches = false;
-                }
-            }
 
             if (matches) {
                 filteredList.add(stajyer);
             }
         }
         stajyerTableModel.setStajyerList(filteredList);
-        filterTable();
+        filterTable(); // Genel metin arama filtresini de uygula (hala gerekliyse)
     }
 
     private void openSpesifikStajyerForm(int stajyerId) {
@@ -289,10 +344,9 @@ public class StajyerListForm extends javax.swing.JFrame {
     }
 
     private void loadAllStajyerDataAndApplyFilters() {
-        loadAllStajyerData(); // Tüm veriyi yeniden çek
-        applyFilters(); // Mevcut filtrelere göre uygula
+        loadAllStajyerData();
+        applyFilters();
     }
-
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {

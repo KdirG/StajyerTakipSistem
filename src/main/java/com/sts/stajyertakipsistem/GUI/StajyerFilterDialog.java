@@ -5,45 +5,42 @@ import java.awt.event.ActionEvent;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.List;
 import java.util.ArrayList;
-import javax.swing.*;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
+import java.util.List;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+
 public class StajyerFilterDialog extends JDialog {
 
+    // Tarih formatımız YYYY.MM.DD
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy.MM.dd");
 
-    // GUI Builder tarafından otomatik oluşturulan bileşen deklarasyonları:
-    // Sizin initComponents() metodunuzda tanımlı olan bileşenleri buraya ekliyorum.
-   
-   
+     // Bu Tarihte Aktif Staj filtresi için
 
-    // Filtre değerlerini geri döndürmek için alanlar
-   
+    // Filtre değerlerini geri döndürmek için kullanılacak değişkenler
     private String bolumFilterResult;
     private String okulTuruFilterResult;
-    // Diğer filtre sonuçları (Staj Durumu, Tarih alanları) ilgili bileşenler GUI'de tanımlı olmadığı için null kalacak.
-    private String stajDurumuFilterResult = null;
-    private LocalDate baslangicTarihiMinResult = null;
-    private LocalDate baslangicTarihiMaxResult = null;
-    private LocalDate bitisTarihiMinResult = null;
-    private LocalDate bitisTarihiMaxResult = null;
-    private LocalDate activeDateFilterResult;
+    private String stajDurumuFilterResult; // Eğer cmbStajDurumu kullanılıyorsa
+    private LocalDate baslangicTarihiMinResult;
+    private LocalDate baslangicTarihiMaxResult;
+    private LocalDate bitisTarihiMinResult;
+    private LocalDate bitisTarihiMaxResult;
+    private LocalDate activeDateFilterResult; // Yeni aktif tarih filtresi sonucu
+    
     private boolean applyFilterConfirmed = false;
 
     private StajyerService stajyerService;
     private List<String> uniqueBolumler;
-    private List<String> uniqueStajDurumlari; // Stajyer modelinizde stajDurumu alanı yoksa bu kullanılmaz
+    private List<String> uniqueStajDurumlari;
 
-    // Constructor güncellendi: unique listeleri parametre olarak alacak
     public StajyerFilterDialog(JFrame parent, StajyerService service,
                                List<String> uniqueBolumler, List<String> uniqueStajDurumlari) {
         super(parent, "Filtreleme Seçenekleri", true);
         this.stajyerService = service;
         this.uniqueBolumler = uniqueBolumler;
-        this.uniqueStajDurumlari = uniqueStajDurumlari; // Eğer Stajyer modelinizde stajDurumu alanı yoksa yorumda kalsın
+        this.uniqueStajDurumlari = uniqueStajDurumlari;
 
         initComponents(); // GUI Builder tarafından oluşturulan metot çağrısı
         setupListeners(); // Kendi listener'larımızı ekliyoruz
@@ -61,7 +58,6 @@ public class StajyerFilterDialog extends JDialog {
         jPanel2 = new javax.swing.JPanel();
         jComboBox4 = new javax.swing.JComboBox<>();
         jComboBox1 = new javax.swing.JComboBox<>();
-        jComboBox2 = new javax.swing.JComboBox<>();
         jLabel1 = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
         minendtxt = new javax.swing.JTextField();
@@ -78,7 +74,10 @@ public class StajyerFilterDialog extends JDialog {
         jPanel5 = new javax.swing.JPanel();
         jTextField1 = new javax.swing.JTextField();
         jLabel8 = new javax.swing.JLabel();
+        jPanel6 = new javax.swing.JPanel();
         applybutton = new javax.swing.JButton();
+        btnClearFilters = new javax.swing.JButton();
+        btnCancel = new javax.swing.JButton();
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -100,7 +99,7 @@ public class StajyerFilterDialog extends JDialog {
                 jComboBox4ActionPerformed(evt);
             }
         });
-        jPanel2.add(jComboBox4, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 10, -1, -1));
+        jPanel2.add(jComboBox4, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 10, -1, 20));
 
         jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         jComboBox1.addActionListener(new java.awt.event.ActionListener() {
@@ -108,26 +107,15 @@ public class StajyerFilterDialog extends JDialog {
                 jComboBox1ActionPerformed(evt);
             }
         });
-        jPanel2.add(jComboBox1, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 10, -1, -1));
-
-        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        jComboBox2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jComboBox2ActionPerformed(evt);
-            }
-        });
-        jPanel2.add(jComboBox2, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 10, -1, -1));
+        jPanel2.add(jComboBox1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 10, -1, -1));
 
         jPanel3.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
-        minendtxt.setText("jTextField1");
         minendtxt.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 minendtxtActionPerformed(evt);
             }
         });
-
-        maxendtxt.setText("jTextField1");
 
         jLabel3.setText("Minimum");
 
@@ -174,14 +162,11 @@ public class StajyerFilterDialog extends JDialog {
 
         jPanel4.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
-        minbegintxt.setText("jTextField1");
         minbegintxt.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 minbegintxtActionPerformed(evt);
             }
         });
-
-        maxbegintxt.setText("jTextField1");
 
         jLabel5.setText("Minimum");
 
@@ -228,7 +213,6 @@ public class StajyerFilterDialog extends JDialog {
 
         jPanel5.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
-        jTextField1.setText("jTextField1");
         jTextField1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jTextField1ActionPerformed(evt);
@@ -258,12 +242,47 @@ public class StajyerFilterDialog extends JDialog {
                 .addContainerGap())
         );
 
+        jPanel6.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+
         applybutton.setText("Uygula");
         applybutton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 applybuttonActionPerformed(evt);
             }
         });
+
+        btnClearFilters.setText("Temizle");
+
+        btnCancel.setText("İptal");
+        btnCancel.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCancelActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
+        jPanel6.setLayout(jPanel6Layout);
+        jPanel6Layout.setHorizontalGroup(
+            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel6Layout.createSequentialGroup()
+                .addGap(14, 14, 14)
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(applybutton)
+                    .addComponent(btnCancel)
+                    .addComponent(btnClearFilters))
+                .addContainerGap(12, Short.MAX_VALUE))
+        );
+        jPanel6Layout.setVerticalGroup(
+            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel6Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(btnCancel)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnClearFilters)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(applybutton)
+                .addGap(16, 16, 16))
+        );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -275,7 +294,7 @@ public class StajyerFilterDialog extends JDialog {
                         .addGap(464, 464, 464)
                         .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(128, 128, 128)
+                        .addGap(10, 10, 10)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -283,8 +302,8 @@ public class StajyerFilterDialog extends JDialog {
                                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jPanel5, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addGap(18, 18, 18)
-                        .addComponent(applybutton)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(0, 0, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -292,20 +311,18 @@ public class StajyerFilterDialog extends JDialog {
             .addGroup(layout.createSequentialGroup()
                 .addGap(0, 0, 0)
                 .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 124, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
+                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(10, 10, 10))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(applybutton)
-                        .addGap(20, 20, 20))))
+                            .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(10, 10, 10))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -321,10 +338,6 @@ public class StajyerFilterDialog extends JDialog {
       
     }//GEN-LAST:event_jComboBox1ActionPerformed
 
-    private void jComboBox2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox2ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jComboBox2ActionPerformed
-
     private void minendtxtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_minendtxtActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_minendtxtActionPerformed
@@ -337,96 +350,81 @@ public class StajyerFilterDialog extends JDialog {
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextField1ActionPerformed
 
-  private void setupListeners() {
-        // applybutton'a zaten initComponents() içinde listener eklendi, tekrar eklemeye gerek yok.
-        // Diğer butonlar (btnClearFilters, btnCancel) GUI'de tanımlı olmadığı için yorum satırı yapıldı.
-        // Eğer bu butonları GUI Builder'da eklediyseniz, buradaki yorumları kaldırın ve değişken adlarını doğru kullanın.
-        // if (btnClearFilters != null) btnClearFilters.addActionListener(e -> clearFilters());
-        // if (btnCancel != null) btnCancel.addActionListener(e -> {
-        //     applyFilterConfirmed = false;
-        //     dispose();
-        // });
+    private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnCancelActionPerformed
+
+ private void setupListeners() {
+        applybutton.addActionListener(this::applyFiltersAndClose);
+        btnClearFilters.addActionListener(e -> clearFilters());
+        btnCancel.addActionListener(e -> dispose());
     }
 
     private void populateComboBoxes() {
-        // jComboBox4 (Bölüm)
         jComboBox4.removeAllItems();
         jComboBox4.addItem("Tüm Bölümler");
         if (uniqueBolumler != null) {
-            for (String bolum : uniqueBolumler) {
-                jComboBox4.addItem(bolum);
-            }
+            uniqueBolumler.forEach(jComboBox4::addItem);
         }
 
-        // jComboBox1 (Okul Türü)
         jComboBox1.removeAllItems();
         jComboBox1.addItem("Tümü");
-        jComboBox1.addItem("Lise");
         jComboBox1.addItem("Üniversite");
-
-
-        // Staj Durumu ComboBox'ı (GUI'de tanımlı değilse bu kısım çalışmaz)
-        /*
-        if (cmbStajDurumu != null) {
-            cmbStajDurumu.removeAllItems();
-            cmbStajDurumu.addItem("Tümü");
-            if (uniqueStajDurumlari != null) {
-                for (String durum : uniqueStajDurumlari) {
-                    cmbStajDurumu.addItem(durum);
-                }
-            }
-        }
-        */
+        jComboBox1.addItem("Lise");
+        // Eğer başka okul türleri varsa buraya ekleyebilirsiniz.
     }
 
     private void applyFiltersAndClose(ActionEvent e) {
-    bolumFilterResult = (String) jComboBox4.getSelectedItem();
-    okulTuruFilterResult = (String) jComboBox1.getSelectedItem();
+        bolumFilterResult = (String) jComboBox4.getSelectedItem();
+        okulTuruFilterResult = (String) jComboBox1.getSelectedItem();
 
-    // jTextField1'deki aktif tarih filtresini parse et
-    activeDateFilterResult = parseDate(jTextField1.getText());
+        // jTextField1'deki aktif tarih filtresini parse et
+        activeDateFilterResult = parseDate(jTextField1.getText());
 
-    if (activeDateFilterResult != null) {
-        // Eğer aktif tarih filtresi geçerliyse, diğer tarih aralığı filtrelerini sıfırla
-        baslangicTarihiMinResult = null;
-        baslangicTarihiMaxResult = null;
-        bitisTarihiMinResult = null;
-        bitisTarihiMaxResult = null;
-    } else {
-        // Aktif tarih filtresi yoksa, diğer tarih aralığı filtrelerini kullan
-        baslangicTarihiMinResult = parseDate(minbegintxt.getText());
-        baslangicTarihiMaxResult = parseDate(maxbegintxt.getText());
-        bitisTarihiMinResult = parseDate(minendtxt.getText());
-        bitisTarihiMaxResult = parseDate(maxendtxt.getText());
+        if (activeDateFilterResult != null) {
+            // Eğer aktif tarih filtresi geçerliyse, diğer tarih aralığı filtrelerini sıfırla
+            baslangicTarihiMinResult = null;
+            baslangicTarihiMaxResult = null;
+            bitisTarihiMinResult = null;
+            bitisTarihiMaxResult = null;
+        } else {
+            // Aktif tarih filtresi yoksa, diğer tarih aralığı filtrelerini kullan
+            baslangicTarihiMinResult = parseDate(minbegintxt.getText());
+            baslangicTarihiMaxResult = parseDate(maxbegintxt.getText());
+            bitisTarihiMinResult = parseDate(minendtxt.getText());
+            bitisTarihiMaxResult = parseDate(maxendtxt.getText());
+        }
+
+        applyFilterConfirmed = true;
+        dispose();
     }
 
-    applyFilterConfirmed = true;
-    dispose();
-}
-
     private void clearFilters() {
-        jComboBox4.setSelectedItem("Tüm Bölümler"); // jComboBox4'ü temizliyoruz
-        jComboBox1.setSelectedItem("Tümü"); // jComboBox1'i temizliyoruz
+        jComboBox4.setSelectedItem("Tüm Bölümler");
+        jComboBox1.setSelectedItem("Tümü");
 
-        // Diğer bileşenler (Staj Durumu, Tarih alanları) GUI'de tanımlı olmadığı için yorum satırı yapılmıştır.
-        /*
-        if (cmbStajDurumu != null) cmbStajDurumu.setSelectedItem("Tümü");
-        if (txtBaslangicTarihiBaslangic != null) txtBaslangicTarihiBaslangic.setText("");
-        if (txtBaslangicTarihiBitis != null) txtBaslangicTarihiBitis.setText("");
-        if (txtBitisTarihiBaslangic != null) txtBitisTarihiBaslangic.setText("");
-        if (txtBitisTarihiBitis != null) txtBitisTarihiBitis.setText("");
-        */
+        // Tarih alanlarını temizle
+        minbegintxt.setText("");
+        maxbegintxt.setText("");
+        minendtxt.setText("");
+        maxendtxt.setText("");
+        jTextField1.setText(""); // jTextField1'i de temizle
 
         bolumFilterResult = null;
         okulTuruFilterResult = null;
+        // if (cmbStajDurumu != null) cmbStajDurumu.setSelectedItem("Tümü"); // Eğer cmbStajDurumu varsa bu yorumu kaldırın
         stajDurumuFilterResult = null;
         baslangicTarihiMinResult = null;
         baslangicTarihiMaxResult = null;
         bitisTarihiMinResult = null;
         bitisTarihiMaxResult = null;
+        activeDateFilterResult = null; // Aktif tarih filtresi sonucunu da sıfırla
     }
 
-    // parseDate metodu, tarih alanları kullanılmadığı için şu an çağrılmayacaktır.
+    /**
+     * Verilen tarih stringini "yyyy.MM.dd" formatında parse ederek LocalDate nesnesine çevirir.
+     * Geçersiz format durumunda null döner ve kullanıcıya uyarı mesajı gösterir.
+     */
     private LocalDate parseDate(String dateString) {
         if (dateString == null || dateString.trim().isEmpty()) {
             return null;
@@ -434,11 +432,12 @@ public class StajyerFilterDialog extends JDialog {
         try {
             return LocalDate.parse(dateString, DATE_FORMATTER);
         } catch (DateTimeParseException e) {
-            JOptionPane.showMessageDialog(this, "Geçersiz tarih formatı: " + dateString + ". Lütfen GG.AA.YYYY formatını kullanın.", "Tarih Formatı Hatası", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Geçersiz tarih formatı: " + dateString + ". Lütfen YYYY.MM.DD formatını kullanın.", "Tarih Formatı Hatası", JOptionPane.WARNING_MESSAGE);
             return null;
         }
     }
 
+    // Getter Metotları
     public String getBolumFilter() {
         return (bolumFilterResult != null && !bolumFilterResult.equals("Tüm Bölümler")) ? bolumFilterResult : null;
     }
@@ -447,42 +446,67 @@ public class StajyerFilterDialog extends JDialog {
         return (okulTuruFilterResult != null && !okulTuruFilterResult.equals("Tümü")) ? okulTuruFilterResult : null;
     }
 
-    // Diğer getter metotları, ilgili bileşenler tanımlı olmadığı için null dönüyor.
-    public String getStajDurumuFilter() { return null; }
-    public LocalDate getBaslangicTarihiMin() { return null; }
-    public LocalDate getBaslangicTarihiMax() { return null; }
-    public LocalDate getBitisTarihiMin() { return null; }
-    public LocalDate getBitisTarihiMax() { return null; }
+    public String getStajDurumuFilter() {
+        // Eğer cmbStajDurumu bileşeni gerçekten varsa ve kullanılıyorsa, bu metodu doldurun.
+        // Aksi takdirde null dönecektir.
+        return stajDurumuFilterResult;
+    }
+    public LocalDate getBaslangicTarihiMin() { return baslangicTarihiMinResult; }
+    public LocalDate getBaslangicTarihiMax() { return baslangicTarihiMaxResult; }
+    public LocalDate getBitisTarihiMin() { return bitisTarihiMinResult; }
+    public LocalDate getBitisTarihiMax() { return bitisTarihiMaxResult; }
+    public LocalDate getActiveDateFilter() { return activeDateFilterResult; } // Yeni getter
 
     public boolean isApplyFilterConfirmed() {
         return applyFilterConfirmed;
     }
 
-    // setInitialFilters metodu güncellendi: jComboBox1 ve jComboBox4'ü destekleyecek
+    /**
+     * Diyaloğu mevcut filtre değerleriyle başlatır.
+     * StajyerListForm'dan gelen mevcut filtre değerlerini GUI bileşenlerine yansıtır.
+     */
     public void setInitialFilters(String bolum, String okulTuru, String durum,
-                                  LocalDate basMin, LocalDate basMax, LocalDate bitMin, LocalDate bitMax) {
+                                  LocalDate basMin, LocalDate basMax, LocalDate bitMin, LocalDate bitMax,
+                                  LocalDate activeDate) { // Yeni activeDate parametresi
+        // Bölüm ayarı
         if (bolum != null && containsItem(jComboBox4, bolum)) {
             jComboBox4.setSelectedItem(bolum);
         } else {
             jComboBox4.setSelectedItem("Tüm Bölümler");
         }
 
+        // Okul Türü ayarı
         if (okulTuru != null && containsItem(jComboBox1, okulTuru)) {
             jComboBox1.setSelectedItem(okulTuru);
         } else {
             jComboBox1.setSelectedItem("Tümü");
         }
 
-        // Diğer bileşenler initComponents() içinde tanımlı olmadığı için yorum satırı yapılmıştır.
-        /*
-        if (durum != null && cmbStajDurumu != null && containsItem(cmbStajDurumu, durum)) { cmbStajDurumu.setSelectedItem(durum); }
-        if (txtBaslangicTarihiBaslangic != null) txtBaslangicTarihiBaslangic.setText(basMin != null ? basMin.format(DATE_FORMATTER) : "");
-        if (txtBaslangicTarihiBitis != null) txtBaslangicTarihiBitis.setText(basMax != null ? basMax.format(DATE_FORMATTER) : "");
-        if (txtBitisTarihiBaslangic != null) txtBitisTarihiBaslangic.setText(bitMin != null ? bitMin.format(DATE_FORMATTER) : "");
-        if (txtBitisTarihiBitis != null) txtBitisTarihiBitis.setText(bitMax != null ? bitMax.format(DATE_FORMATTER) : "");
-        */
+        // Staj Durumu (eğer GUI'de cmbStajDurumu adında bir JComboBox tanımlıysa bu yorum satırını kaldırabilirsiniz)
+        // if (durum != null && cmbStajDurumu != null && containsItem(cmbStajDurumu, durum)) { cmbStajDurumu.setSelectedItem(durum); }
+
+        // Tarih alanlarını ayarla: Eğer 'activeDate' varsa öncelikli olarak onu kullan
+        if (activeDate != null) {
+            // jTextField1'i ayarla ve diğer tarih aralığı alanlarını temizle
+            jTextField1.setText(activeDate.format(DATE_FORMATTER));
+            minbegintxt.setText("");
+            maxbegintxt.setText("");
+            minendtxt.setText("");
+            maxendtxt.setText("");
+        } else {
+            // 'activeDate' yoksa, normal tarih aralığı filtrelerini ayarla
+            jTextField1.setText(""); // jTextField1'i temizle
+
+            minbegintxt.setText(basMin != null ? basMin.format(DATE_FORMATTER) : "");
+            maxbegintxt.setText(basMax != null ? basMax.format(DATE_FORMATTER) : "");
+            minendtxt.setText(bitMin != null ? bitMin.format(DATE_FORMATTER) : "");
+            maxendtxt.setText(bitMax != null ? bitMax.format(DATE_FORMATTER) : "");
+        }
     }
 
+    /**
+     * ComboBox'ın belirli bir öğeyi içerip içermediğini kontrol eder.
+     */
     private boolean containsItem(JComboBox<String> comboBox, String item) {
         for (int i = 0; i < comboBox.getItemCount(); i++) {
             if (comboBox.getItemAt(i).equals(item)) {
@@ -494,8 +518,9 @@ public class StajyerFilterDialog extends JDialog {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton applybutton;
+    private javax.swing.JButton btnCancel;
+    private javax.swing.JButton btnClearFilters;
     private javax.swing.JComboBox<String> jComboBox1;
-    private javax.swing.JComboBox<String> jComboBox2;
     private javax.swing.JComboBox<String> jComboBox4;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -510,6 +535,7 @@ public class StajyerFilterDialog extends JDialog {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
+    private javax.swing.JPanel jPanel6;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField maxbegintxt;
     private javax.swing.JTextField maxendtxt;
