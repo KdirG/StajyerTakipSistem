@@ -9,6 +9,7 @@ com\sts\stajyertakipsistem\service\OkulService.class
 com\sts\stajyertakipsistem\GUI\SpesifikStajyerForm$10.class
 com\sts\stajyertakipsistem\GUI\StajyerListForm$3.class
 com\sts\stajyertakipsistem\service\ReferansService.class
+com\sts\stajyertakipsistem\GUI\StajyerListForm$16.class
 com\sts\stajyertakipsistem\dao\OkulDAO.class
 com\sts\stajyertakipsistem\GUI\SpesifikStajyerForm$8.class
 com\sts\stajyertakipsistem\model\Stajyer.class

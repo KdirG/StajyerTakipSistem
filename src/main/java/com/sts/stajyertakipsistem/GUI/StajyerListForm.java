@@ -26,8 +26,8 @@ public class StajyerListForm extends javax.swing.JFrame {
     private static final Logger logger = Logger.getLogger(StajyerListForm.class.getName());
     
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.YYYY");
-
-
+    private JFrame spesifikStajyerJFrame;
+    private JFrame spesifikStajyerFormWindow;
     private StajyerTableModel stajyerTableModel;
     private StajyerService stajyerService;
     private TableRowSorter<StajyerTableModel> sorter;
@@ -341,19 +341,50 @@ if (matches && currentMaxWorkdayFilter != null) {
         filterTable();
     }
 
-    private void openSpesifikStajyerForm(int stajyerId) {
-        JFrame detailFrame = new JFrame(stajyerId == 0 ? "Yeni Stajyer Ekle" : "Stajyer Bilgilerini Düzenle");
-        detailFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-
-        Runnable onSaveCallback = this::loadAllStajyerDataAndApplyFilters;
-
-        SpesifikStajyerForm spesifikFormPanel = new SpesifikStajyerForm(stajyerId, onSaveCallback);
-
-        detailFrame.getContentPane().add(spesifikFormPanel);
-        detailFrame.pack();
-        detailFrame.setLocationRelativeTo(this);
-        detailFrame.setVisible(true);
+  private void openSpesifikStajyerForm(int stajyerId) {
+    // Kontrol: Eğer zaten bir form penceresi açıksa
+    if (spesifikStajyerFormWindow != null && spesifikStajyerFormWindow.isVisible()) {
+        // Mevcut pencereyi öne getir ve odakla - Uyarı mesajı GÖSTERME
+        spesifikStajyerFormWindow.toFront(); // Pencereyi en üste getir
+        spesifikStajyerFormWindow.requestFocus(); // Pencereye odaklanmasını sağla
+        // Buraya ek olarak pencerenin kenarlık rengini değiştirmek gibi
+        // görsel bir vurgu da eklenebilir. Örneğin:
+        // spesifikStajyerFormWindow.setExtendedState(JFrame.NORMAL); // Eğer minimize ise normal boyuta getir
+        // spesifikStajyerFormWindow.toFront(); // Tekrar en üste getir
+        return; // Yeni pencere açma, metottan çık
     }
+
+    // Eğer açık bir pencere yoksa, yeni bir JFrame oluştur ve referansını sakla
+    JFrame detailFrame = new JFrame(stajyerId == 0 ? "Yeni Stajyer Ekle" : "Stajyer Bilgilerini Düzenle");
+    detailFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); 
+
+    // spesifikStajyerFormWindow değişkenini yeni oluşturduğumuz detailFrame'e ata
+    this.spesifikStajyerFormWindow = detailFrame; 
+
+    // Callback Metodunu Tanımla
+    Runnable onSaveCallback = this::loadAllStajyerDataAndApplyFilters;
+
+    // SpesifikStajyerForm JPanel'ini Oluştur
+    SpesifikStajyerForm spesifikFormPanel = new SpesifikStajyerForm(stajyerId, onSaveCallback);
+
+    // JPanel'i JFrame'e Ekle
+    detailFrame.getContentPane().add(spesifikFormPanel);
+
+    // Pencereyi Boyutlandır ve Konumlandır
+    detailFrame.pack();
+    detailFrame.setLocationRelativeTo(this); 
+
+    // Pencere Kapanış Olayını Dinle
+    detailFrame.addWindowListener(new java.awt.event.WindowAdapter() {
+        @Override
+        public void windowClosed(java.awt.event.WindowEvent e) {
+            spesifikStajyerFormWindow = null; 
+        }
+    });
+
+    // Pencereyi Görünür Yap
+    detailFrame.setVisible(true);
+}
 
     private void deleteSelectedStajyer() {
         int selectedRow = jTable1.getSelectedRow();
