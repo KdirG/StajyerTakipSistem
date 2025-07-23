@@ -18,6 +18,8 @@ import java.time.format.DateTimeParseException;
 import java.util.Locale;
 import java.util.Map; 
 import java.util.HashMap; 
+import java.awt.Color;
+import java.awt.Font;
 
 public class StajyerListForm extends javax.swing.JFrame {
 
@@ -32,7 +34,7 @@ public class StajyerListForm extends javax.swing.JFrame {
 
     private List<Stajyer> allStajyerler;
 
-    
+  
     private String currentBolumFilter = null;
     private String currentOkulTuruFilter = null;
     private String currentStajDurumuFilter = null;
@@ -54,6 +56,9 @@ public class StajyerListForm extends javax.swing.JFrame {
         loadAllStajyerData();
         applyFilters();
         this.setLocationRelativeTo(null);
+          jTable1.getTableHeader().setBackground(new Color(173, 216, 230));
+    jTable1.getTableHeader().setForeground(Color.DARK_GRAY);
+    
     }
 
     private void initializeCustomComponents() {

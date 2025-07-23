@@ -48,6 +48,7 @@ com\sts\stajyertakipsistem\GUI\StajyerFilterDialog$2.class
 com\sts\stajyertakipsistem\GUI\StajyerListForm$10.class
 com\sts\stajyertakipsistem\model\Referans.class
 com\sts\stajyertakipsistem\GUI\StajyerFilterDialog$9.class
+com\sts\stajyertakipsistem\GUI\SpesifikStajyerForm$15.class
 com\sts\stajyertakipsistem\GUI\StajyerListForm$8.class
 com\sts\stajyertakipsistem\GUI\ChangePasswordPanel$2.class
 com\sts\stajyertakipsistem\dao\ReferansDAO.class
