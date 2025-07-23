@@ -4,30 +4,30 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files; // java.nio.file.Files import'u eklendi
+import java.nio.file.Files; 
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.HashMap; // Map için
+import java.util.HashMap; 
 import java.util.List;
-import java.util.Map; // Map için
+import java.util.Map; 
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.net.URL; // URL sınıfını import ettik
-import java.awt.datatransfer.DataFlavor; // DataFlavor için
-import java.awt.datatransfer.UnsupportedFlavorException; // UnsupportedFlavorException için
-import java.awt.dnd.DnDConstants; // DnDConstants için
-import java.awt.dnd.DropTarget; // DropTarget için
-import java.awt.dnd.DropTargetDropEvent; // DropTargetDropEvent için
+import java.net.URL; 
+import java.awt.datatransfer.DataFlavor; 
+import java.awt.datatransfer.UnsupportedFlavorException; 
+import java.awt.dnd.DnDConstants; 
+import java.awt.dnd.DropTarget; 
+import java.awt.dnd.DropTargetDropEvent; 
 import com.sts.stajyertakipsistem.model.Evrak;
 import com.sts.stajyertakipsistem.model.Referans;
-import com.sts.stajyertakipsistem.model.Stajyer; // Stajyer sınıfı için de aynı pakette olduğunu varsayıyorum
-import com.sts.stajyertakipsistem.model.Okul;     // Okul sınıfı için de aynı pakette olduğunu varsayıyorum
+import com.sts.stajyertakipsistem.model.Stajyer; 
+import com.sts.stajyertakipsistem.model.Okul;     
 import com.sts.stajyertakipsistem.service.StajyerService; 
 import java.time.DayOfWeek;
 
@@ -42,38 +42,38 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
 
     private boolean isEditMode = false;
 
-    // YENİ: PDF ikonlarını tutacak map
+    
     private Map<String, ImageIcon> pdfIcons;
-    // YENİ: Eklenen tüm dosyaları ve onların GUI panellerini takip etmek için map
-    // (Aynı dosya birden fazla kez eklenmesini engellemek ve açma kolaylığı için)
+    
+    
     private Map<File, JPanel> addedFilePanelsMap;
 
-    // YENİ: Giriş ve Çıkış evrakları için asıl listeleme panelleri
-    // Bu paneller GUI Builder'da eklediğiniz JScrollPane'lerin içine yerleştirilecek.
+    
+    
     private JPanel girisFileListPanel;
     private JPanel cikisFileListPanel;
 
-    // YENİ: İkon boyutu sabiti
-    private static final int ICON_SIZE = 24; // Örneğin 24x24 piksel
+    
+    private static final int ICON_SIZE = 24; 
 
-    // Not: girisEvrakScrollPane ve cikisEvrakScrollPane GUI Builder tarafından
-    // initComponents() metodunda tanımlanıp başlatılmalıdır.
-    // Eğer butonlarınız varsa, onların isimlerini de kontrol edin ve ActionPerformed metodlarına bağlayın.
-    // Örneğin: btnGirisEvrakSec (JButton) ve btnCikisEvrakSec (JButton)
+    
+    
+    
+    
 
     public SpesifikStajyerForm(int stajyerId, Runnable onSaveCallback) {
         this.stajyerService = new StajyerService();
         this.onSaveCallback = onSaveCallback;
-        initComponents(); // GUI Builder tarafından oluşturulan bileşenleri başlatır
+        initComponents(); 
 
-        // YENİ: Özel bileşenleri başlat (panelleri oluştur ve scroll panellere bağla)
+        
         initializeCustomComponents();
-        // YENİ: PDF ikonlarını yükle (artık tek bir scaled ikon yüklenecek)
+        
         loadPdfIcons();
-        // YENİ: AddedFilesMap'i başlat
+        
         addedFilePanelsMap = new HashMap<>();
 
-        // Drag-and-drop kurulumu
+        
         setupDragAndDrop();
 
        
@@ -93,31 +93,31 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
     LocalDate endDate;
 
     try {
-        // JTextField'lardan tarihleri al ve parse et
-        startDate = LocalDate.parse(jTextField3.getText().trim(), formatter); // Başlangıç tarihi
-        endDate = LocalDate.parse(jTextField2.getText().trim(), formatter);   // Bitiş tarihi
+        
+        startDate = LocalDate.parse(jTextField3.getText().trim(), formatter); 
+        endDate = LocalDate.parse(jTextField2.getText().trim(), formatter);   
     } catch (DateTimeParseException e) {
-        // Geçersiz tarih formatı durumunda hata mesajı göster
+        
         jLabelBusinessDaysResult.setText("Hata: Geçersiz tarih formatı.");
         JOptionPane.showMessageDialog(this,
                 "Geçersiz tarih formatı. Lütfen 'YYYY.MM.DD' formatını kullanın.",
                 "Tarih Formatı Hatası", JOptionPane.ERROR_MESSAGE);
         
-        // Hata durumunda stajyer nesnesindeki iş gününü sıfırla
+        
         if (currentStajyer != null) {
             currentStajyer.setHesaplananIsGunu(0);
         }
         return;
     }
 
-    // Başlangıç tarihi bitiş tarihinden sonra olamaz kontrolü
+    
     if (startDate.isAfter(endDate)) {
         jLabelBusinessDaysResult.setText("Hata: Başlangıç tarihi bitiş tarihinden sonra olamaz.");
         JOptionPane.showMessageDialog(this,
                 "Başlangıç tarihi bitiş tarihinden sonra olamaz.",
                 "Geçersiz Tarih Aralığı", JOptionPane.WARNING_MESSAGE);
         
-        // Hata durumunda stajyer nesnesindeki iş gününü sıfırla
+        
         if (currentStajyer != null) {
             currentStajyer.setHesaplananIsGunu(0);
         }
@@ -127,30 +127,30 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
     long businessDays = 0;
     LocalDate currentDay = startDate;
 
-    // Başlangıç tarihinden bitiş tarihine kadar her günü döngüyle kontrol et
+    
     while (!currentDay.isAfter(endDate)) {
         DayOfWeek dayOfWeek = currentDay.getDayOfWeek();
 
-        // Pazar her zaman iş günü değildir
+        
         if (dayOfWeek == DayOfWeek.SUNDAY) {
-            // Pazar günü atla
+            
         }
-        // Cumartesi kontrolü: Eğer jCheckBoxSaturday işaretli değilse, Cumartesiyi atla
-        // NOT: Sizin kodunuzda addSaturdayCheckbox olarak belirtilmiş, onu kullandım.
+        
+        
         else if (dayOfWeek == DayOfWeek.SATURDAY && !addSaturdayCheckbox.isSelected()) { 
-            // Cumartesi günü atla
+            
         }
-        // Diğer günler iş günüdür (Pazartesi-Cuma ve Cumartesi dahilse Cumartesi)
+        
         else {
             businessDays++;
         }
-        currentDay = currentDay.plusDays(1); // Bir sonraki güne geç
+        currentDay = currentDay.plusDays(1); 
     }
 
-    // Hesaplanan iş günü sayısını jLabelBusinessDaysResult'ta göster
+    
     jLabelBusinessDaysResult.setText(businessDays + " gün");
 
-    // *** KRİTİK NOKTA: Hesaplanan iş gününü Stajyer nesnesine ata ***
+    
     if (currentStajyer != null) {
         currentStajyer.setHesaplananIsGunu(businessDays);
         System.out.println("DEBUG: calculateAndDisplayBusinessDays() - Stajyer nesnesine atanan iş günü: " + currentStajyer.getHesaplananIsGunu());
@@ -159,18 +159,18 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
     }
 }
 
-    // YENİ METOT: Özel GUI bileşenlerini başlatır
+    
     private void initializeCustomComponents() {
-        // Giriş Evrakları için panel oluştur ve girisEvrakScrollPane'e bağla
+        
         girisFileListPanel = new JPanel();
         girisFileListPanel.setLayout(new BoxLayout(girisFileListPanel, BoxLayout.Y_AXIS));
-        // **ÖNEMLİ:** Buradaki `girisEvrakScrollPane` ve `cikisEvrakScrollPane` adları
-        // sizin GUI Builder'da verdiğiniz adlarla eşleşmeli!
+        
+        
         girisEvrakScrollPane.setViewportView(girisFileListPanel);
 
-        // Çıkış Evrakları için panel oluştur ve cikisEvrakScrollPane'e bağla
+        
         cikisFileListPanel = new JPanel();
-         cikisFileListPanel.setLayout(new BoxLayout(cikisFileListPanel, BoxLayout.Y_AXIS)); // Yatayda 10, dikeyde 10 boşluk
+         cikisFileListPanel.setLayout(new BoxLayout(cikisFileListPanel, BoxLayout.Y_AXIS)); 
         cikisEvrakScrollPane.setViewportView(cikisFileListPanel);
     }
 
@@ -182,7 +182,7 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
 
             populateFormFields();
 
-            // YENİ: Mevcut evrakları GUI listelerine yükle
+            
             if (currentStajyer.getGirisEvrak() != null && currentStajyer.getGirisEvrak().getDosyaYolu() != null && !currentStajyer.getGirisEvrak().getDosyaYolu().isEmpty()) {
                 File file = new File(currentStajyer.getGirisEvrak().getDosyaYolu());
                 if (file.exists()) {
@@ -221,17 +221,17 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
             jTextField14.setText(currentStajyer.getReferans().getTelefonNo());
             jTextField15.setText(currentStajyer.getReferans().getKurum());
         }
-        // ESKİ: girisEvrakPathLabel ve cikisEvrakPathLabel artık kullanılmıyor
-        // if (currentStajyer.getGirisEvrak() != null && currentStajyer.getGirisEvrak().getDosyaYolu() != null) {
-        //     girisEvrakPathLabel.setText(currentStajyer.getGirisEvrak().getDosyaYolu());
-        // } else {
-        //     girisEvrakPathLabel.setText("Dosya Seçilmedi");
-        // }
-        // if (currentStajyer.getCikisEvrak() != null && currentStajyer.getCikisEvrak().getDosyaYolu() != null) {
-        //     cikisEvrakPathLabel.setText(currentStajyer.getCikisEvrak().getDosyaYolu());
-        // } else {
-        //     cikisEvrakPathLabel.setText("Dosya Seçilmedi");
-        // }
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
     }
 
     private boolean validateAndCollectFormData() {
@@ -297,9 +297,9 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
             currentStajyer.setReferans(null);
         }
 
-        // YENİ: Evrak yolu toplama mantığı güncellendi
-        // Eğer Stajyer modeli tek bir evrak tutuyorsa, ilk eklenen dosyayı alıyoruz.
-        // Eğer birden fazla evrak tutuyorsa (List<Evrak>), bu kısım buna göre revize edilmeli.
+        
+        
+        
         File girisFile = getFirstFileInPanel(girisFileListPanel);
         if (girisFile != null) {
             if (currentStajyer.getGirisEvrak() == null) currentStajyer.setGirisEvrak(new Evrak());
@@ -319,14 +319,14 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
         return true;
     }
     
-    // YENİ METOT: Bir paneldeki ilk dosyanın File nesnesini döndürür
+    
     private File getFirstFileInPanel(JPanel panel) {
-        // panel.getComponents() içinde JPanel'ler var (her biri bir dosya girişi)
-        // her bir JPanel'in UserData'sına File nesnesini saklayacağız (aşağıda addPdfFile metodunda)
+        
+        
         for (Component comp : panel.getComponents()) {
             if (comp instanceof JPanel) {
                 JPanel fileEntryPanel = (JPanel) comp;
-                // Bu paneli oluştururken File nesnesini bir client property olarak sakladığımızı varsayalım
+                
                 File file = (File) fileEntryPanel.getClientProperty("file");
                 if (file != null) {
                     return file;
@@ -363,12 +363,12 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
     }
 
     private void setupDragAndDrop() {
-        // YENİ: girisEvrakIconPanel ve cikisEvrakIconPanel'e DropTarget ekle
-        // Bu panellerin zaten GUI Builder'da var olduğunu varsayıyoruz.
+        
+        
         girisEvrakIconPanel.setDropTarget(new DropTarget() {
             @Override
             public synchronized void drop(DropTargetDropEvent evt) {
-                // handleDrop metodunu dosyanın ekleneceği paneli belirterek çağır
+                
                 handleDrop(evt, girisFileListPanel);
             }
         });
@@ -376,26 +376,26 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
         cikisEvrakIconPanel.setDropTarget(new DropTarget() {
             @Override
             public synchronized void drop(DropTargetDropEvent evt) {
-                // handleDrop metodunu dosyanın ekleneceği paneli belirterek çağır
+                
                 handleDrop(evt, cikisFileListPanel);
             }
         });
     }
 
-    // handleDrop metodunu güncelledik: pathLabel yerine hedef paneli alıyor
+    
     private void handleDrop(DropTargetDropEvent evt, JPanel targetListPanel) {
         try {
             evt.acceptDrop(DnDConstants.ACTION_COPY);
             List<File> droppedFiles = (List<File>) evt.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
             if (!droppedFiles.isEmpty()) {
-                for (File file : droppedFiles) { // Sürüklenen tüm dosyaları işle
-                    // Sadece PDF dosyalarını kabul et
+                for (File file : droppedFiles) { 
+                    
                     if (!file.getName().toLowerCase().endsWith(".pdf")) {
                         JOptionPane.showMessageDialog(this, "Lütfen sadece PDF dosyaları sürükleyip bırakın.", "Geçersiz Dosya", JOptionPane.WARNING_MESSAGE);
-                        continue; // Bir sonraki dosyaya geç
+                        continue; 
                     }
 
-                    // Dosyayı 'evraklar' klasörüne kopyala
+                    
                     Path targetDir = Paths.get("evraklar");
                     if (!Files.exists(targetDir)) {
                         Files.createDirectories(targetDir);
@@ -403,7 +403,7 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
                     Path targetPath = targetDir.resolve(file.getName());
                     Files.copy(file.toPath(), targetPath, StandardCopyOption.REPLACE_EXISTING);
 
-                    // YENİ: Kopyalanan dosyayı GUI listesine ekle
+                    
                     addPdfFile(targetPath.toFile(), targetListPanel);
                     JOptionPane.showMessageDialog(this, "Dosya başarıyla kaydedildi: " + targetPath.getFileName(), "Dosya Kaydedildi", JOptionPane.INFORMATION_MESSAGE);
                 }
@@ -414,18 +414,18 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
         }
     }
 
-    // YENİ METOT: PDF ikonlarını yükler ve ilgili JLabel'lara atar.
-    // Artık bu metod sadece tek bir ölçeklenmiş PDF ikonu oluşturup map'e koyuyor.
+    
+    
     private void loadPdfIcons() {
-        pdfIcons = new HashMap<>(); // Haritayı başlat
+        pdfIcons = new HashMap<>(); 
         try {
-            // Kaynak klasördeki PDF ikonunun URL'sini al
-            URL pdfIconURL = getClass().getResource("/icon/pdf.png"); // "/icon/pdf.png" ikonunuzun yolu olmalı
+            
+            URL pdfIconURL = getClass().getResource("/icon/pdf.png"); 
             if (pdfIconURL != null) {
                 ImageIcon originalIcon = new ImageIcon(pdfIconURL);
-                // Orijinal ikonu istenen boyuta ölçekle
+                
                 Image scaledImage = originalIcon.getImage().getScaledInstance(ICON_SIZE, ICON_SIZE, Image.SCALE_SMOOTH);
-                pdfIcons.put("pdf", new ImageIcon(scaledImage)); // Ölçeklenmiş ikonu map'e kaydet
+                pdfIcons.put("pdf", new ImageIcon(scaledImage)); 
             } else {
                 LOGGER.log(Level.WARNING, "pdf.png dosyası kaynaklarda bulunamadı.");
             }
@@ -434,12 +434,12 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
         }
     }
 
-    // ESKİ METOT: setupIconClickListeners() artık kullanılmıyor,
-    // tıklama dinleyicileri her bir dosya paneline (fileEntryPanel) ekleniyor.
-    // private void setupIconClickListeners() { ... }
+    
+    
+    
 
-    // YENİ METOT: Belirtilen yoldaki PDF dosyasını varsayılan uygulama ile açar.
-    private void openPdfFile(File file) { // filePath yerine doğrudan File nesnesi alıyor
+    
+    private void openPdfFile(File file) { 
         if (file == null || !file.exists()) {
             JOptionPane.showMessageDialog(this, "Açılacak bir PDF dosyası bulunamadı veya geçersiz.", "Hata", JOptionPane.WARNING_MESSAGE);
             return;
@@ -457,18 +457,18 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
         }
     }
 
-    // YENİ METOT: Dosyayı listeye ekler ve GUI'de gösterir
-    // targetPanel: Dosyanın ekleneceği JPanel (girisFileListPanel veya cikisFileListPanel)
+    
+    
     private void addPdfFile(File file, JPanel targetPanel) {
         if (file == null || !file.exists()) {
             return;
         }
 
-        // Zaten eklenmişse tekrar ekleme (dosya yolu aynıysa)
-        // Not: Bu kontrol sadece tam dosya yoluna bakar. İçerik değişse bile aynı yol aynı dosya sayılır.
+        
+        
         if (addedFilePanelsMap.containsKey(file)) {
-            // Aynı dosyanın zaten eklendiği listede olup olmadığını kontrol et
-            if (targetPanel.getComponents().length > 0) { // Check if the target panel has components
+            
+            if (targetPanel.getComponents().length > 0) { 
                 for (Component comp : targetPanel.getComponents()) {
                     if (comp instanceof JPanel) {
                         JPanel existingPanel = (JPanel) comp;
@@ -483,85 +483,85 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
         }
 
 
-        // Her dosya için özel bir panel oluştur
+        
         JPanel fileEntryPanel = new JPanel();
-        fileEntryPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 0)); // İkon ve isim arasında boşluk
-        fileEntryPanel.setBorder(BorderFactory.createEtchedBorder()); // Hafif bir çerçeve ekleyebiliriz
+        fileEntryPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 0)); 
+        fileEntryPanel.setBorder(BorderFactory.createEtchedBorder()); 
 
-        // İkon ekle
-        JLabel iconLabel = new JLabel(pdfIcons.get("pdf")); // Yüklediğimiz ölçeklenmiş ikonu kullan
+        
+        JLabel iconLabel = new JLabel(pdfIcons.get("pdf")); 
         fileEntryPanel.add(iconLabel);
         fileEntryPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, ICON_SIZE + 10));
-        // Dosya adını ekle
+        
         JLabel fileNameLabel = new JLabel(file.getName());
-        fileNameLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12)); // Yazı tipini küçültebiliriz
+        fileNameLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12)); 
         fileEntryPanel.add(fileNameLabel);
         fileEntryPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        // Kapatma butonu ekle (isteğe bağlı)
+        
         JButton removeButton = new JButton("X");
         removeButton.setFont(new Font("Segoe UI", Font.BOLD, 10));
-        removeButton.setMargin(new Insets(1, 4, 1, 4)); // Butonun kenar boşluklarını ayarla
-        removeButton.setFocusPainted(false); // Odak çizgisini kapat
+        removeButton.setMargin(new Insets(1, 4, 1, 4)); 
+        removeButton.setFocusPainted(false); 
         removeButton.setBackground(Color.RED);
         removeButton.setForeground(Color.WHITE);
         removeButton.addActionListener(e -> {
             targetPanel.remove(fileEntryPanel);
-            addedFilePanelsMap.remove(file); // Map'ten de kaldır
+            addedFilePanelsMap.remove(file); 
             targetPanel.revalidate();
             targetPanel.repaint();
         });
         fileEntryPanel.add(removeButton);
 
 
-        // Panel tıklama dinleyicisini ekle
+        
         fileEntryPanel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (e.getClickCount() == 1) { // Tek tıklama
-                    openPdfFile(file); // Doğrudan File nesnesini aç
+                if (e.getClickCount() == 1) { 
+                    openPdfFile(file); 
                 }
             }
             @Override
             public void mouseEntered(MouseEvent e) {
-                fileEntryPanel.setBackground(new Color(220, 230, 240)); // Üzerine gelince renk değiştir
+                fileEntryPanel.setBackground(new Color(220, 230, 240)); 
             }
             @Override
             public void mouseExited(MouseEvent e) {
-                fileEntryPanel.setBackground(UIManager.getColor("Panel.background")); // Ayrılınca varsayılan renge dön
+                fileEntryPanel.setBackground(UIManager.getColor("Panel.background")); 
             }
         });
 
-        // Dosya nesnesini JPanel'e bir Client Property olarak bağla
-        // Bu, daha sonra hangi dosyanın hangi panele ait olduğunu anlamamızı sağlar.
+        
+        
         fileEntryPanel.putClientProperty("file", file);
 
 
-        // Ana listeleme paneline bu dosya panelini ekle
+        
         targetPanel.add(fileEntryPanel);
-        addedFilePanelsMap.put(file, fileEntryPanel); // Dosyayı genel takip haritasına ekle
-        targetPanel.revalidate(); // Bileşenleri yeniden düzenle
-        targetPanel.repaint(); // Yeniden çiz
+        addedFilePanelsMap.put(file, fileEntryPanel); 
+        targetPanel.revalidate(); 
+        targetPanel.repaint(); 
     }
 
 
-    // YENİ: Giriş Evrakları için dosya seçme butonu ActionListener'ı
-    // Bu metodu, GUI Builder'da "Giriş Evrakları" ile ilgili butonun ActionPerformed olayına bağlamalısınız.
+    
+    
     private void btnSelectGirisEvrakActionPerformed(java.awt.event.ActionEvent evt) {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        fileChooser.setMultiSelectionEnabled(true); // Çoklu dosya seçimine izin ver
+        fileChooser.setMultiSelectionEnabled(true); 
 
         int result = fileChooser.showOpenDialog(this);
         if (result == JFileChooser.APPROVE_OPTION) {
             File[] selectedFiles = fileChooser.getSelectedFiles();
             for (File file : selectedFiles) {
-                // PDF kontrolü yap
+                
                 if (!file.getName().toLowerCase().endsWith(".pdf")) {
                     JOptionPane.showMessageDialog(this, "Sadece PDF dosyaları seçilebilir: " + file.getName(), "Geçersiz Dosya", JOptionPane.WARNING_MESSAGE);
-                    continue; // Bir sonraki dosyaya geç
+                    continue; 
                 }
 
-                // Dosyayı 'evraklar' klasörüne kopyala
+                
                 try {
                     Path targetDir = Paths.get("evraklar");
                     if (!Files.exists(targetDir)) {
@@ -570,7 +570,7 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
                     Path targetPath = targetDir.resolve(file.getName());
                     Files.copy(file.toPath(), targetPath, StandardCopyOption.REPLACE_EXISTING);
 
-                    addPdfFile(targetPath.toFile(), girisFileListPanel); // Giriş paneline kopyalanan dosyayı ekle
+                    addPdfFile(targetPath.toFile(), girisFileListPanel); 
                     JOptionPane.showMessageDialog(this, "Dosya başarıyla kaydedildi: " + targetPath.getFileName(), "Dosya Kaydedildi", JOptionPane.INFORMATION_MESSAGE);
                 } catch (IOException ex) {
                     LOGGER.log(Level.SEVERE, "Dosya kopyalama hatası: " + file.getName(), ex);
@@ -580,24 +580,24 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
         }
     }
 
-    // YENİ: Çıkış Evrakları için dosya seçme butonu ActionListener'ı
-    // Bu metodu, GUI Builder'da "Çıkış Evrakları" ile ilgili butonun ActionPerformed olayına bağlamalısınız.
+    
+    
     private void btnSelectCikisEvrakActionPerformed(java.awt.event.ActionEvent evt) {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        fileChooser.setMultiSelectionEnabled(true); // Çoklu dosya seçimine izin ver
+        fileChooser.setMultiSelectionEnabled(true); 
 
         int result = fileChooser.showOpenDialog(this);
         if (result == JFileChooser.APPROVE_OPTION) {
             File[] selectedFiles = fileChooser.getSelectedFiles();
             for (File file : selectedFiles) {
-                // PDF kontrolü yap
+                
                 if (!file.getName().toLowerCase().endsWith(".pdf")) {
                     JOptionPane.showMessageDialog(this, "Sadece PDF dosyaları seçilebilir: " + file.getName(), "Geçersiz Dosya", JOptionPane.WARNING_MESSAGE);
-                    continue; // Bir sonraki dosyaya geç
+                    continue; 
                 }
 
-                // Dosyayı 'evraklar' klasörüne kopyala
+                
                 try {
                     Path targetDir = Paths.get("evraklar");
                     if (!Files.exists(targetDir)) {
@@ -606,7 +606,7 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
                     Path targetPath = targetDir.resolve(file.getName());
                     Files.copy(file.toPath(), targetPath, StandardCopyOption.REPLACE_EXISTING);
 
-                    addPdfFile(targetPath.toFile(), cikisFileListPanel); // Çıkış paneline kopyalanan dosyayı ekle
+                    addPdfFile(targetPath.toFile(), cikisFileListPanel); 
                     JOptionPane.showMessageDialog(this, "Dosya başarıyla kaydedildi: " + targetPath.getFileName(), "Dosya Kaydedildi", JOptionPane.INFORMATION_MESSAGE);
                 } catch (IOException ex) {
                     LOGGER.log(Level.SEVERE, "Dosya kopyalama hatası: " + file.getName(), ex);
@@ -629,10 +629,9 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
         jButton2 = new javax.swing.JButton();
         jButton1 = new javax.swing.JButton();
         jLabel18 = new javax.swing.JLabel();
-        jLabel19 = new javax.swing.JLabel();
         girisEvrakIconPanel = new javax.swing.JPanel();
-        girisEvrakIconLabel = new javax.swing.JLabel();
         girisEvrakScrollPane = new javax.swing.JScrollPane();
+        jLabel19 = new javax.swing.JLabel();
         cikisEvrakIconPanel = new javax.swing.JPanel();
         cikisEvrakScrollPane = new javax.swing.JScrollPane();
         jPanel1 = new javax.swing.JPanel();
@@ -671,8 +670,9 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
         addSaturdayCheckbox = new javax.swing.JCheckBox();
         jLabelBusinessDaysResult = new javax.swing.JLabel();
         calculateWorkdayButton = new javax.swing.JButton();
+        jSeparator4 = new javax.swing.JSeparator();
 
-        jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
+        jLabel2.setFont(new java.awt.Font("Times New Roman", 0, 24)); // NOI18N
         jLabel2.setText("STAJYER TAKİP SİSTEMİ");
 
         jLabel1.setText("Evrakları Buraya Sürükleyip Bırakabilirsiniz");
@@ -693,15 +693,18 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
 
         jLabel18.setText("Giriş Evrakları ");
 
-        jLabel19.setText("Çıkış Evrakları");
-
-        girisEvrakIconPanel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        girisEvrakIconPanel.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
         girisEvrakIconPanel.setLayout(new javax.swing.BoxLayout(girisEvrakIconPanel, javax.swing.BoxLayout.LINE_AXIS));
-        girisEvrakIconPanel.add(girisEvrakIconLabel);
+
+        girisEvrakScrollPane.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
         girisEvrakIconPanel.add(girisEvrakScrollPane);
 
-        cikisEvrakIconPanel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        jLabel19.setText("Çıkış Evrakları");
+
+        cikisEvrakIconPanel.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
         cikisEvrakIconPanel.setLayout(new javax.swing.BoxLayout(cikisEvrakIconPanel, javax.swing.BoxLayout.LINE_AXIS));
+
+        cikisEvrakScrollPane.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
         cikisEvrakIconPanel.add(cikisEvrakScrollPane);
 
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -830,9 +833,9 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
         jTextField15.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         jPanel1.add(jTextField15, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 331, 272, -1));
 
-        jPanel2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        jPanel2.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
         jPanel2.setMaximumSize(new java.awt.Dimension(212, 102));
-        jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        jPanel2.setLayout(new java.awt.BorderLayout());
 
         addSaturdayCheckbox.setText("Cumartesi Dahil ");
         addSaturdayCheckbox.addActionListener(new java.awt.event.ActionListener() {
@@ -840,8 +843,8 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
                 addSaturdayCheckboxActionPerformed(evt);
             }
         });
-        jPanel2.add(addSaturdayCheckbox, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, -1, -1));
-        jPanel2.add(jLabelBusinessDaysResult, new org.netbeans.lib.awtextra.AbsoluteConstraints(196, 25, -1, -1));
+        jPanel2.add(addSaturdayCheckbox, java.awt.BorderLayout.CENTER);
+        jPanel2.add(jLabelBusinessDaysResult, java.awt.BorderLayout.PAGE_START);
 
         calculateWorkdayButton.setText("Hesapla");
         calculateWorkdayButton.addActionListener(new java.awt.event.ActionListener() {
@@ -849,7 +852,7 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
                 calculateWorkdayButtonActionPerformed(evt);
             }
         });
-        jPanel2.add(calculateWorkdayButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 30, -1, -1));
+        jPanel2.add(calculateWorkdayButton, java.awt.BorderLayout.PAGE_END);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -862,7 +865,7 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
                         .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(jButton1)
                                 .addGap(45, 45, 45))
                             .addGroup(layout.createSequentialGroup()
@@ -870,28 +873,34 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
                                     .addGroup(layout.createSequentialGroup()
                                         .addGap(18, 18, 18)
                                         .addComponent(jLabel1))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGap(16, 16, 16)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(girisEvrakIconPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addGroup(layout.createSequentialGroup()
-                                                .addComponent(jLabel20)
-                                                .addGap(30, 30, 30)
-                                                .addComponent(jLabel18)))
-                                        .addGap(58, 58, 58)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(jLabel19)
-                                            .addComponent(cikisEvrakIconPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGap(18, 18, 18)
-                                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 256, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                .addGap(30, 30, 30))))
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                .addGroup(layout.createSequentialGroup()
+                                                    .addGap(16, 16, 16)
+                                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                        .addComponent(jLabel20)
+                                                        .addComponent(girisEvrakIconPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                                .addGroup(layout.createSequentialGroup()
+                                                    .addGap(41, 41, 41)
+                                                    .addComponent(jLabel18)))
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                .addComponent(cikisEvrakIconPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addGroup(layout.createSequentialGroup()
+                                                    .addGap(27, 27, 27)
+                                                    .addComponent(jLabel19))))
+                                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                            .addGap(18, 18, 18)
+                                            .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                .addContainerGap(151, Short.MAX_VALUE))))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 243, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jButton2)
-                        .addGap(164, 164, 164))))
+                        .addGap(152, 152, 152))))
             .addComponent(jSeparator3)
+            .addComponent(jSeparator4)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -899,19 +908,22 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
                 .addGap(31, 31, 31)
                 .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
                     .addComponent(jButton2))
-                .addGap(116, 116, 116)
+                .addGap(18, 18, 18)
+                .addComponent(jSeparator4, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(88, 88, 88)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
+                        .addGap(6, 6, 6)
                         .addComponent(jLabel1)
-                        .addGap(18, 18, 18)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(girisEvrakIconPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 243, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(jLabel18))
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(cikisEvrakIconPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 243, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -923,7 +935,7 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
                         .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(27, 27, 27)
                         .addComponent(jButton1)))
-                .addContainerGap(44, Short.MAX_VALUE))
+                .addContainerGap(47, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -943,31 +955,31 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
     }//GEN-LAST:event_jTextField7ActionPerformed
 
     private void jTextField6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField6ActionPerformed
-        // TODO add your handling code here:
+        
     }//GEN-LAST:event_jTextField6ActionPerformed
 
     private void jTextField5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField5ActionPerformed
-        // TODO add your handling code here:
+        
     }//GEN-LAST:event_jTextField5ActionPerformed
 
     private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
-        // TODO add your handling code here:
+        
     }//GEN-LAST:event_jTextField1ActionPerformed
 
     private void jTextField10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField10ActionPerformed
-        // TODO add your handling code here:
+        
     }//GEN-LAST:event_jTextField10ActionPerformed
 
     private void jTextField11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField11ActionPerformed
-        // TODO add your handling code here:
+        
     }//GEN-LAST:event_jTextField11ActionPerformed
 
     private void addSaturdayCheckboxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addSaturdayCheckboxActionPerformed
-        // TODO add your handling code here:
+        
     }//GEN-LAST:event_addSaturdayCheckboxActionPerformed
 
     private void jTextField3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField3ActionPerformed
-        // TODO add your handling code here:
+        
     }//GEN-LAST:event_jTextField3ActionPerformed
 
     private void calculateWorkdayButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_calculateWorkdayButtonActionPerformed
@@ -980,7 +992,6 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
     private javax.swing.JButton calculateWorkdayButton;
     private javax.swing.JPanel cikisEvrakIconPanel;
     private javax.swing.JScrollPane cikisEvrakScrollPane;
-    private javax.swing.JLabel girisEvrakIconLabel;
     private javax.swing.JPanel girisEvrakIconPanel;
     private javax.swing.JScrollPane girisEvrakScrollPane;
     private javax.swing.JButton jButton1;
@@ -1011,6 +1022,7 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
     private javax.swing.JSeparator jSeparator12;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
+    private javax.swing.JSeparator jSeparator4;
     private javax.swing.JSeparator jSeparator8;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField10;

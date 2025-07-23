@@ -16,7 +16,7 @@ public class OkulDAO {
         String sql = "INSERT INTO OKUL (OKUL_ID, OKUL_ADI, OKUL_TURU) VALUES (?, ?, ?)";
         try (Connection conn = DatabaseConnection.getConnection()) {
             int newId;
-            // 1. Veritabanından yeni ID al
+            
             try (Statement stmt = conn.createStatement();
                  ResultSet rs = stmt.executeQuery("SELECT NEXT VALUE FOR GEN_OKUL_ID FROM RDB$DATABASE")) {
                 if (rs.next()) {
@@ -25,20 +25,20 @@ public class OkulDAO {
                     throw new SQLException("Okul için yeni ID alınamadı.");
                 }
             }
-            // 2. Alınan ID'yi nesneye ata
+            
             okul.setOkulId(newId);
 
-            // 3. Kayıt işlemini yap
+            
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
                 ps.setInt(1, okul.getOkulId());
                 ps.setString(2, okul.getOkulAdi());
                 ps.setString(3, okul.getOkulTuru());
                 ps.executeUpdate();
-                return newId; // Başarılı olursa yeni ID'yi döndür
+                return newId; 
             }
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Okul eklenirken hata.", e);
-            return 0; // Hata durumunda 0 döndür
+            return 0; 
         }
     }
 

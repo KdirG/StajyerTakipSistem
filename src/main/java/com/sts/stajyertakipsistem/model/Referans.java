@@ -33,8 +33,8 @@ public class Referans implements Serializable {
 
     @Override
     public String toString() {
-        // Tabloda referansın ad-soyadının görünmesini istediğinizi varsayıyorum
-        // İsterseniz kurum bilgisini de ekleyebilirsiniz: return adSoyad + " (" + kurum + ")";
+        
+        
         return adSoyad;
     }
 }

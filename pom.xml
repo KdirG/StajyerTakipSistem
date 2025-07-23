@@ -12,6 +12,11 @@
     </properties>
 
     <dependencies>
+        <dependency>
+    <groupId>com.formdev</groupId>
+    <artifactId>flatlaf</artifactId>
+    <version>3.4</version>
+</dependency>
        <dependency>
     <groupId>org.firebirdsql.jdbc</groupId>
     <artifactId>jaybird</artifactId>

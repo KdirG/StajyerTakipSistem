@@ -86,7 +86,7 @@ public class Stajyer implements Serializable {
     public LocalDate getStajBitisTarihi() { return stajBitisTarihi; }
     public void setStajBitisTarihi(LocalDate stajBitisTarihi) { this.stajBitisTarihi = stajBitisTarihi; }
 
-    // *** YENİ EKLENEN GETTER VE SETTER ***
+   
     public long getHesaplananIsGunu() {
         return hesaplananIsGunu;
     }
@@ -94,7 +94,7 @@ public class Stajyer implements Serializable {
     public void setHesaplananIsGunu(long hesaplananIsGunu) {
         this.hesaplananIsGunu = hesaplananIsGunu;
     }
-    // **********************************
+    
     
     public String getStajyerTuru() {
         return this.okul != null ? this.okul.getOkulTuru() : "";

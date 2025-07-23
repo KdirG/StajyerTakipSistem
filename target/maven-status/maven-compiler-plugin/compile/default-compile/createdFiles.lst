@@ -3,6 +3,7 @@ com\sts\stajyertakipsistem\GUI\StajyerListForm$6.class
 com\sts\stajyertakipsistem\GUI\StajyerListForm.class
 com\sts\stajyertakipsistem\dao\EvrakDAO.class
 com\sts\stajyertakipsistem\GUI\StajyerFilterDialog$7.class
+com\sts\stajyertakipsistem\GUI\LoginPanel$4.class
 com\sts\stajyertakipsistem\service\OkulService.class
 com\sts\stajyertakipsistem\GUI\SpesifikStajyerForm$10.class
 com\sts\stajyertakipsistem\GUI\StajyerListForm$3.class
@@ -21,6 +22,7 @@ com\sts\stajyertakipsistem\GUI\SpesifikStajyerForm$14.class
 com\sts\stajyertakipsistem\GUI\StajyerFilterDialog.class
 com\sts\stajyertakipsistem\GUI\StajyerListForm$7.class
 com\sts\stajyertakipsistem\service\EvrakService.class
+com\sts\stajyertakipsistem\GUI\StajyerListForm$15.class
 com\sts\stajyertakipsistem\GUI\SpesifikStajyerForm$7.class
 com\sts\stajyertakipsistem\service\UserManager.class
 com\sts\stajyertakipsistem\model\Okul.class

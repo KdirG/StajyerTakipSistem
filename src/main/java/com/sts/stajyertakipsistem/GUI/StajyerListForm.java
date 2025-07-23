@@ -16,14 +16,14 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Locale;
-import java.util.Map; // Gerekirse Map için import
-import java.util.HashMap; // Gerekirse HashMap için import
+import java.util.Map; 
+import java.util.HashMap; 
 
 public class StajyerListForm extends javax.swing.JFrame {
 
     private static final Logger logger = Logger.getLogger(StajyerListForm.class.getName());
-    // Lütfen tarih formatınızın "YYYY.MM.DD" olduğundan emin olun ve bu satırı buna göre düzeltin.
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy.MM.dd");
+    
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.YYYY");
 
 
     private StajyerTableModel stajyerTableModel;
@@ -32,7 +32,7 @@ public class StajyerListForm extends javax.swing.JFrame {
 
     private List<Stajyer> allStajyerler;
 
-    // Filtre değerlerini tutmak için alanlar (StajyerFilterDialog'dan dönecek değerler)
+    
     private String currentBolumFilter = null;
     private String currentOkulTuruFilter = null;
     private String currentStajDurumuFilter = null;
@@ -40,12 +40,12 @@ public class StajyerListForm extends javax.swing.JFrame {
     private LocalDate currentBaslangicTarihiMax = null;
     private LocalDate currentBitisTarihiMin = null;
     private LocalDate currentBitisTarihiMax = null;
-    private LocalDate currentActiveDateFilter = null; // Yeni: Aktif tarih filtresi değişkeni
+    private LocalDate currentActiveDateFilter = null; 
 
-    // <<-- YENİ EKLENEN FİLTRE DEĞERLERİ -->>
+    
     private Long currentMinWorkdayFilter = null;
     private Long currentMaxWorkdayFilter = null;
-    // <<---------------------------------->>
+    
 
 
     public StajyerListForm() {
@@ -82,14 +82,14 @@ public class StajyerListForm extends javax.swing.JFrame {
             }
         });
 
-        // filterbutton'a zaten eklenmiş ActionListener var, değişiklik yok.
+        
         filterbutton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 openFilterDialog();
             }
         });
 
-        // Diğer buton action listener'ları zaten tanımlı.
+        
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton2ActionPerformed(evt);
@@ -114,8 +114,8 @@ public class StajyerListForm extends javax.swing.JFrame {
 
     private void loadAllStajyerData() {
         try {
-            // Burası veritabanından tüm stajyerleri çekmeye devam ediyor.
-            // Eğer veritabanı tabanlı filtrelemeye geçilirse bu metod değişir.
+            
+            
             allStajyerler = stajyerService.getAllStajyerler();
             if (allStajyerler == null) {
                 allStajyerler = new ArrayList<>();
@@ -127,24 +127,24 @@ public class StajyerListForm extends javax.swing.JFrame {
         }
     }
 
-    // Bu metodun içeriği önceki yanıtımda verdiğim "active date" filtreleme mantığıyla güncel kalmalıdır.
+    
     private void filterTable() {
         String searchText = jTextField1.getText().trim();
         LocalDate filterDate = null;
 
         if (!searchText.isEmpty()) {
             try {
-                // jTextField1'deki metni tarih olarak ayrıştırmayı dene
+                
                 filterDate = LocalDate.parse(searchText, DATE_FORMATTER);
             } catch (DateTimeParseException e) {
-                // Metin geçerli bir tarih değil, genel metin aramasına devam et
+                
                 filterDate = null;
             }
         }
 
         if (filterDate != null) {
-            // Geçerli bir tarih girildiyse, aktif staj filtrelemesini uygula
-            final LocalDate finalFilterDate = filterDate; // Lambda ifadesi içinde kullanabilmek için final olmalı
+            
+            final LocalDate finalFilterDate = filterDate; 
             sorter.setRowFilter(new RowFilter<StajyerTableModel, Integer>() {
                 @Override
                 public boolean include(RowFilter.Entry<? extends StajyerTableModel, ? extends Integer> entry) {
@@ -153,56 +153,56 @@ public class StajyerListForm extends javax.swing.JFrame {
                     LocalDate baslangic = stajyer.getStajBaslangicTarihi();
                     LocalDate bitis = stajyer.getStajBitisTarihi();
 
-                    // Bir staj, verilen tarihte (finalFilterDate) aktifse:
-                    // 1. Başlangıç tarihi null değil VE verilen tarihten sonra değil (yani eşit veya önce)
-                    // 2. Bitiş tarihi null değil VE verilen tarihten önce değil (yani eşit veya sonra)
+                    
+                    
+                    
                     return baslangic != null && !baslangic.isAfter(finalFilterDate) &&
                            bitis != null && !bitis.isBefore(finalFilterDate);
                 }
             });
         } else {
-            // Geçerli bir tarih girilmediyse, mevcut metin bazlı filtrelemeyi uygula
+            
             if (searchText.length() == 0) {
-                sorter.setRowFilter(null); // Arama kutusu boşsa tüm filtreyi kaldır
+                sorter.setRowFilter(null); 
             } else {
-                sorter.setRowFilter(RowFilter.regexFilter("(?i)" + searchText)); // Büyük/küçük harf duyarsız metin arama
+                sorter.setRowFilter(RowFilter.regexFilter("(?i)" + searchText)); 
             }
         }
     }
 
-    // openFilterDialog() metodunun güncellenmiş hali
+    
     private void openFilterDialog() {
         Set<String> uniqueBolumler = new HashSet<>();
         Set<String> uniqueStajDurumlari = new HashSet<>();
 
-        // Mevcut allStajyerler listesinden benzersiz değerleri topluyoruz.
-        // Eğer veritabanı tabanlı filtrelemeye geçilirse bu kısım değişebilir (örneğin servisten benzersiz bölümleri çekmek).
+        
+        
         for (Stajyer stajyer : allStajyerler) {
             if (stajyer.getBolum() != null && !stajyer.getBolum().isEmpty()) {
                 uniqueBolumler.add(stajyer.getBolum());
             }
-            // Stajyer modelinizde getStajDurumu() metodu varsa bu kısmı aktif edin.
-            // if (stajyer.getStajDurumu() != null && !stajyer.getStajDurumu().isEmpty()) {
-            //      uniqueStajDurumlari.add(stajyer.getStajDurumu());
-            // }
+            
+            
+            
+            
         }
 
         StajyerFilterDialog filterDialog = new StajyerFilterDialog(this, stajyerService,
                                                                      new ArrayList<>(uniqueBolumler),
                                                                      new ArrayList<>(uniqueStajDurumlari));
 
-        // Diyalog açılmadan önce, mevcut filtre değerlerini diyaloga gönderir
+        
         filterDialog.setInitialFilters(currentBolumFilter, currentOkulTuruFilter, currentStajDurumuFilter,
                                         currentBaslangicTarihiMin, currentBaslangicTarihiMax,
                                         currentBitisTarihiMin, currentBitisTarihiMax,
                                         currentActiveDateFilter,
-                                        currentMinWorkdayFilter, currentMaxWorkdayFilter); // <<-- YENİ İŞ GÜNÜ PARAMETRELERİ EKLENDİ -->>
+                                        currentMinWorkdayFilter, currentMaxWorkdayFilter); 
 
-        filterDialog.setVisible(true); // Diyaloğu göster (modal olduğu için burada kod bloklanır)
+        filterDialog.setVisible(true); 
 
-        // Diyalog kapandıktan sonra bu kod çalışır.
+        
         if (filterDialog.isApplyFilterConfirmed()) {
-            // Diyalogdan filtre değerlerini alır
+            
             currentBolumFilter = filterDialog.getBolumFilter();
             currentOkulTuruFilter = filterDialog.getOkulTuruFilter();
             currentStajDurumuFilter = filterDialog.getStajDurumuFilter();
@@ -210,43 +210,43 @@ public class StajyerListForm extends javax.swing.JFrame {
             currentActiveDateFilter = filterDialog.getActiveDateFilter();
 
             if (currentActiveDateFilter != null) {
-                // Aktif tarih filtresi ayarlandıysa, diğer tarih aralıklarını sıfırla
+                
                 currentBaslangicTarihiMin = null;
                 currentBaslangicTarihiMax = null;
                 currentBitisTarihiMin = null;
                 currentBitisTarihiMax = null;
             } else {
-                // Aktif tarih filtresi yoksa, diğer tarih aralıklarını al
+                
                 currentBaslangicTarihiMin = filterDialog.getBaslangicTarihiMin();
                 currentBaslangicTarihiMax = filterDialog.getBaslangicTarihiMax();
                 currentBitisTarihiMin = filterDialog.getBitisTarihiMin();
                 currentBitisTarihiMax = filterDialog.getBitisTarihiMax();
             }
 
-            // <<-- YENİ EKLENEN: İş Günü Filtrelerini al ve güncelle -->>
+            
             currentMinWorkdayFilter = filterDialog.getMinWorkdayResult();
             currentMaxWorkdayFilter = filterDialog.getMaxWorkdayResult();
-            // <<-------------------------------------------------------->>
+            
 
-            applyFilters(); // Yeni filtrelerle tabloyu günceller
+            applyFilters(); 
         }
     }
 
-    // applyFilters() metodunun güncellenmiş hali (GUI tabanlı filtreleme)
+    
     private void applyFilters() {
         List<Stajyer> filteredList = new ArrayList<>();
 
         for (Stajyer stajyer : allStajyerler) {
             boolean matches = true;
 
-            // Bölüm Filtresi
+            
             if (currentBolumFilter != null && !currentBolumFilter.equals("Tüm Bölümler")) {
                 if (stajyer.getBolum() == null || !stajyer.getBolum().equalsIgnoreCase(currentBolumFilter)) {
                     matches = false;
                 }
             }
 
-            // Okul Türü Filtresi
+            
             if (matches && currentOkulTuruFilter != null && !currentOkulTuruFilter.equals("Tümü")) {
                 if (stajyer.getOkul() == null || stajyer.getOkul().getOkulTuru() == null) {
                     matches = false;
@@ -264,14 +264,14 @@ public class StajyerListForm extends javax.swing.JFrame {
                 }
             }
 
-            // Staj Durumu Filtresi (Eğer Stajyer modelinizde getStajDurumu() metodu varsa bu kısmı aktif edin.)
-            // if (matches && currentStajDurumuFilter != null && !currentStajDurumuFilter.equals("Tümü")) {
-            //      if (stajyer.getStajDurumu() == null || !stajyer.getStajDurumu().equalsIgnoreCase(currentStajDurumuFilter)) {
-            //          matches = false;
-            //      }
-            // }
+            
+            
+            
+            
+            
+            
 
-            // YENİ: Aktif Tarih Filtresi öncelikli
+            
             if (matches && currentActiveDateFilter != null) {
                 LocalDate baslangic = stajyer.getStajBaslangicTarihi();
                 LocalDate bitis = stajyer.getStajBitisTarihi();
@@ -281,8 +281,8 @@ public class StajyerListForm extends javax.swing.JFrame {
                     matches = false;
                 }
             } else {
-                // Sadece Aktif Tarih Filtresi AYARLI DEĞİLSE, diğer tarih aralığı filtrelerini uygula
-                // Başlangıç Tarihi Aralığı Filtresi
+                
+                
                 if (matches && currentBaslangicTarihiMin != null) {
                     if (stajyer.getStajBaslangicTarihi() == null || stajyer.getStajBaslangicTarihi().isBefore(currentBaslangicTarihiMin)) {
                         matches = false;
@@ -294,7 +294,7 @@ public class StajyerListForm extends javax.swing.JFrame {
                     }
                 }
 
-                // Bitiş Tarihi Aralığı Filtresi
+                
                 if (matches && currentBitisTarihiMin != null) {
                     if (stajyer.getStajBitisTarihi() == null || stajyer.getStajBitisTarihi().isBefore(currentBitisTarihiMin)) {
                         matches = false;
@@ -310,17 +310,17 @@ public class StajyerListForm extends javax.swing.JFrame {
             
            if (matches && currentMinWorkdayFilter != null) {
     Long hesaplananIsGunu = stajyer.getHesaplananIsGunu();
-    // First, check if hesaplananIsGunu is null.
-    // If it is null, or if it's less than the filter, set matches to false.
+    
+    
     if (hesaplananIsGunu == null || hesaplananIsGunu < currentMinWorkdayFilter) {
         matches = false;
     }
 }
 
 if (matches && currentMaxWorkdayFilter != null) {
-    Long hesaplananIsGunu = stajyer.getHesaplananIsGunu(); // Get it again or reuse if scoped
-    // First, check if hesaplananIsGunu is null.
-    // If it is null, or if it's greater than the filter, set matches to false.
+    Long hesaplananIsGunu = stajyer.getHesaplananIsGunu(); 
+    
+    
     if (hesaplananIsGunu == null || hesaplananIsGunu > currentMaxWorkdayFilter) {
         matches = false;
     }
@@ -384,7 +384,6 @@ if (matches && currentMaxWorkdayFilter != null) {
     private void initComponents() {
 
         jLabel1 = new javax.swing.JLabel();
-        jScrollBar1 = new javax.swing.JScrollBar();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
         jTextField1 = new javax.swing.JTextField();
@@ -394,13 +393,13 @@ if (matches && currentMaxWorkdayFilter != null) {
         jButton4 = new javax.swing.JButton();
         jButton5 = new javax.swing.JButton();
         filterbutton = new javax.swing.JButton();
+        jSeparator1 = new javax.swing.JSeparator();
+        jSeparator2 = new javax.swing.JSeparator();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
+        jLabel1.setFont(new java.awt.Font("Times New Roman", 0, 24)); // NOI18N
         jLabel1.setText("STAJYER TAKİP SİSTEMİ");
-
-        jScrollBar1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -439,6 +438,11 @@ if (matches && currentMaxWorkdayFilter != null) {
         });
 
         jButton1.setText("Ara");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         jButton2.setText("Çıkış Yap");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
@@ -482,50 +486,46 @@ if (matches && currentMaxWorkdayFilter != null) {
             .addGroup(layout.createSequentialGroup()
                 .addGap(21, 21, 21)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel1)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 1240, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 1240, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addGap(66, 66, 66)
                         .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(35, 35, 35)
-                        .addComponent(filterbutton)
-                        .addGap(27, 27, 27)
+                        .addGap(18, 18, 18)
                         .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
+                        .addComponent(filterbutton)
+                        .addGap(200, 200, 200)
                         .addComponent(jButton2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButton3)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButton4)
-                        .addGap(18, 18, 18)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButton5)))
-                .addContainerGap(25, Short.MAX_VALUE))
+                .addContainerGap(21, Short.MAX_VALUE))
+            .addComponent(jSeparator1)
+            .addComponent(jSeparator2)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap(104, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel1)
-                            .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(72, 72, 72))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jButton1)
-                            .addComponent(jButton2)
-                            .addComponent(jButton3)
-                            .addComponent(jButton4)
-                            .addComponent(jButton5)
-                            .addComponent(filterbutton))
-                        .addGap(71, 71, 71)))
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 334, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 334, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(31, 31, 31)
+                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 29, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButton1)
+                    .addComponent(jButton2)
+                    .addComponent(jButton3)
+                    .addComponent(jButton4)
+                    .addComponent(jButton5)
+                    .addComponent(filterbutton)
+                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(71, 71, 71)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 334, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(57, 57, 57))
         );
 
@@ -561,8 +561,12 @@ if (matches && currentMaxWorkdayFilter != null) {
     }//GEN-LAST:event_jButton5ActionPerformed
 
     private void filterbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_filterbuttonActionPerformed
-        // TODO add your handling code here:
+        
     }//GEN-LAST:event_filterbuttonActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        
+    }//GEN-LAST:event_jButton1ActionPerformed
 
    
 
@@ -574,8 +578,9 @@ if (matches && currentMaxWorkdayFilter != null) {
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JScrollBar jScrollBar1;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JSeparator jSeparator2;
     private javax.swing.JTable jTable1;
     private javax.swing.JTextField jTextField1;
     // End of variables declaration//GEN-END:variables

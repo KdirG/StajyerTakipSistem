@@ -1,10 +1,10 @@
 /*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
+ * Click nbfs:
+ * Click nbfs:
  */
 package com.sts.stajyertakipsistem.GUI;
 import javax.swing.SwingUtilities;
-import com.sts.stajyertakipsistem.service.UserManager; // UserManager sınıfını import edin
+import com.sts.stajyertakipsistem.service.UserManager; 
 import javax.swing.JOptionPane;
 import javax.swing.JFrame;
 /**
@@ -23,7 +23,7 @@ public class ChangePasswordPanel extends javax.swing.JPanel {
         newpasswordfieldagain.setText("                      ");
     }
 public ChangePasswordPanel(String username) {
-        this(); // Parametresiz constructor'ı çağırarak initComponents vb. işlemleri yapar
+        this(); 
         this.currentLoggedInUsername = username;
     }
 
@@ -50,7 +50,7 @@ public ChangePasswordPanel(String username) {
         jLabel5 = new javax.swing.JLabel();
         newpasswordfieldagain = new javax.swing.JPasswordField();
 
-        jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
+        jLabel1.setFont(new java.awt.Font("Times New Roman", 0, 24)); // NOI18N
         jLabel1.setText("STAJYER TAKİP SİSTEMİ");
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
@@ -111,7 +111,7 @@ public ChangePasswordPanel(String username) {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel2)
                     .addComponent(jLabel1))
-                .addContainerGap(198, Short.MAX_VALUE))
+                .addContainerGap(169, Short.MAX_VALUE))
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 409, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 44, Short.MAX_VALUE))
@@ -127,7 +127,7 @@ public ChangePasswordPanel(String username) {
                 .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 46, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 49, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(confirmitbutton)
@@ -146,39 +146,39 @@ if (currentLoggedInUsername == null || currentLoggedInUsername.trim().isEmpty())
             return;
         }
 
-        // Girdi alanlarının boş olup olmadığını kontrol et
+        
         if (oldPassword.isEmpty() || newPassword.isEmpty() || newPasswordAgain.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Tüm alanları doldurunuz.", "Hata", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        // Yeni şifrelerin birbiriyle eşleşip eşleşmediğini kontrol et
+        
         if (!newPassword.equals(newPasswordAgain)) {
             JOptionPane.showMessageDialog(this, "Yeni şifreler eşleşmiyor.", "Hata", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        // Yeni şifre eski şifre ile aynı mı kontrolü (isteğe bağlı)
+        
         if (oldPassword.equals(newPassword)) {
             JOptionPane.showMessageDialog(this, "Yeni şifre eski şifre ile aynı olamaz.", "Uyarı", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-        // UserManager örneği oluştur
+        
         UserManager userManager = new UserManager();
 
-        // Şifre değiştirme işlemini çağır
+        
         if (userManager.changePassword(currentLoggedInUsername, oldPassword, newPassword)) {
             JOptionPane.showMessageDialog(this, "Şifre başarıyla değiştirildi!", "Başarılı", JOptionPane.INFORMATION_MESSAGE);
-            // Başarılı olduktan sonra alanları temizle
+            
             oldpasswordfield.setText("");
             newpasswordfield.setText("");
             newpasswordfieldagain.setText("");
-            // Şifre değiştirme başarılı olduktan sonra paneli kapat ve giriş ekranına dön
-            gobacktotheloginpanelbuttonActionPerformed(evt); // "Geri Dön" butonunun metodunu çağırarak paneli kapat
+            
+            gobacktotheloginpanelbuttonActionPerformed(evt); 
         } else {
-            // UserManager içinde zaten hata mesajları gösterildiği için burada ek bir hata mesajı yazmaya gerek yok.
-            // Örneğin: JOptionPane.showMessageDialog(this, "Şifre değiştirilemedi. Lütfen bilgileri kontrol edin.", "Hata", JOptionPane.ERROR_MESSAGE);
+            
+            
         }
     }//GEN-LAST:event_confirmitbuttonActionPerformed
 

@@ -14,7 +14,7 @@ public class EvrakDAO {
         String sql = "INSERT INTO EVRAK (EVRAK_ID, EVRAK_DOSYA_YOLU) VALUES (?, ?)";
         try (Connection conn = DatabaseConnection.getConnection()) {
             int newId;
-            // 1. Veritabanından yeni ID al
+            
             try (Statement stmt = conn.createStatement();
                  ResultSet rs = stmt.executeQuery("SELECT NEXT VALUE FOR GEN_EVRAK_ID FROM RDB$DATABASE")) {
                 if (rs.next()) {
@@ -23,19 +23,19 @@ public class EvrakDAO {
                     throw new SQLException("Evrak için yeni ID alınamadı.");
                 }
             }
-            // 2. Alınan ID'yi nesneye ata
+            
             evrak.setEvrakId(newId);
 
-            // 3. Kayıt işlemini yap
+            
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
                 ps.setInt(1, evrak.getEvrakId());
                 ps.setString(2, evrak.getDosyaYolu());
                 ps.executeUpdate();
-                return newId; // Başarılı olursa yeni ID'yi döndür
+                return newId; 
             }
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Evrak eklenirken hata.", e);
-            return 0; // Hata durumunda 0 döndür
+            return 0; 
         }
     }
 

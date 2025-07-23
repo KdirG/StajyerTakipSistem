@@ -4,7 +4,7 @@ import com.sts.stajyertakipsistem.model.Stajyer;
 import com.sts.stajyertakipsistem.db.DatabaseConnection;
 
 import java.sql.*;
-import java.time.LocalDate; // LocalDate için import
+import java.time.LocalDate; 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -17,7 +17,7 @@ public class StajyerDAO {
     private final ReferansDAO referansDAO = new ReferansDAO();
     private final EvrakDAO evrakDAO = new EvrakDAO();
 
-    // populateStajyerFromResultSet metodu güncellenecek
+    
     private Stajyer populateStajyerFromResultSet(ResultSet rs) throws SQLException {
         Stajyer stajyer = new Stajyer();
         stajyer.setStajyerId(rs.getInt("STAJYER_ID"));
@@ -39,23 +39,23 @@ public class StajyerDAO {
         stajyer.setBolum(rs.getString("BOLUM"));
         stajyer.setSinif(rs.getInt("SINIF"));
 
-        // Okul ID'sini oku ve null kontrolü yap
+        
         int okulId = rs.getInt("OKUL_ID");
-        if (!rs.wasNull()) { // Eğer sütun değeri NULL değilse
+        if (!rs.wasNull()) { 
             stajyer.setOkul(okulDAO.getOkulById(okulId));
         } else {
-            stajyer.setOkul(null); // Explicitly set to null if DB value is null
+            stajyer.setOkul(null); 
         }
         
-        // Referans ID'sini oku ve null kontrolü yap
+        
         int referansId = rs.getInt("REFERANS_ID");
-        if (!rs.wasNull()) { // Eğer sütun değeri NULL değilse
+        if (!rs.wasNull()) { 
             stajyer.setReferans(referansDAO.getReferansById(referansId));
         } else {
             stajyer.setReferans(null);
         }
 
-        // Giriş Evrak ID'sini oku ve null kontrolü yap
+        
         int girisEvrakId = rs.getInt("GIRIS_EVRAK_ID");
         if (!rs.wasNull()) {
             stajyer.setGirisEvrak(evrakDAO.getEvrakById(girisEvrakId));
@@ -63,7 +63,7 @@ public class StajyerDAO {
             stajyer.setGirisEvrak(null);
         }
 
-        // Çıkış Evrak ID'sini oku ve null kontrolü yap
+        
         int cikisEvrakId = rs.getInt("CIKIS_EVRAK_ID");
         if (!rs.wasNull()) {
             stajyer.setCikisEvrak(evrakDAO.getEvrakById(cikisEvrakId));
@@ -71,11 +71,11 @@ public class StajyerDAO {
             stajyer.setCikisEvrak(null);
         }
 
-        // <<-- YENİ EKLENEN KISIM: hesaplananIsGunu değerini okuma -->>
-        // Tabloda bu sütunun adı büyük harflerle 'HESAPLANAN_IS_GUNU' veya 'IS_GUNU' olmalı.
-        // Veritabanı şemanızdaki tam adını kontrol edin.
+        
+        
+        
         stajyer.setHesaplananIsGunu(rs.getLong("HESAPLANAN_IS_GUNU")); 
-        // <<------------------------------------------------------->>
+        
 
         return stajyer;
     }
@@ -83,11 +83,11 @@ public class StajyerDAO {
     public boolean addStajyer(Stajyer stajyer) {
         String sql = "INSERT INTO STAJYERLER (STAJYER_ID, TC_KIMLIK, AD_SOYAD, ADRES, TELEFON_NO, IBAN_NO, DOGUM_TARIHI, " +
                      "OKUL_ID, REFERANS_ID, GIRIS_EVRAK_ID, CIKIS_EVRAK_ID, BOLUM, SINIF, " +
-                     "BASLANGIC_TARIHI, BITIS_TARIHI, HESAPLANAN_IS_GUNU) " + // <<-- HESAPLANAN_IS_GUNU EKLENDİ
-                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"; // <<-- Parametre sayısı arttı
+                     "BASLANGIC_TARIHI, BITIS_TARIHI, HESAPLANAN_IS_GUNU) " + 
+                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"; 
 
         try (Connection conn = DatabaseConnection.getConnection()) {
-            // 1. ADIM: Önce veritabanından yeni ve benzersiz bir ID al.
+            
             int newStajyerId;
             try (Statement stmt = conn.createStatement();
                  ResultSet rs = stmt.executeQuery("SELECT NEXT VALUE FOR GEN_STAJYERLER_ID FROM RDB$DATABASE")) {
@@ -98,7 +98,7 @@ public class StajyerDAO {
                 }
             }
             
-            // 2. ADIM: Alınan yeni ID'yi stajyer nesnesine ve sorguya ata.
+            
             stajyer.setStajyerId(newStajyerId);
 
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -111,7 +111,7 @@ public class StajyerDAO {
                 ps.setString(paramIndex++, stajyer.getIbanNo());
                 ps.setDate(paramIndex++, stajyer.getDogumTarihi() != null ? Date.valueOf(stajyer.getDogumTarihi()) : null);
 
-                // İlişkili ID'ler için null kontrolü ve Types.INTEGER kullanımı daha güvenlidir.
+                
                 if (stajyer.getOkul() != null && stajyer.getOkul().getOkulId() > 0) ps.setInt(paramIndex++, stajyer.getOkul().getOkulId()); else ps.setNull(paramIndex++, Types.INTEGER);
                 if (stajyer.getReferans() != null && stajyer.getReferans().getReferansId() > 0) ps.setInt(paramIndex++, stajyer.getReferans().getReferansId()); else ps.setNull(paramIndex++, Types.INTEGER);
                 if (stajyer.getGirisEvrak() != null && stajyer.getGirisEvrak().getEvrakId() > 0) ps.setInt(paramIndex++, stajyer.getGirisEvrak().getEvrakId()); else ps.setNull(paramIndex++, Types.INTEGER);
@@ -122,9 +122,9 @@ public class StajyerDAO {
                 ps.setDate(paramIndex++, stajyer.getStajBaslangicTarihi() != null ? Date.valueOf(stajyer.getStajBaslangicTarihi()) : null);
                 ps.setDate(paramIndex++, stajyer.getStajBitisTarihi() != null ? Date.valueOf(stajyer.getStajBitisTarihi()) : null);
                 
-                // <<-- YENİ EKLENEN KISIM: hesaplananIsGunu değerini yazma -->>
+                
                 ps.setLong(paramIndex++, stajyer.getHesaplananIsGunu());
-                // <<------------------------------------------------------->>
+                
 
                 return ps.executeUpdate() > 0;
             }
@@ -137,7 +137,7 @@ public class StajyerDAO {
     public boolean updateStajyer(Stajyer stajyer) {
         String sql = "UPDATE STAJYERLER SET TC_KIMLIK = ?, AD_SOYAD = ?, ADRES = ?, TELEFON_NO = ?, IBAN_NO = ?, DOGUM_TARIHI = ?, " +
                      "OKUL_ID = ?, REFERANS_ID = ?, GIRIS_EVRAK_ID = ?, CIKIS_EVRAK_ID = ?, BOLUM = ?, SINIF = ?, " +
-                     "BASLANGIC_TARIHI = ?, BITIS_TARIHI = ?, HESAPLANAN_IS_GUNU = ? " + // <<-- HESAPLANAN_IS_GUNU EKLENDİ
+                     "BASLANGIC_TARIHI = ?, BITIS_TARIHI = ?, HESAPLANAN_IS_GUNU = ? " + 
                      "WHERE STAJYER_ID = ?";
         try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             int paramIndex = 1;
@@ -156,11 +156,11 @@ public class StajyerDAO {
             ps.setDate(paramIndex++, stajyer.getStajBaslangicTarihi() != null ? Date.valueOf(stajyer.getStajBaslangicTarihi()) : null);
             ps.setDate(paramIndex++, stajyer.getStajBitisTarihi() != null ? Date.valueOf(stajyer.getStajBitisTarihi()) : null);
             
-            // <<-- YENİ EKLENEN KISIM: hesaplananIsGunu değerini yazma -->>
+            
             ps.setLong(paramIndex++, stajyer.getHesaplananIsGunu());
-            // <<------------------------------------------------------->>
+            
 
-            ps.setInt(paramIndex++, stajyer.getStajyerId()); // WHERE koşulu için ID
+            ps.setInt(paramIndex++, stajyer.getStajyerId()); 
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Stajyer güncellenirken hata oluştu.", e);
@@ -169,8 +169,8 @@ public class StajyerDAO {
     }
 
     public Stajyer getStajyerById(int stajyerId) {
-        // SELECT sorgusuna HESAPLANAN_IS_GUNU sütununu eklemeye gerek yok,
-        // çünkü populateStajyerFromResultSet metodu ResultSet'teki tüm sütunları okuyabiliyor.
+        
+        
         String sql = "SELECT * FROM STAJYERLER WHERE STAJYER_ID = ?";
         try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, stajyerId);
@@ -187,8 +187,8 @@ public class StajyerDAO {
 
     public List<Stajyer> getAllStajyerler() {
         List<Stajyer> stajyerler = new ArrayList<>();
-        // SELECT sorgusuna HESAPLANAN_IS_GUNU sütununu eklemeye gerek yok,
-        // çünkü populateStajyerFromResultSet metodu ResultSet'teki tüm sütunları okuyabiliyor.
+        
+        
         String sql = "SELECT * FROM STAJYERLER";
         try (Connection conn = DatabaseConnection.getConnection(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
