@@ -8,7 +8,7 @@ import com.sts.stajyertakipsistem.service.UserManager;
 import javax.swing.JOptionPane; 
 import javax.swing.JFrame; 
 import javax.swing.SwingUtilities;
-
+import java.awt.Color;
 
 /**
  *
@@ -23,6 +23,11 @@ public class LoginPanel extends javax.swing.JPanel {
         initComponents();
         usernamefield.setText("");
         jPasswordField1.setText("");
+        jPasswordField1.setOpaque(true);
+    jPasswordField1.setBackground(new Color(224, 238, 238)); // Açık mavi
+    jPasswordField1.setForeground(Color.DARK_GRAY);
+    jPasswordField1.setCaretColor(Color.BLUE);
+
     }
      public void setParentFrame(JFrame frame) {
         this.parentFrame = frame;
@@ -65,6 +70,8 @@ public class LoginPanel extends javax.swing.JPanel {
         jLabel2.setText("Kullanıcı Adı:");
         jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 50, -1, -1));
 
+        jPasswordField1.setBackground(new java.awt.Color(240, 248, 255));
+        jPasswordField1.setForeground(java.awt.Color.darkGray);
         jPasswordField1.setText("jPasswordField1");
         jPasswordField1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -199,7 +206,7 @@ public class LoginPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_usernamefieldActionPerformed
 
     private void jPasswordField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jPasswordField1ActionPerformed
-        
+    
     }//GEN-LAST:event_jPasswordField1ActionPerformed
 
 
