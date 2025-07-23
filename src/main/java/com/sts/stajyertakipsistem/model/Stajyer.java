@@ -21,14 +21,15 @@ public class Stajyer implements Serializable {
     private int sinif;
     private LocalDate stajBaslangicTarihi;
     private LocalDate stajBitisTarihi;
+    private long hesaplananIsGunu; // YENİ EKLENECEK ALAN
 
     public Stajyer() {}
 
-    // Constructor parametresi int olarak güncellendi
+    // Constructor parametresi int olarak güncellendi ve hesaplananIsGunu eklendi
     public Stajyer(int stajyerId, String adSoyad, String adres, String telefonNo, String ibanNo,
                    LocalDate dogumTarihi, LocalDate stajBaslangicTarihi, LocalDate stajBitisTarihi, Okul okul, Referans referans, String tcKimlik,
                    Evrak girisEvrak, Evrak cikisEvrak,
-                   String bolum, int sinif) {
+                   String bolum, int sinif, long hesaplananIsGunu) { // <<-- hesaplananIsGunu parametresi eklendi
         this.stajyerId = stajyerId;
         this.adSoyad = adSoyad;
         this.adres = adres;
@@ -44,6 +45,7 @@ public class Stajyer implements Serializable {
         this.sinif = sinif;
         this.stajBaslangicTarihi = stajBaslangicTarihi;
         this.stajBitisTarihi = stajBitisTarihi;
+        this.hesaplananIsGunu = hesaplananIsGunu; // <<-- atama yapıldı
     }
 
     public int getYas() {
@@ -83,6 +85,16 @@ public class Stajyer implements Serializable {
     public void setStajBaslangicTarihi(LocalDate stajBaslangicTarihi) { this.stajBaslangicTarihi = stajBaslangicTarihi; }
     public LocalDate getStajBitisTarihi() { return stajBitisTarihi; }
     public void setStajBitisTarihi(LocalDate stajBitisTarihi) { this.stajBitisTarihi = stajBitisTarihi; }
+
+    // *** YENİ EKLENEN GETTER VE SETTER ***
+    public long getHesaplananIsGunu() {
+        return hesaplananIsGunu;
+    }
+
+    public void setHesaplananIsGunu(long hesaplananIsGunu) {
+        this.hesaplananIsGunu = hesaplananIsGunu;
+    }
+    // **********************************
     
     public String getStajyerTuru() {
         return this.okul != null ? this.okul.getOkulTuru() : "";
@@ -98,6 +110,23 @@ public class Stajyer implements Serializable {
 
     @Override
     public String toString() {
-        return adSoyad + " (" + getBolumForDisplay() + ", Sınıf: " + sinif + ", Okul: " + (okul != null ? okul.getOkulAdi() : "Yok") + ")";
+        return "Stajyer{" +
+               "stajyerId=" + stajyerId +
+               ", adSoyad='" + adSoyad + '\'' +
+               ", adres='" + adres + '\'' +
+               ", telefonNo='" + telefonNo + '\'' +
+               ", ibanNo='" + ibanNo + '\'' +
+               ", dogumTarihi=" + dogumTarihi +
+               ", okul=" + okul +
+               ", referans=" + referans +
+               ", tcKimlik='" + tcKimlik + '\'' +
+               ", girisEvrak=" + girisEvrak +
+               ", cikisEvrak=" + cikisEvrak +
+               ", bolum='" + bolum + '\'' +
+               ", sinif=" + sinif +
+               ", stajBaslangicTarihi=" + stajBaslangicTarihi +
+               ", stajBitisTarihi=" + stajBitisTarihi +
+               ", hesaplananIsGunu=" + hesaplananIsGunu + // <<-- toString'e eklendi
+               '}';
     }
 }

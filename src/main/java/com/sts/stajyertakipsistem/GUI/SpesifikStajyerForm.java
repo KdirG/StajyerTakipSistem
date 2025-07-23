@@ -88,20 +88,25 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
             this.currentStajyer.setReferans(new Referans());
         }
     }
-    private void calculateAndDisplayBusinessDays() {
+       private void calculateAndDisplayBusinessDays() {
     LocalDate startDate;
     LocalDate endDate;
 
     try {
         // JTextField'lardan tarihleri al ve parse et
-        startDate = LocalDate.parse(jTextField3.getText().trim(), formatter);
-        endDate = LocalDate.parse(jTextField2.getText().trim(), formatter);
+        startDate = LocalDate.parse(jTextField3.getText().trim(), formatter); // Başlangıç tarihi
+        endDate = LocalDate.parse(jTextField2.getText().trim(), formatter);   // Bitiş tarihi
     } catch (DateTimeParseException e) {
         // Geçersiz tarih formatı durumunda hata mesajı göster
         jLabelBusinessDaysResult.setText("Hata: Geçersiz tarih formatı.");
         JOptionPane.showMessageDialog(this,
                 "Geçersiz tarih formatı. Lütfen 'YYYY.MM.DD' formatını kullanın.",
                 "Tarih Formatı Hatası", JOptionPane.ERROR_MESSAGE);
+        
+        // Hata durumunda stajyer nesnesindeki iş gününü sıfırla
+        if (currentStajyer != null) {
+            currentStajyer.setHesaplananIsGunu(0);
+        }
         return;
     }
 
@@ -111,6 +116,11 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
         JOptionPane.showMessageDialog(this,
                 "Başlangıç tarihi bitiş tarihinden sonra olamaz.",
                 "Geçersiz Tarih Aralığı", JOptionPane.WARNING_MESSAGE);
+        
+        // Hata durumunda stajyer nesnesindeki iş gününü sıfırla
+        if (currentStajyer != null) {
+            currentStajyer.setHesaplananIsGunu(0);
+        }
         return;
     }
 
@@ -126,7 +136,8 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
             // Pazar günü atla
         }
         // Cumartesi kontrolü: Eğer jCheckBoxSaturday işaretli değilse, Cumartesiyi atla
-        else if (dayOfWeek == DayOfWeek.SATURDAY && !addSaturdayCheckbox.isSelected()) {
+        // NOT: Sizin kodunuzda addSaturdayCheckbox olarak belirtilmiş, onu kullandım.
+        else if (dayOfWeek == DayOfWeek.SATURDAY && !addSaturdayCheckbox.isSelected()) { 
             // Cumartesi günü atla
         }
         // Diğer günler iş günüdür (Pazartesi-Cuma ve Cumartesi dahilse Cumartesi)
@@ -137,7 +148,15 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
     }
 
     // Hesaplanan iş günü sayısını jLabelBusinessDaysResult'ta göster
-    jLabelBusinessDaysResult.setText(  businessDays + " gün");
+    jLabelBusinessDaysResult.setText(businessDays + " gün");
+
+    // *** KRİTİK NOKTA: Hesaplanan iş gününü Stajyer nesnesine ata ***
+    if (currentStajyer != null) {
+        currentStajyer.setHesaplananIsGunu(businessDays);
+        System.out.println("DEBUG: calculateAndDisplayBusinessDays() - Stajyer nesnesine atanan iş günü: " + currentStajyer.getHesaplananIsGunu());
+    } else {
+        System.err.println("HATA: calculateAndDisplayBusinessDays() - currentStajyer nesnesi null! İş günü atanamadı.");
+    }
 }
 
     // YENİ METOT: Özel GUI bileşenlerini başlatır
