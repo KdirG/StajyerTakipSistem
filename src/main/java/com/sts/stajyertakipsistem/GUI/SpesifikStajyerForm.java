@@ -29,6 +29,8 @@ import com.sts.stajyertakipsistem.model.Referans;
 import com.sts.stajyertakipsistem.model.Stajyer; // Stajyer sınıfı için de aynı pakette olduğunu varsayıyorum
 import com.sts.stajyertakipsistem.model.Okul;     // Okul sınıfı için de aynı pakette olduğunu varsayıyorum
 import com.sts.stajyertakipsistem.service.StajyerService; 
+import java.time.DayOfWeek;
+
 
 public class SpesifikStajyerForm extends javax.swing.JPanel {
 
@@ -74,7 +76,7 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
         // Drag-and-drop kurulumu
         setupDragAndDrop();
 
-        //setupIconClickListeners(); // ESKİ: Bu artık her dosya paneli için dinamik olarak eklenecek.
+       
 
         if (stajyerId > 0) {
             isEditMode = true;
@@ -86,6 +88,57 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
             this.currentStajyer.setReferans(new Referans());
         }
     }
+    private void calculateAndDisplayBusinessDays() {
+    LocalDate startDate;
+    LocalDate endDate;
+
+    try {
+        // JTextField'lardan tarihleri al ve parse et
+        startDate = LocalDate.parse(jTextField3.getText().trim(), formatter);
+        endDate = LocalDate.parse(jTextField2.getText().trim(), formatter);
+    } catch (DateTimeParseException e) {
+        // Geçersiz tarih formatı durumunda hata mesajı göster
+        jLabelBusinessDaysResult.setText("Hata: Geçersiz tarih formatı.");
+        JOptionPane.showMessageDialog(this,
+                "Geçersiz tarih formatı. Lütfen 'YYYY.MM.DD' formatını kullanın.",
+                "Tarih Formatı Hatası", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+
+    // Başlangıç tarihi bitiş tarihinden sonra olamaz kontrolü
+    if (startDate.isAfter(endDate)) {
+        jLabelBusinessDaysResult.setText("Hata: Başlangıç tarihi bitiş tarihinden sonra olamaz.");
+        JOptionPane.showMessageDialog(this,
+                "Başlangıç tarihi bitiş tarihinden sonra olamaz.",
+                "Geçersiz Tarih Aralığı", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+
+    long businessDays = 0;
+    LocalDate currentDay = startDate;
+
+    // Başlangıç tarihinden bitiş tarihine kadar her günü döngüyle kontrol et
+    while (!currentDay.isAfter(endDate)) {
+        DayOfWeek dayOfWeek = currentDay.getDayOfWeek();
+
+        // Pazar her zaman iş günü değildir
+        if (dayOfWeek == DayOfWeek.SUNDAY) {
+            // Pazar günü atla
+        }
+        // Cumartesi kontrolü: Eğer jCheckBoxSaturday işaretli değilse, Cumartesiyi atla
+        else if (dayOfWeek == DayOfWeek.SATURDAY && !addSaturdayCheckbox.isSelected()) {
+            // Cumartesi günü atla
+        }
+        // Diğer günler iş günüdür (Pazartesi-Cuma ve Cumartesi dahilse Cumartesi)
+        else {
+            businessDays++;
+        }
+        currentDay = currentDay.plusDays(1); // Bir sonraki güne geç
+    }
+
+    // Hesaplanan iş günü sayısını jLabelBusinessDaysResult'ta göster
+    jLabelBusinessDaysResult.setText("Hesaplanan İş Günü: " + businessDays + " gün");
+}
 
     // YENİ METOT: Özel GUI bileşenlerini başlatır
     private void initializeCustomComponents() {
@@ -595,7 +648,10 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
         jTextField14 = new javax.swing.JTextField();
         jTextField15 = new javax.swing.JTextField();
         jLabel20 = new javax.swing.JLabel();
-        jCheckBox1 = new javax.swing.JCheckBox();
+        jPanel2 = new javax.swing.JPanel();
+        addSaturdayCheckbox = new javax.swing.JCheckBox();
+        jLabelBusinessDaysResult = new javax.swing.JLabel();
+        calculateWorkdayButton = new javax.swing.JButton();
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         jLabel2.setText("STAJYER TAKİP SİSTEMİ");
@@ -648,6 +704,11 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
         jPanel1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 398, -1, -1));
 
         jTextField3.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        jTextField3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextField3ActionPerformed(evt);
+            }
+        });
         jPanel1.add(jTextField3, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 395, 272, -1));
 
         jLabel5.setText("T.C: Kimlik No:");
@@ -750,12 +811,57 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
         jTextField15.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         jPanel1.add(jTextField15, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 331, 272, -1));
 
-        jCheckBox1.setText("Cumartesi Dahil ");
-        jCheckBox1.addActionListener(new java.awt.event.ActionListener() {
+        jPanel2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+
+        addSaturdayCheckbox.setText("Cumartesi Dahil ");
+        addSaturdayCheckbox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jCheckBox1ActionPerformed(evt);
+                addSaturdayCheckboxActionPerformed(evt);
             }
         });
+
+        jLabelBusinessDaysResult.setText("resultLabel");
+
+        calculateWorkdayButton.setText("Hesapla");
+        calculateWorkdayButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                calculateWorkdayButtonActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addContainerGap(137, Short.MAX_VALUE)
+                .addComponent(jLabelBusinessDaysResult)
+                .addGap(15, 15, 15))
+            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel2Layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel2Layout.createSequentialGroup()
+                            .addComponent(addSaturdayCheckbox)
+                            .addContainerGap(94, Short.MAX_VALUE))
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                            .addComponent(calculateWorkdayButton)
+                            .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGap(24, 24, 24)
+                .addComponent(jLabelBusinessDaysResult)
+                .addContainerGap(60, Short.MAX_VALUE))
+            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel2Layout.createSequentialGroup()
+                    .addGap(22, 22, 22)
+                    .addComponent(addSaturdayCheckbox)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                    .addComponent(calculateWorkdayButton)
+                    .addContainerGap(23, Short.MAX_VALUE)))
+        );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -772,26 +878,27 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
                                 .addComponent(jLabel1))
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(16, 16, 16)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(jButton1)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(girisEvrakIconPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addGroup(layout.createSequentialGroup()
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(girisEvrakIconPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addGroup(layout.createSequentialGroup()
-                                                .addComponent(jLabel20)
-                                                .addGap(30, 30, 30)
-                                                .addComponent(jLabel18)))
-                                        .addGap(58, 58, 58)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(jLabel19)
-                                            .addComponent(cikisEvrakIconPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                                        .addComponent(jLabel20)
+                                        .addGap(30, 30, 30)
+                                        .addComponent(jLabel18)))
+                                .addGap(58, 58, 58)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel19)
+                                    .addComponent(cikisEvrakIconPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)))
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(18, 18, 18)
-                                .addComponent(jCheckBox1)))
+                                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jButton1)
+                                .addGap(15, 15, 15)))
                         .addGap(30, 30, 30))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 243, Short.MAX_VALUE)
                         .addComponent(jButton2)
                         .addGap(164, 164, 164))))
             .addComponent(jSeparator3)
@@ -822,9 +929,9 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
                                 .addComponent(jLabel19, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(18, 18, 18)
                         .addComponent(jLabel20)
-                        .addGap(18, 18, 18)
-                        .addComponent(jCheckBox1)
-                        .addGap(59, 59, 59)
+                        .addGap(8, 8, 8)
+                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(27, 27, 27)
                         .addComponent(jButton1)))
                 .addContainerGap(44, Short.MAX_VALUE))
         );
@@ -865,12 +972,22 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextField11ActionPerformed
 
-    private void jCheckBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox1ActionPerformed
+    private void addSaturdayCheckboxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addSaturdayCheckboxActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jCheckBox1ActionPerformed
+    }//GEN-LAST:event_addSaturdayCheckboxActionPerformed
+
+    private void jTextField3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField3ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextField3ActionPerformed
+
+    private void calculateWorkdayButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_calculateWorkdayButtonActionPerformed
+        calculateAndDisplayBusinessDays();
+    }//GEN-LAST:event_calculateWorkdayButtonActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JCheckBox addSaturdayCheckbox;
+    private javax.swing.JButton calculateWorkdayButton;
     private javax.swing.JPanel cikisEvrakIconPanel;
     private javax.swing.JScrollPane cikisEvrakScrollPane;
     private javax.swing.JLabel girisEvrakIconLabel;
@@ -878,7 +995,6 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
     private javax.swing.JScrollPane girisEvrakScrollPane;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
-    private javax.swing.JCheckBox jCheckBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -899,7 +1015,9 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
+    private javax.swing.JLabel jLabelBusinessDaysResult;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JSeparator jSeparator12;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
