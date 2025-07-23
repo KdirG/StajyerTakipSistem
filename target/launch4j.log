@@ -1,0 +1,63 @@
+
+
+Version:	3.50
+CmdLine:	C:\Users\kadir\OneDrive\Belgeler\NetBeansProjects\StajyerTakipSistem\target\StajyerTakipSistem.exe --l4j-debug
+JNI:		No
+WOW64:		Yes
+Working dir:	C:\Users\kadir\OneDrive\Belgeler\NetBeansProjects\StajyerTakipSistem\target\.
+Requires JDK:	Yes
+Requires 64-Bit: No
+Java min ver:	1.017.000_000
+Java max ver:	
+Substitute:	JAVA_HOME = C:\Program Files\Eclipse Adoptium\jdk-17.0.15.6-hotspot
+Substitute:	PATH = C:\Program Files\Eclipse Adoptium\jdk-17.0.15.6-hotspot\bin;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.9\bin;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.9\libnvvp;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;C:\Program Files\NVIDIA Corporation\Nsight Compute 2025.2.1\;C:\Program Files\NVIDIA Corporation\NVIDIA App\NvDLISR;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files\Git\cmd;C:\Program Files\PostgreSQL\17\bin;C:\programs\apache-maven-3.9.10\bin;C:\ffmpeg-7.1.1-essentials_build\bin;C:\Program Files\dotnet\;C:\Users\kadir\AppData\Local\Programs\Python\Python313\Scripts\;C:\Users\kadir\AppData\Local\Programs\Python\Python313\;C:\Users\kadir\AppData\Local\Microsoft\WindowsApps;C:\Users\kadir\AppData\Local\Programs\cursor\resources\app\bin;C:\Users\kadir\.lmstudio\bin;C:\Program Files\Eclipse Adoptium\jdk-17.0.15.6-hotspot\bin
+JRE paths:	C:\Program Files\Eclipse Adoptium\jdk-17.0.15.6-hotspot;C:\Program Files\Eclipse Adoptium\jdk-17.0.15.6-hotspot\bin;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.9\bin;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.9\libnvvp;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;C:\Program Files\NVIDIA Corporation\Nsight Compute 2025.2.1\;C:\Program Files\NVIDIA Corporation\NVIDIA App\NvDLISR;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files\Git\cmd;C:\Program Files\PostgreSQL\17\bin;C:\programs\apache-maven-3.9.10\bin;C:\ffmpeg-7.1.1-essentials_build\bin;C:\Program Files\dotnet\;C:\Users\kadir\AppData\Local\Programs\Python\Python313\Scripts\;C:\Users\kadir\AppData\Local\Programs\Python\Python313\;C:\Users\kadir\AppData\Local\Microsoft\WindowsApps;C:\Users\kadir\AppData\Local\Programs\cursor\resources\app\bin;C:\Users\kadir\.lmstudio\bin;C:\Program Files\Eclipse Adoptium\jdk-17.0.15.6-hotspot\bin
+Check launcher:	C:\Program Files\Eclipse Adoptium\jdk-17.0.15.6-hotspot\bin\javaw.exe (OK)
+Check javac:	C:\Program Files\Eclipse Adoptium\jdk-17.0.15.6-hotspot\bin\javac.exe (OK)
+Version string: 1.017.000_015 / 64-Bit (OK)
+Launcher:	C:\Program Files\Eclipse Adoptium\jdk-17.0.15.6-hotspot\bin\javaw.exe
+Launcher args:	-jar "C:\Users\kadir\OneDrive\Belgeler\NetBeansProjects\StajyerTakipSistem\target\StajyerTakipSistem.exe"
+Args length:	105/32768 chars
+Exit code:	0
+
+
+Version:	3.50
+CmdLine:	C:\Users\kadir\OneDrive\Belgeler\NetBeansProjects\StajyerTakipSistem\target\StajyerTakipSistem.exe --l4j-debug
+JNI:		No
+WOW64:		Yes
+Working dir:	C:\Users\kadir\OneDrive\Belgeler\NetBeansProjects\StajyerTakipSistem\target\.
+Requires JDK:	Yes
+Requires 64-Bit: No
+Java min ver:	1.017.000_000
+Java max ver:	
+Substitute:	JAVA_HOME = C:\Program Files\Eclipse Adoptium\jdk-17.0.15.6-hotspot
+Substitute:	PATH = C:\Program Files\Eclipse Adoptium\jdk-17.0.15.6-hotspot\bin;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.9\bin;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.9\libnvvp;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;C:\Program Files\NVIDIA Corporation\Nsight Compute 2025.2.1\;C:\Program Files\NVIDIA Corporation\NVIDIA App\NvDLISR;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files\Git\cmd;C:\Program Files\PostgreSQL\17\bin;C:\programs\apache-maven-3.9.10\bin;C:\ffmpeg-7.1.1-essentials_build\bin;C:\Program Files\dotnet\;C:\Users\kadir\AppData\Local\Programs\Python\Python313\Scripts\;C:\Users\kadir\AppData\Local\Programs\Python\Python313\;C:\Users\kadir\AppData\Local\Microsoft\WindowsApps;C:\Users\kadir\AppData\Local\Programs\cursor\resources\app\bin;C:\Users\kadir\.lmstudio\bin;C:\Program Files\Eclipse Adoptium\jdk-17.0.15.6-hotspot\bin
+JRE paths:	C:\Program Files\Eclipse Adoptium\jdk-17.0.15.6-hotspot;C:\Program Files\Eclipse Adoptium\jdk-17.0.15.6-hotspot\bin;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.9\bin;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.9\libnvvp;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;C:\Program Files\NVIDIA Corporation\Nsight Compute 2025.2.1\;C:\Program Files\NVIDIA Corporation\NVIDIA App\NvDLISR;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files\Git\cmd;C:\Program Files\PostgreSQL\17\bin;C:\programs\apache-maven-3.9.10\bin;C:\ffmpeg-7.1.1-essentials_build\bin;C:\Program Files\dotnet\;C:\Users\kadir\AppData\Local\Programs\Python\Python313\Scripts\;C:\Users\kadir\AppData\Local\Programs\Python\Python313\;C:\Users\kadir\AppData\Local\Microsoft\WindowsApps;C:\Users\kadir\AppData\Local\Programs\cursor\resources\app\bin;C:\Users\kadir\.lmstudio\bin;C:\Program Files\Eclipse Adoptium\jdk-17.0.15.6-hotspot\bin
+Check launcher:	C:\Program Files\Eclipse Adoptium\jdk-17.0.15.6-hotspot\bin\javaw.exe (OK)
+Check javac:	C:\Program Files\Eclipse Adoptium\jdk-17.0.15.6-hotspot\bin\javac.exe (OK)
+Version string: 1.017.000_015 / 64-Bit (OK)
+Launcher:	C:\Program Files\Eclipse Adoptium\jdk-17.0.15.6-hotspot\bin\javaw.exe
+Launcher args:	-jar "C:\Users\kadir\OneDrive\Belgeler\NetBeansProjects\StajyerTakipSistem\target\StajyerTakipSistem.exe"
+Args length:	105/32768 chars
+Exit code:	0
+
+
+Version:	3.50
+CmdLine:	C:\Users\kadir\OneDrive\Belgeler\NetBeansProjects\StajyerTakipSistem\target\StajyerTakipSistem.exe --l4j-debug
+JNI:		No
+WOW64:		Yes
+Working dir:	C:\Users\kadir\OneDrive\Belgeler\NetBeansProjects\StajyerTakipSistem\target\.
+Requires JDK:	Yes
+Requires 64-Bit: No
+Java min ver:	1.017.000_000
+Java max ver:	
+Substitute:	JAVA_HOME = C:\Program Files\Eclipse Adoptium\jdk-17.0.15.6-hotspot
+Substitute:	PATH = C:\Program Files\Eclipse Adoptium\jdk-17.0.15.6-hotspot\bin;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.9\bin;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.9\libnvvp;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;C:\Program Files\NVIDIA Corporation\Nsight Compute 2025.2.1\;C:\Program Files\NVIDIA Corporation\NVIDIA App\NvDLISR;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files\Git\cmd;C:\Program Files\PostgreSQL\17\bin;C:\programs\apache-maven-3.9.10\bin;C:\ffmpeg-7.1.1-essentials_build\bin;C:\Program Files\dotnet\;C:\Users\kadir\AppData\Local\Programs\Python\Python313\Scripts\;C:\Users\kadir\AppData\Local\Programs\Python\Python313\;C:\Users\kadir\AppData\Local\Microsoft\WindowsApps;C:\Users\kadir\AppData\Local\Programs\cursor\resources\app\bin;C:\Users\kadir\.lmstudio\bin;C:\Program Files\Eclipse Adoptium\jdk-17.0.15.6-hotspot\bin
+JRE paths:	C:\Program Files\Eclipse Adoptium\jdk-17.0.15.6-hotspot;C:\Program Files\Eclipse Adoptium\jdk-17.0.15.6-hotspot\bin;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.9\bin;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.9\libnvvp;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;C:\Program Files\NVIDIA Corporation\Nsight Compute 2025.2.1\;C:\Program Files\NVIDIA Corporation\NVIDIA App\NvDLISR;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files\Git\cmd;C:\Program Files\PostgreSQL\17\bin;C:\programs\apache-maven-3.9.10\bin;C:\ffmpeg-7.1.1-essentials_build\bin;C:\Program Files\dotnet\;C:\Users\kadir\AppData\Local\Programs\Python\Python313\Scripts\;C:\Users\kadir\AppData\Local\Programs\Python\Python313\;C:\Users\kadir\AppData\Local\Microsoft\WindowsApps;C:\Users\kadir\AppData\Local\Programs\cursor\resources\app\bin;C:\Users\kadir\.lmstudio\bin;C:\Program Files\Eclipse Adoptium\jdk-17.0.15.6-hotspot\bin
+Check launcher:	C:\Program Files\Eclipse Adoptium\jdk-17.0.15.6-hotspot\bin\javaw.exe (OK)
+Check javac:	C:\Program Files\Eclipse Adoptium\jdk-17.0.15.6-hotspot\bin\javac.exe (OK)
+Version string: 1.017.000_015 / 64-Bit (OK)
+Launcher:	C:\Program Files\Eclipse Adoptium\jdk-17.0.15.6-hotspot\bin\javaw.exe
+Launcher args:	-jar "C:\Users\kadir\OneDrive\Belgeler\NetBeansProjects\StajyerTakipSistem\target\StajyerTakipSistem.exe"
+Args length:	105/32768 chars
+Exit code:	0

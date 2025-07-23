@@ -10,12 +10,16 @@
         <maven.compiler.release>17</maven.compiler.release>
         <exec.mainClass>com.sts.stajyertakipsistem.StajyerTakipSistem</exec.mainClass>
     </properties>
-
     <dependencies>
         <dependency>
     <groupId>com.formdev</groupId>
+    <artifactId>flatlaf-intellij-themes</artifactId>
+    <version>3.6.1</version>
+</dependency>
+        <dependency>
+    <groupId>com.formdev</groupId>
     <artifactId>flatlaf</artifactId>
-    <version>3.4</version>
+    <version>3.6.1</version>
 </dependency>
        <dependency>
     <groupId>org.firebirdsql.jdbc</groupId>

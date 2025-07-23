@@ -2,6 +2,7 @@ com\sts\stajyertakipsistem\GUI\SpesifikStajyerForm$13.class
 com\sts\stajyertakipsistem\GUI\StajyerListForm$6.class
 com\sts\stajyertakipsistem\GUI\StajyerListForm.class
 com\sts\stajyertakipsistem\dao\EvrakDAO.class
+com\sts\stajyertakipsistem\GUI\ChangePasswordPanel$3.class
 com\sts\stajyertakipsistem\GUI\StajyerFilterDialog$7.class
 com\sts\stajyertakipsistem\GUI\LoginPanel$4.class
 com\sts\stajyertakipsistem\service\OkulService.class
@@ -51,6 +52,7 @@ com\sts\stajyertakipsistem\GUI\StajyerListForm$8.class
 com\sts\stajyertakipsistem\GUI\ChangePasswordPanel$2.class
 com\sts\stajyertakipsistem\dao\ReferansDAO.class
 com\sts\stajyertakipsistem\db\DatabaseConnection.class
+com\sts\stajyertakipsistem\GUI\ChangePasswordPanel$4.class
 com\sts\stajyertakipsistem\GUI\StajyerFilterDialog$1.class
 com\sts\stajyertakipsistem\GUI\StajyerListForm$2.class
 com\sts\stajyertakipsistem\GUI\SpesifikStajyerForm$12.class
