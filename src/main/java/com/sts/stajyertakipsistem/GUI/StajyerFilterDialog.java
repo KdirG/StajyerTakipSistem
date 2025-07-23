@@ -28,7 +28,8 @@ public class StajyerFilterDialog extends JDialog {
     private LocalDate bitisTarihiMinResult;
     private LocalDate bitisTarihiMaxResult;
     private LocalDate activeDateFilterResult; // Yeni aktif tarih filtresi sonucu
-    
+        private Long minWorkdayResult;
+        private Long maxWorkdayResult;
     private boolean applyFilterConfirmed = false;
 
     private StajyerService stajyerService;
@@ -80,8 +81,8 @@ public class StajyerFilterDialog extends JDialog {
         btnCancel = new javax.swing.JButton();
         jPanel7 = new javax.swing.JPanel();
         jLabel9 = new javax.swing.JLabel();
-        txtminWorkDay = new javax.swing.JTextField();
-        txtMaxWorkDay = new javax.swing.JTextField();
+        txtMinWorkday = new javax.swing.JTextField();
+        txtMaxWorkday = new javax.swing.JTextField();
         jLabel10 = new javax.swing.JLabel();
         jLabel11 = new javax.swing.JLabel();
 
@@ -294,9 +295,19 @@ public class StajyerFilterDialog extends JDialog {
 
         jLabel9.setText("İş Günü");
 
-        txtminWorkDay.setText("jTextField2");
+        txtMinWorkday.setText("jTextField2");
+        txtMinWorkday.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtMinWorkdayActionPerformed(evt);
+            }
+        });
 
-        txtMaxWorkDay.setText("jTextField3");
+        txtMaxWorkday.setText("jTextField3");
+        txtMaxWorkday.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtMaxWorkdayActionPerformed(evt);
+            }
+        });
 
         jLabel10.setText("Minimum");
 
@@ -314,9 +325,9 @@ public class StajyerFilterDialog extends JDialog {
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(jPanel7Layout.createSequentialGroup()
                         .addContainerGap()
-                        .addComponent(txtminWorkDay, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(txtMinWorkday, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 26, Short.MAX_VALUE)
-                        .addComponent(txtMaxWorkDay, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(txtMaxWorkday, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
             .addGroup(jPanel7Layout.createSequentialGroup()
                 .addContainerGap()
@@ -336,8 +347,8 @@ public class StajyerFilterDialog extends JDialog {
                     .addComponent(jLabel11))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtminWorkDay, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtMaxWorkDay, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtMinWorkday, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtMaxWorkday, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(28, Short.MAX_VALUE))
         );
 
@@ -416,6 +427,14 @@ public class StajyerFilterDialog extends JDialog {
         // TODO add your handling code here:
     }//GEN-LAST:event_btnCancelActionPerformed
 
+    private void txtMinWorkdayActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtMinWorkdayActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtMinWorkdayActionPerformed
+
+    private void txtMaxWorkdayActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtMaxWorkdayActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtMaxWorkdayActionPerformed
+
  private void setupListeners() {
         applybutton.addActionListener(this::applyFiltersAndClose);
         btnClearFilters.addActionListener(e -> clearFilters());
@@ -456,6 +475,27 @@ public class StajyerFilterDialog extends JDialog {
             bitisTarihiMinResult = parseDate(minendtxt.getText());
             bitisTarihiMaxResult = parseDate(maxendtxt.getText());
         }
+
+        // <<-- YENİ EKLENEN KISIM: İş Günü Filtreleri -->>
+        try {
+            minWorkdayResult = parseLong(txtMinWorkday.getText());
+            maxWorkdayResult = parseLong(txtMaxWorkday.getText());
+            
+            // Min > Max kontrolü
+            if (minWorkdayResult != null && maxWorkdayResult != null && minWorkdayResult > maxWorkdayResult) {
+                 JOptionPane.showMessageDialog(this, "Minimum iş günü, maksimum iş gününden büyük olamaz.", "Hata", JOptionPane.ERROR_MESSAGE);
+                 minWorkdayResult = null; // Hatalı durumu sıfırla
+                 maxWorkdayResult = null;
+                 return; // Hata durumunda işlemi durdur ve dialog'u kapatma
+            }
+
+        } catch (DateTimeParseException | NumberFormatException ex) { // DateTimeParseException'ı yakalamaya gerek yok, parseLong'da zaten NumberFormatException yakalanır.
+            JOptionPane.showMessageDialog(this, "İş günü değeri sayı formatında olmalı.", "Hata", JOptionPane.ERROR_MESSAGE);
+            minWorkdayResult = null; // Hatalı durumu sıfırla
+            maxWorkdayResult = null;
+            return; // Hata durumunda işlemi durdur ve dialog'u kapatma
+        }
+        // <<---------------------------------------------->
 
         applyFilterConfirmed = true;
         dispose();
@@ -498,7 +538,18 @@ public class StajyerFilterDialog extends JDialog {
             return null;
         }
     }
-
+    private Long parseLong(String longStr) throws NumberFormatException {
+        if (longStr == null || longStr.trim().isEmpty()) {
+            return null; // Boş veya sadece boşluk içeren bir string ise null döndür
+        }
+        return Long.parseLong(longStr.trim()); // String'i Long'a çevir
+    }
+     public Long getMinWorkdayResult() {
+        return minWorkdayResult;
+    }
+    public Long getMaxWorkdayResult() {
+        return maxWorkdayResult;
+    } 
     // Getter Metotları
     public String getBolumFilter() {
         return (bolumFilterResult != null && !bolumFilterResult.equals("Tüm Bölümler")) ? bolumFilterResult : null;
@@ -529,40 +580,45 @@ public class StajyerFilterDialog extends JDialog {
      */
     public void setInitialFilters(String bolum, String okulTuru, String durum,
                                   LocalDate basMin, LocalDate basMax, LocalDate bitMin, LocalDate bitMax,
-                                  LocalDate activeDate) { // Yeni activeDate parametresi
-        // Bölüm ayarı
+                                  LocalDate activeDate,
+                                  Long minWorkday, Long maxWorkday) {
+
         if (bolum != null && containsItem(jComboBox4, bolum)) {
             jComboBox4.setSelectedItem(bolum);
         } else {
             jComboBox4.setSelectedItem("Tüm Bölümler");
         }
 
-        // Okul Türü ayarı
         if (okulTuru != null && containsItem(jComboBox1, okulTuru)) {
             jComboBox1.setSelectedItem(okulTuru);
         } else {
             jComboBox1.setSelectedItem("Tümü");
         }
 
-        // Staj Durumu (eğer GUI'de cmbStajDurumu adında bir JComboBox tanımlıysa bu yorum satırını kaldırabilirsiniz)
+        // Staj Durumu
         // if (durum != null && cmbStajDurumu != null && containsItem(cmbStajDurumu, durum)) { cmbStajDurumu.setSelectedItem(durum); }
 
-        // Tarih alanlarını ayarla: Eğer 'activeDate' varsa öncelikli olarak onu kullan
         if (activeDate != null) {
-            // jTextField1'i ayarla ve diğer tarih aralığı alanlarını temizle
             jTextField1.setText(activeDate.format(DATE_FORMATTER));
             minbegintxt.setText("");
             maxbegintxt.setText("");
             minendtxt.setText("");
             maxendtxt.setText("");
         } else {
-            // 'activeDate' yoksa, normal tarih aralığı filtrelerini ayarla
-            jTextField1.setText(""); // jTextField1'i temizle
+            jTextField1.setText("");
 
             minbegintxt.setText(basMin != null ? basMin.format(DATE_FORMATTER) : "");
             maxbegintxt.setText(basMax != null ? basMax.format(DATE_FORMATTER) : "");
             minendtxt.setText(bitMin != null ? bitMin.format(DATE_FORMATTER) : "");
             maxendtxt.setText(bitMax != null ? bitMax.format(DATE_FORMATTER) : "");
+        }
+
+        // İŞ GÜNÜ ALANLARI BURADA GÜNCELLENDİ
+        if (txtMinWorkday != null) {
+            txtMinWorkday.setText(minWorkday != null ? String.valueOf(minWorkday) : "");
+        }
+        if (txtMaxWorkday != null) {
+            txtMaxWorkday.setText(maxWorkday != null ? String.valueOf(maxWorkday) : "");
         }
     }
 
@@ -607,7 +663,7 @@ public class StajyerFilterDialog extends JDialog {
     private javax.swing.JTextField maxendtxt;
     private javax.swing.JTextField minbegintxt;
     private javax.swing.JTextField minendtxt;
-    private javax.swing.JTextField txtMaxWorkDay;
-    private javax.swing.JTextField txtminWorkDay;
+    private javax.swing.JTextField txtMaxWorkday;
+    private javax.swing.JTextField txtMinWorkday;
     // End of variables declaration//GEN-END:variables
 }

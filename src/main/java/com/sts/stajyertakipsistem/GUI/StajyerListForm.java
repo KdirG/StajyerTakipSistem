@@ -13,9 +13,11 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter; // Eğer kullanılıyorsa
-import java.time.format.DateTimeParseException; // Eğer kullanılıyorsa
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Locale;
+import java.util.Map; // Gerekirse Map için import
+import java.util.HashMap; // Gerekirse HashMap için import
 
 public class StajyerListForm extends javax.swing.JFrame {
 
@@ -40,7 +42,10 @@ public class StajyerListForm extends javax.swing.JFrame {
     private LocalDate currentBitisTarihiMax = null;
     private LocalDate currentActiveDateFilter = null; // Yeni: Aktif tarih filtresi değişkeni
 
-    
+    // <<-- YENİ EKLENEN FİLTRE DEĞERLERİ -->>
+    private Long currentMinWorkdayFilter = null;
+    private Long currentMaxWorkdayFilter = null;
+    // <<---------------------------------->>
 
 
     public StajyerListForm() {
@@ -77,12 +82,14 @@ public class StajyerListForm extends javax.swing.JFrame {
             }
         });
 
+        // filterbutton'a zaten eklenmiş ActionListener var, değişiklik yok.
         filterbutton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 openFilterDialog();
             }
         });
 
+        // Diğer buton action listener'ları zaten tanımlı.
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton2ActionPerformed(evt);
@@ -107,6 +114,8 @@ public class StajyerListForm extends javax.swing.JFrame {
 
     private void loadAllStajyerData() {
         try {
+            // Burası veritabanından tüm stajyerleri çekmeye devam ediyor.
+            // Eğer veritabanı tabanlı filtrelemeye geçilirse bu metod değişir.
             allStajyerler = stajyerService.getAllStajyerler();
             if (allStajyerler == null) {
                 allStajyerler = new ArrayList<>();
@@ -161,34 +170,33 @@ public class StajyerListForm extends javax.swing.JFrame {
         }
     }
 
-    // BURADA İSTEDİĞİNİZ DEĞİŞİKLİK YAPILDI: openFilterDialog() metodunun yeni hali
+    // openFilterDialog() metodunun güncellenmiş hali
     private void openFilterDialog() {
-        // ComboBox'ları doldurmak için benzersiz değerleri topla
         Set<String> uniqueBolumler = new HashSet<>();
         Set<String> uniqueStajDurumlari = new HashSet<>();
-        // Okul Türü sabit olduğu için burada toplamaya gerek yok.
 
+        // Mevcut allStajyerler listesinden benzersiz değerleri topluyoruz.
+        // Eğer veritabanı tabanlı filtrelemeye geçilirse bu kısım değişebilir (örneğin servisten benzersiz bölümleri çekmek).
         for (Stajyer stajyer : allStajyerler) {
             if (stajyer.getBolum() != null && !stajyer.getBolum().isEmpty()) {
                 uniqueBolumler.add(stajyer.getBolum());
             }
             // Stajyer modelinizde getStajDurumu() metodu varsa bu kısmı aktif edin.
             // if (stajyer.getStajDurumu() != null && !stajyer.getStajDurumu().isEmpty()) {
-            //     uniqueStajDurumlari.add(stajyer.getStajDurumu());
+            //      uniqueStajDurumlari.add(stajyer.getStajDurumu());
             // }
         }
 
-        // StajyerFilterDialog'a benzersiz listeleri ve servisi gönder
         StajyerFilterDialog filterDialog = new StajyerFilterDialog(this, stajyerService,
-                                                                    new ArrayList<>(uniqueBolumler),
-                                                                    new ArrayList<>(uniqueStajDurumlari));
+                                                                     new ArrayList<>(uniqueBolumler),
+                                                                     new ArrayList<>(uniqueStajDurumlari));
 
         // Diyalog açılmadan önce, mevcut filtre değerlerini diyaloga gönderir
-        // Yeni 'currentActiveDateFilter' parametresi eklendi
         filterDialog.setInitialFilters(currentBolumFilter, currentOkulTuruFilter, currentStajDurumuFilter,
                                         currentBaslangicTarihiMin, currentBaslangicTarihiMax,
                                         currentBitisTarihiMin, currentBitisTarihiMax,
-                                        currentActiveDateFilter); // <-- BURAYA YENİ PARAMETRE EKLENDİ
+                                        currentActiveDateFilter,
+                                        currentMinWorkdayFilter, currentMaxWorkdayFilter); // <<-- YENİ İŞ GÜNÜ PARAMETRELERİ EKLENDİ -->>
 
         filterDialog.setVisible(true); // Diyaloğu göster (modal olduğu için burada kod bloklanır)
 
@@ -199,11 +207,10 @@ public class StajyerListForm extends javax.swing.JFrame {
             currentOkulTuruFilter = filterDialog.getOkulTuruFilter();
             currentStajDurumuFilter = filterDialog.getStajDurumuFilter();
 
-            // Yeni aktif tarih filtresini al
             currentActiveDateFilter = filterDialog.getActiveDateFilter();
 
-            // Eğer aktif tarih filtresi ayarlandıysa, diğer tarih aralıklarını sıfırla
             if (currentActiveDateFilter != null) {
+                // Aktif tarih filtresi ayarlandıysa, diğer tarih aralıklarını sıfırla
                 currentBaslangicTarihiMin = null;
                 currentBaslangicTarihiMax = null;
                 currentBitisTarihiMin = null;
@@ -216,11 +223,16 @@ public class StajyerListForm extends javax.swing.JFrame {
                 currentBitisTarihiMax = filterDialog.getBitisTarihiMax();
             }
 
+            // <<-- YENİ EKLENEN: İş Günü Filtrelerini al ve güncelle -->>
+            currentMinWorkdayFilter = filterDialog.getMinWorkdayResult();
+            currentMaxWorkdayFilter = filterDialog.getMaxWorkdayResult();
+            // <<-------------------------------------------------------->>
+
             applyFilters(); // Yeni filtrelerle tabloyu günceller
         }
     }
 
-    // Bu metodun içeriği önceki yanıtımda verdiğim "active date" filtreleme mantığıyla güncel kalmalıdır.
+    // applyFilters() metodunun güncellenmiş hali (GUI tabanlı filtreleme)
     private void applyFilters() {
         List<Stajyer> filteredList = new ArrayList<>();
 
@@ -252,11 +264,11 @@ public class StajyerListForm extends javax.swing.JFrame {
                 }
             }
 
-            // Staj Durumu Filtresi (Stajyer modelinizde getStajDurumu() metodu varsa bu kısmı aktif edin.)
+            // Staj Durumu Filtresi (Eğer Stajyer modelinizde getStajDurumu() metodu varsa bu kısmı aktif edin.)
             // if (matches && currentStajDurumuFilter != null && !currentStajDurumuFilter.equals("Tümü")) {
-            //     if (stajyer.getStajDurumu() == null || !stajyer.getStajDurumu().equalsIgnoreCase(currentStajDurumuFilter)) {
-            //         matches = false;
-            //     }
+            //      if (stajyer.getStajDurumu() == null || !stajyer.getStajDurumu().equalsIgnoreCase(currentStajDurumuFilter)) {
+            //          matches = false;
+            //      }
             // }
 
             // YENİ: Aktif Tarih Filtresi öncelikli
@@ -295,13 +307,33 @@ public class StajyerListForm extends javax.swing.JFrame {
                 }
             }
 
+            
+           if (matches && currentMinWorkdayFilter != null) {
+    Long hesaplananIsGunu = stajyer.getHesaplananIsGunu();
+    // First, check if hesaplananIsGunu is null.
+    // If it is null, or if it's less than the filter, set matches to false.
+    if (hesaplananIsGunu == null || hesaplananIsGunu < currentMinWorkdayFilter) {
+        matches = false;
+    }
+}
+
+if (matches && currentMaxWorkdayFilter != null) {
+    Long hesaplananIsGunu = stajyer.getHesaplananIsGunu(); // Get it again or reuse if scoped
+    // First, check if hesaplananIsGunu is null.
+    // If it is null, or if it's greater than the filter, set matches to false.
+    if (hesaplananIsGunu == null || hesaplananIsGunu > currentMaxWorkdayFilter) {
+        matches = false;
+    }
+}
+
 
             if (matches) {
                 filteredList.add(stajyer);
             }
         }
         stajyerTableModel.setStajyerList(filteredList);
-        filterTable(); // Genel metin arama filtresini de uygula (hala gerekliyse)
+        
+        filterTable();
     }
 
     private void openSpesifikStajyerForm(int stajyerId) {
@@ -456,8 +488,8 @@ public class StajyerListForm extends javax.swing.JFrame {
                         .addComponent(jScrollBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel1)
-                        .addGap(91, 91, 91)
-                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(66, 66, 66)
+                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(35, 35, 35)
                         .addComponent(filterbutton)
                         .addGap(27, 27, 27)

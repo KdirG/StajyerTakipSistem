@@ -449,9 +449,9 @@
                       </Group>
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="txtminWorkDay" min="-2" pref="71" max="-2" attributes="0"/>
+                          <Component id="txtMinWorkday" min="-2" pref="71" max="-2" attributes="0"/>
                           <EmptySpace pref="26" max="32767" attributes="0"/>
-                          <Component id="txtMaxWorkDay" min="-2" pref="71" max="-2" attributes="0"/>
+                          <Component id="txtMaxWorkday" min="-2" pref="71" max="-2" attributes="0"/>
                       </Group>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
@@ -477,8 +477,8 @@
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
-                      <Component id="txtminWorkDay" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="txtMaxWorkDay" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="txtMinWorkday" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="txtMaxWorkday" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace pref="28" max="32767" attributes="0"/>
               </Group>
@@ -491,15 +491,21 @@
             <Property name="text" type="java.lang.String" value="&#x130;&#x15f; G&#xfc;n&#xfc;"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JTextField" name="txtminWorkDay">
+        <Component class="javax.swing.JTextField" name="txtMinWorkday">
           <Properties>
             <Property name="text" type="java.lang.String" value="jTextField2"/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="txtMinWorkdayActionPerformed"/>
+          </Events>
         </Component>
-        <Component class="javax.swing.JTextField" name="txtMaxWorkDay">
+        <Component class="javax.swing.JTextField" name="txtMaxWorkday">
           <Properties>
             <Property name="text" type="java.lang.String" value="jTextField3"/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="txtMaxWorkdayActionPerformed"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JLabel" name="jLabel10">
           <Properties>
