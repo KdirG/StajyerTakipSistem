@@ -1,5 +1,9 @@
 package com.sts.stajyertakipsistem.GUI;
 
+import java.sql.SQLException;
+import com.sts.stajyertakipsistem.service.BelgeService;
+import com.sts.stajyertakipsistem.model.Izin; 
+import com.sts.stajyertakipsistem.dao.IzinDAO;
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
@@ -39,7 +43,8 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
     private Stajyer currentStajyer;
     private final Runnable onSaveCallback;
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-
+    private IzinDAO izinDAO; // Burada tanımlanır
+    private BelgeService belgeService; 
     private boolean isEditMode = false;
 
     
@@ -65,8 +70,8 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
         this.stajyerService = new StajyerService();
         this.onSaveCallback = onSaveCallback;
         initComponents(); 
-
-        
+        this.izinDAO = new IzinDAO();
+        this.belgeService = new BelgeService();
         initializeCustomComponents();
         
         loadPdfIcons();
@@ -631,9 +636,6 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
         jLabel18 = new javax.swing.JLabel();
         girisEvrakIconPanel = new javax.swing.JPanel();
         girisEvrakScrollPane = new javax.swing.JScrollPane();
-        jLabel19 = new javax.swing.JLabel();
-        cikisEvrakIconPanel = new javax.swing.JPanel();
-        cikisEvrakScrollPane = new javax.swing.JScrollPane();
         jPanel1 = new javax.swing.JPanel();
         jTextField1 = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
@@ -671,6 +673,27 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
         jLabelBusinessDaysResult = new javax.swing.JLabel();
         calculateWorkdayButton = new javax.swing.JButton();
         jSeparator4 = new javax.swing.JSeparator();
+        jPanel3 = new javax.swing.JPanel();
+        jLabel21 = new javax.swing.JLabel();
+        jLabel23 = new javax.swing.JLabel();
+        jLabel22 = new javax.swing.JLabel();
+        txtdayoffstart = new javax.swing.JTextField();
+        txtdayoffend = new javax.swing.JTextField();
+        adddayoffbutton = new javax.swing.JButton();
+        jLabel24 = new javax.swing.JLabel();
+        txtdayoffcause = new javax.swing.JTextField();
+        jLabel25 = new javax.swing.JLabel();
+        cikisEvrakIconPanel = new javax.swing.JPanel();
+        cikisEvrakScrollPane = new javax.swing.JScrollPane();
+        jPanel4 = new javax.swing.JPanel();
+        jLabel19 = new javax.swing.JLabel();
+        jLabel26 = new javax.swing.JLabel();
+        txtinterncity = new javax.swing.JTextField();
+        jLabel27 = new javax.swing.JLabel();
+        jTextField16 = new javax.swing.JTextField();
+        addstajuygunlukbutton = new javax.swing.JButton();
+        jLabel28 = new javax.swing.JLabel();
+        txtinternfaculty = new javax.swing.JTextField();
 
         jLabel2.setFont(new java.awt.Font("Times New Roman", 0, 24)); // NOI18N
         jLabel2.setText("STAJYER TAKİP SİSTEMİ");
@@ -698,14 +721,6 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
 
         girisEvrakScrollPane.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
         girisEvrakIconPanel.add(girisEvrakScrollPane);
-
-        jLabel19.setText("Çıkış Evrakları");
-
-        cikisEvrakIconPanel.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        cikisEvrakIconPanel.setLayout(new javax.swing.BoxLayout(cikisEvrakIconPanel, javax.swing.BoxLayout.LINE_AXIS));
-
-        cikisEvrakScrollPane.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        cikisEvrakIconPanel.add(cikisEvrakScrollPane);
 
         jTextField1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -981,6 +996,156 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
         });
         jPanel2.add(calculateWorkdayButton, java.awt.BorderLayout.PAGE_END);
 
+        jPanel3.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+
+        jLabel21.setText("İzin Ekle");
+
+        jLabel23.setText("Bitiş");
+
+        jLabel22.setText("Başlangıç");
+
+        txtdayoffstart.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtdayoffstartActionPerformed(evt);
+            }
+        });
+
+        txtdayoffend.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtdayoffendActionPerformed(evt);
+            }
+        });
+
+        adddayoffbutton.setText("Ekle");
+        adddayoffbutton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                adddayoffbuttonActionPerformed(evt);
+            }
+        });
+
+        jLabel24.setText("Sebep");
+
+        txtdayoffcause.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtdayoffcauseActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(adddayoffbutton))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(txtdayoffstart, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel22)
+                            .addComponent(jLabel21))
+                        .addGap(63, 146, Short.MAX_VALUE)))
+                .addGap(16, 16, 16))
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jLabel24)
+                        .addComponent(txtdayoffcause, javax.swing.GroupLayout.PREFERRED_SIZE, 206, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jLabel23)
+                        .addComponent(txtdayoffend, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addComponent(jLabel21)
+                .addGap(18, 18, 18)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel23)
+                    .addComponent(jLabel22))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtdayoffstart, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtdayoffend, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jLabel24)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(txtdayoffcause, javax.swing.GroupLayout.DEFAULT_SIZE, 51, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
+                .addComponent(adddayoffbutton)
+                .addContainerGap())
+        );
+
+        jLabel25.setText("Çıkış Evrakları");
+
+        cikisEvrakIconPanel.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        cikisEvrakIconPanel.setLayout(new javax.swing.BoxLayout(cikisEvrakIconPanel, javax.swing.BoxLayout.LINE_AXIS));
+
+        cikisEvrakScrollPane.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        cikisEvrakIconPanel.add(cikisEvrakScrollPane);
+
+        jPanel4.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+
+        jLabel19.setText("Staj Uygunluk Belgesi Ekle");
+
+        jLabel26.setText("Şehir ");
+
+        jLabel27.setText("Öğrenci No.:");
+
+        addstajuygunlukbutton.setText("Ekle");
+
+        jLabel28.setText("Fakülte");
+
+        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
+        jPanel4.setLayout(jPanel4Layout);
+        jPanel4Layout.setHorizontalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel19)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jLabel26, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtinterncity, javax.swing.GroupLayout.DEFAULT_SIZE, 80, Short.MAX_VALUE)
+                    .addComponent(jLabel27)
+                    .addComponent(jTextField16))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 82, Short.MAX_VALUE)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+                        .addComponent(addstajuygunlukbutton)
+                        .addContainerGap())
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+                        .addComponent(txtinternfaculty, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(27, 27, 27))
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addComponent(jLabel28)
+                        .addContainerGap())))
+        );
+        jPanel4Layout.setVerticalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel19)
+                .addGap(18, 18, 18)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel26)
+                    .addComponent(jLabel28))
+                .addGap(12, 12, 12)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtinterncity, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtinternfaculty, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addComponent(jLabel27)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jTextField16, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(addstajuygunlukbutton)
+                .addContainerGap())
+        );
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -990,35 +1155,30 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                         .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(16, 16, 16)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel20)
                             .addGroup(layout.createSequentialGroup()
-                                .addGap(18, 18, 18)
-                                .addComponent(jLabel1)
-                                .addContainerGap(255, Short.MAX_VALUE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(16, 16, 16)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(layout.createSequentialGroup()
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(girisEvrakIconPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addGroup(layout.createSequentialGroup()
-                                                .addGap(68, 68, 68)
-                                                .addComponent(jLabel18)))
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                                .addComponent(jLabel19)
-                                                .addGap(89, 89, 89))
-                                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                                    .addComponent(jButton1)
-                                                    .addComponent(cikisEvrakIconPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                                .addGap(30, 30, 30))))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(jLabel20)
-                                            .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                        .addGap(0, 0, Short.MAX_VALUE))))))
+                                        .addGap(2, 2, 2)
+                                        .addComponent(jLabel18))
+                                    .addComponent(jLabel1)
+                                    .addComponent(girisEvrakIconPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 203, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(cikisEvrakIconPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 203, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel25)))
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                .addGroup(layout.createSequentialGroup()
+                                    .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jButton1))
+                                .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                    .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGap(39, 39, 39)
+                                    .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addContainerGap(30, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -1038,28 +1198,31 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
                     .addComponent(jButton2))
                 .addGap(18, 18, 18)
                 .addComponent(jSeparator4, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(88, 88, 88)
+                .addGap(72, 72, 72)
+                .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(6, 6, 6)
-                        .addComponent(jLabel1)
-                        .addGap(15, 15, 15)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(girisEvrakIconPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 243, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(cikisEvrakIconPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 243, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGap(37, 37, 37)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(girisEvrakIconPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 243, Short.MAX_VALUE)
+                            .addComponent(cikisEvrakIconPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel18, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel25))
+                        .addGap(21, 21, 21)
+                        .addComponent(jLabel20)
+                        .addGap(8, 8, 8)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel18, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(21, 21, 21)
-                                .addComponent(jLabel20)
-                                .addGap(8, 8, 8)
-                                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(jLabel19, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(15, 15, 15)
-                        .addComponent(jButton1)))
-                .addContainerGap(54, Short.MAX_VALUE))
+                                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                            .addComponent(jButton1)))
+                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(22, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -1114,9 +1277,99 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextField2ActionPerformed
 
+    private void adddayoffbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_adddayoffbuttonActionPerformed
+        if (currentStajyer == null) {
+            JOptionPane.showMessageDialog(this, "Lütfen önce bir stajyer seçin veya yeni bir stajyer kaydedin.", "Hata", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        String izinSebebi = txtdayoffcause.getText().trim();
+        String baslangicStr = txtdayoffstart.getText().trim();
+        String bitisStr = txtdayoffend.getText().trim();
+
+        if (izinSebebi.isEmpty() || baslangicStr.isEmpty() || bitisStr.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Lütfen izin sebebi, başlangıç ve bitiş tarihlerini doldurun.", "Eksik Bilgi", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        try {
+            LocalDate izinBaslangic = belgeService.parseDate(baslangicStr);
+            LocalDate izinBitis = belgeService.parseDate(bitisStr);
+
+            if (izinBaslangic.isAfter(izinBitis)) {
+                JOptionPane.showMessageDialog(this, "Başlangıç tarihi bitiş tarihinden sonra olamaz.", "Geçersiz Tarih", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            // 1. İzin kaydını veritabanına ekle (IzinDAO kullanarak)
+            Izin yeniIzin = new Izin();
+            yeniIzin.setStajyerId(currentStajyer.getStajyerId());
+            yeniIzin.setIzinBaslangic(izinBaslangic);
+            yeniIzin.setIzinBitis(izinBitis);
+            yeniIzin.setIzinSebep(izinSebebi);
+
+            // izinDAO.addIzin() metodu artık void döndüğü için doğrudan çağırılır.
+            // Eğer bir hata olursa, SQLException fırlatılacak ve aşağıdaki catch bloğu yakalayacaktır.
+            izinDAO.addIzin(yeniIzin);
+            
+            // Eğer buraya gelinirse, izin veritabanına başarıyla eklenmiş demektir.
+            // Ayrı bir 'boolean izinEklendi' kontrolüne gerek kalmaz.
+
+            // 2. Belgeyi oluşturmak için gerekli bilgileri topla (BelgeService kullanarak)
+            String templatePath = "templates/Izin_Belgesi_Sablonu.docx";
+            String outputDirectory = "izin_belgeleri";
+
+            String generatedFilePath = belgeService.createIzinBelgesi(currentStajyer, izinSebebi, izinBaslangic, izinBitis, templatePath, outputDirectory);
+
+            File generatedFile = new File(generatedFilePath);
+            if (generatedFile.exists()) {
+                JOptionPane.showMessageDialog(this, "İzin kaydı veritabanına eklendi ve izin belgesi başarıyla oluşturuldu:\n" + generatedFilePath, "İşlem Başarılı", JOptionPane.INFORMATION_MESSAGE);
+
+                if (Desktop.isDesktopSupported()) {
+                    Desktop.getDesktop().open(generatedFile);
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Belge oluşturuldu ancak dosya bulunamadı: " + generatedFilePath, "Hata", JOptionPane.ERROR_MESSAGE);
+            }
+
+            // İzin formu alanlarını temizle
+            txtdayoffstart.setText("");
+            txtdayoffend.setText("");
+            txtdayoffcause.setText("");
+
+        } catch (DateTimeParseException e) {
+            JOptionPane.showMessageDialog(this, "Lütfen tarihleri 'gg.aa.yyyy' formatında girin.", "Geçersiz Tarih Formatı", JOptionPane.WARNING_MESSAGE);
+            LOGGER.log(Level.WARNING, "Tarih formatı hatası: {0}", e.getMessage());
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this, "İzin belgesi oluşturulurken bir hata oluştu: " + e.getMessage(), "Hata", JOptionPane.ERROR_MESSAGE);
+            LOGGER.log(Level.SEVERE, "İzin belgesi oluşturma hatası", e);
+        } catch (SQLException e) { // IzinDAO.addIzin() buradan fırlatılan SQLException'ı yakalayacak
+            JOptionPane.showMessageDialog(this, "Veritabanı hatası oluştu: " + e.getMessage(), "Hata", JOptionPane.ERROR_MESSAGE);
+            LOGGER.log(Level.SEVERE, "Veritabanı hatası", e);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Beklenmeyen bir hata oluştu: " + e.getMessage(), "Hata", JOptionPane.ERROR_MESSAGE);
+            LOGGER.log(Level.SEVERE, "Beklenmeyen hata", e);
+        }
+    
+    }//GEN-LAST:event_adddayoffbuttonActionPerformed
+
+    private void txtdayoffstartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtdayoffstartActionPerformed
+       
+    }//GEN-LAST:event_txtdayoffstartActionPerformed
+
+    private void txtdayoffendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtdayoffendActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtdayoffendActionPerformed
+
+    private void txtdayoffcauseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtdayoffcauseActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtdayoffcauseActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBox addSaturdayCheckbox;
+    private javax.swing.JButton adddayoffbutton;
+    private javax.swing.JButton addstajuygunlukbutton;
     private javax.swing.JButton calculateWorkdayButton;
     private javax.swing.JPanel cikisEvrakIconPanel;
     private javax.swing.JScrollPane cikisEvrakScrollPane;
@@ -1137,6 +1390,14 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel20;
+    private javax.swing.JLabel jLabel21;
+    private javax.swing.JLabel jLabel22;
+    private javax.swing.JLabel jLabel23;
+    private javax.swing.JLabel jLabel24;
+    private javax.swing.JLabel jLabel25;
+    private javax.swing.JLabel jLabel26;
+    private javax.swing.JLabel jLabel27;
+    private javax.swing.JLabel jLabel28;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
@@ -1147,6 +1408,8 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
     private javax.swing.JLabel jLabelBusinessDaysResult;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
     private javax.swing.JSeparator jSeparator12;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
@@ -1159,6 +1422,7 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
     private javax.swing.JTextField jTextField13;
     private javax.swing.JTextField jTextField14;
     private javax.swing.JTextField jTextField15;
+    private javax.swing.JTextField jTextField16;
     private javax.swing.JTextField jTextField2;
     private javax.swing.JTextField jTextField3;
     private javax.swing.JTextField jTextField4;
@@ -1167,6 +1431,11 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
     private javax.swing.JTextField jTextField7;
     private javax.swing.JTextField jTextField8;
     private javax.swing.JTextField jTextField9;
+    private javax.swing.JTextField txtdayoffcause;
+    private javax.swing.JTextField txtdayoffend;
+    private javax.swing.JTextField txtdayoffstart;
+    private javax.swing.JTextField txtinterncity;
+    private javax.swing.JTextField txtinternfaculty;
     // End of variables declaration//GEN-END:variables
 
 

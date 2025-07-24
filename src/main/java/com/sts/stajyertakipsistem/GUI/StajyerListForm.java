@@ -52,6 +52,7 @@ public class StajyerListForm extends javax.swing.JFrame {
 
     public StajyerListForm() {
         initComponents();
+        stajyerService = new StajyerService();
         initializeCustomComponents();
         loadAllStajyerData();
         applyFilters();

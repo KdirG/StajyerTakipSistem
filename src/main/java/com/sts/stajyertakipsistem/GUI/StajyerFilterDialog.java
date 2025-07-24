@@ -589,9 +589,7 @@ public class StajyerFilterDialog extends JDialog {
             jComboBox1.setSelectedItem("Tümü");
         }
 
-        // Staj Durumu
-        // if (durum != null && cmbStajDurumu != null && containsItem(cmbStajDurumu, durum)) { cmbStajDurumu.setSelectedItem(durum); }
-
+        
         if (activeDate != null) {
             jTextField1.setText(activeDate.format(DATE_FORMATTER));
             minbegintxt.setText("");

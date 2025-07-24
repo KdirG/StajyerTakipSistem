@@ -25,6 +25,7 @@ com\sts\stajyertakipsistem\GUI\StajyerFilterDialog.class
 com\sts\stajyertakipsistem\GUI\StajyerListForm$7.class
 com\sts\stajyertakipsistem\service\EvrakService.class
 com\sts\stajyertakipsistem\GUI\StajyerListForm$15.class
+com\sts\stajyertakipsistem\GUI\SpesifikStajyerForm$17.class
 com\sts\stajyertakipsistem\GUI\SpesifikStajyerForm$7.class
 com\sts\stajyertakipsistem\service\UserManager.class
 com\sts\stajyertakipsistem\model\Okul.class
@@ -32,6 +33,7 @@ com\sts\stajyertakipsistem\GUI\StajyerFilterDialog$3.class
 com\sts\stajyertakipsistem\GUI\SpesifikStajyerForm$11.class
 com\sts\stajyertakipsistem\GUI\StajyerListForm$4.class
 com\sts\stajyertakipsistem\GUI\StajyerTableModel.class
+com\sts\stajyertakipsistem\model\Izin.class
 com\sts\stajyertakipsistem\StajyerTakipSistem.class
 com\sts\stajyertakipsistem\model\Evrak.class
 com\sts\stajyertakipsistem\GUI\SpesifikStajyerForm$4.class
@@ -41,6 +43,7 @@ com\sts\stajyertakipsistem\GUI\LoginPanel$2.class
 com\sts\stajyertakipsistem\GUI\SpesifikStajyerForm$6.class
 com\sts\stajyertakipsistem\GUI\StajyerFilterDialog$5.class
 com\sts\stajyertakipsistem\GUI\StajyerListForm$14.class
+com\sts\stajyertakipsistem\GUI\SpesifikStajyerForm$18.class
 com\sts\stajyertakipsistem\GUI\StajyerListForm$1.class
 com\sts\stajyertakipsistem\dao\StajyerDAO.class
 com\sts\stajyertakipsistem\GUI\StajyerListForm$11.class
@@ -49,6 +52,7 @@ com\sts\stajyertakipsistem\GUI\StajyerFilterDialog$2.class
 com\sts\stajyertakipsistem\GUI\StajyerListForm$10.class
 com\sts\stajyertakipsistem\model\Referans.class
 com\sts\stajyertakipsistem\GUI\StajyerFilterDialog$9.class
+com\sts\stajyertakipsistem\service\BelgeService.class
 com\sts\stajyertakipsistem\GUI\SpesifikStajyerForm$15.class
 com\sts\stajyertakipsistem\GUI\StajyerListForm$8.class
 com\sts\stajyertakipsistem\GUI\ChangePasswordPanel$2.class
@@ -61,9 +65,12 @@ com\sts\stajyertakipsistem\GUI\SpesifikStajyerForm$12.class
 com\sts\stajyertakipsistem\GUI\StajyerListForm$5.class
 com\sts\stajyertakipsistem\GUI\LoginPanel$3.class
 com\sts\stajyertakipsistem\GUI\SpesifikStajyerForm$3.class
+com\sts\stajyertakipsistem\GUI\SpesifikStajyerForm$16.class
 com\sts\stajyertakipsistem\GUI\StajyerListForm$9.class
 com\sts\stajyertakipsistem\GUI\ChangePasswordPanel$1.class
 com\sts\stajyertakipsistem\GUI\ChangePasswordPanel.class
+com\sts\stajyertakipsistem\dao\IzinDAO.class
 com\sts\stajyertakipsistem\GUI\SpesifikStajyerForm$9.class
 com\sts\stajyertakipsistem\service\StajyerService.class
+com\sts\stajyertakipsistem\GUI\SpesifikStajyerForm$19.class
 com\sts\stajyertakipsistem\GUI\StajyerFilterDialog$8.class

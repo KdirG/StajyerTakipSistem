@@ -1,4 +1,5 @@
 C:\Users\kadir\OneDrive\Belgeler\NetBeansProjects\StajyerTakipSistem\src\main\java\com\sts\stajyertakipsistem\dao\EvrakDAO.java
+C:\Users\kadir\OneDrive\Belgeler\NetBeansProjects\StajyerTakipSistem\src\main\java\com\sts\stajyertakipsistem\dao\IzinDAO.java
 C:\Users\kadir\OneDrive\Belgeler\NetBeansProjects\StajyerTakipSistem\src\main\java\com\sts\stajyertakipsistem\dao\OkulDAO.java
 C:\Users\kadir\OneDrive\Belgeler\NetBeansProjects\StajyerTakipSistem\src\main\java\com\sts\stajyertakipsistem\dao\ReferansDAO.java
 C:\Users\kadir\OneDrive\Belgeler\NetBeansProjects\StajyerTakipSistem\src\main\java\com\sts\stajyertakipsistem\dao\StajyerDAO.java
@@ -10,9 +11,11 @@ C:\Users\kadir\OneDrive\Belgeler\NetBeansProjects\StajyerTakipSistem\src\main\ja
 C:\Users\kadir\OneDrive\Belgeler\NetBeansProjects\StajyerTakipSistem\src\main\java\com\sts\stajyertakipsistem\GUI\StajyerListForm.java
 C:\Users\kadir\OneDrive\Belgeler\NetBeansProjects\StajyerTakipSistem\src\main\java\com\sts\stajyertakipsistem\GUI\StajyerTableModel.java
 C:\Users\kadir\OneDrive\Belgeler\NetBeansProjects\StajyerTakipSistem\src\main\java\com\sts\stajyertakipsistem\model\Evrak.java
+C:\Users\kadir\OneDrive\Belgeler\NetBeansProjects\StajyerTakipSistem\src\main\java\com\sts\stajyertakipsistem\model\Izin.java
 C:\Users\kadir\OneDrive\Belgeler\NetBeansProjects\StajyerTakipSistem\src\main\java\com\sts\stajyertakipsistem\model\Okul.java
 C:\Users\kadir\OneDrive\Belgeler\NetBeansProjects\StajyerTakipSistem\src\main\java\com\sts\stajyertakipsistem\model\Referans.java
 C:\Users\kadir\OneDrive\Belgeler\NetBeansProjects\StajyerTakipSistem\src\main\java\com\sts\stajyertakipsistem\model\Stajyer.java
+C:\Users\kadir\OneDrive\Belgeler\NetBeansProjects\StajyerTakipSistem\src\main\java\com\sts\stajyertakipsistem\service\BelgeService.java
 C:\Users\kadir\OneDrive\Belgeler\NetBeansProjects\StajyerTakipSistem\src\main\java\com\sts\stajyertakipsistem\service\EvrakService.java
 C:\Users\kadir\OneDrive\Belgeler\NetBeansProjects\StajyerTakipSistem\src\main\java\com\sts\stajyertakipsistem\service\OkulService.java
 C:\Users\kadir\OneDrive\Belgeler\NetBeansProjects\StajyerTakipSistem\src\main\java\com\sts\stajyertakipsistem\service\ReferansService.java
