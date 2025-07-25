@@ -80,26 +80,51 @@ public class BelgeService {
      * Basit senaryolar için yeterlidir.
      */
     private void replacePlaceholdersInParagraph(XWPFParagraph p, Map<String, String> placeholders) {
-        for (XWPFRun r : p.getRuns()) {
-            String text = r.getText(0);
-            if (text == null || text.isEmpty()) continue;
+    // 1. Paragraftaki tüm run'ların metinlerini birleştir
+    StringBuilder paragraphText = new StringBuilder();
+    for (XWPFRun r : p.getRuns()) {
+        paragraphText.append(r.getText(0) == null ? "" : r.getText(0));
+    }
 
-            boolean changed = false;
-            for (Map.Entry<String, String> entry : placeholders.entrySet()) {
-                String placeholder = entry.getKey();
-                String value = entry.getValue();
+    String fullText = paragraphText.toString();
+    boolean changed = false;
 
-                if (text.contains(placeholder)) {
-                    text = text.replace(placeholder, value);
-                    changed = true;
-                }
-            }
-            if (changed) {
-                r.setText(text, 0); // Mevcut run'ın metnini değiştir
-            }
+    // 2. Birleştirilmiş metin üzerinde placeholder'ları değiştir
+    for (Map.Entry<String, String> entry : placeholders.entrySet()) {
+        String placeholder = entry.getKey();
+        String value = entry.getValue();
+
+        if (fullText.contains(placeholder)) {
+            fullText = fullText.replace(placeholder, value);
+            changed = true;
         }
     }
 
+    // 3. Eğer değişiklik yapıldıysa, paragrafın mevcut run'larını temizle ve yeni run ekle
+    if (changed) {
+        // Mevcut run'ları temizle
+        List<XWPFRun> runs = p.getRuns();
+        for (int i = runs.size() - 1; i >= 0; i--) {
+            p.removeRun(i);
+        }
+
+        // Değiştirilmiş metni içeren yeni bir run ekle
+        XWPFRun newRun = p.createRun();
+        newRun.setText(fullText, 0);
+
+        // İsteğe bağlı: Orijinal run'ların formatını korumaya çalış (basit bir yaklaşım)
+        // Eğer ilk run'ın formatını korumak isterseniz:
+        // if (!runs.isEmpty()) {
+        //    XWPFRun firstRun = runs.get(0);
+        //    newRun.setFontFamily(firstRun.getFontFamily());
+        //    newRun.setFontSize(firstRun.getFontSize());
+        //    newRun.setBold(firstRun.isBold());
+        //    newRun.setItalic(firstRun.isItalic());
+        //    newRun.setColor(firstRun.getColor());
+        //    // Daha fazla format özelliği kopyalayabilirsiniz
+        // }
+    }
+}
     /**
      * İzin Belgesini oluşturur.
      * Şablon dosyasındaki placeholder'ları ilgili verilerle doldurur.
@@ -150,7 +175,7 @@ public class BelgeService {
         placeholders.put("[IZIN_SEBEBI]", izinSebebi != null ? izinSebebi : "");
         placeholders.put("[IZIN_BASLANGIC]", izinBaslangic != null ? izinBaslangic.format(formatter) : "");
         placeholders.put("[IZIN_BITIS]", izinBitis != null ? izinBitis.format(formatter) : "");
-
+        placeholders.put("[BUGUNUN_TARIHI]", LocalDate.now().format(formatter));
 
         createDocumentFromTemplate(templatePath, outputPath, placeholders);
         return outputPath;
