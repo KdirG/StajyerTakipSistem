@@ -2,6 +2,7 @@ C:\Users\kadir\OneDrive\Belgeler\NetBeansProjects\StajyerTakipSistem\src\main\ja
 C:\Users\kadir\OneDrive\Belgeler\NetBeansProjects\StajyerTakipSistem\src\main\java\com\sts\stajyertakipsistem\dao\IzinDAO.java
 C:\Users\kadir\OneDrive\Belgeler\NetBeansProjects\StajyerTakipSistem\src\main\java\com\sts\stajyertakipsistem\dao\OkulDAO.java
 C:\Users\kadir\OneDrive\Belgeler\NetBeansProjects\StajyerTakipSistem\src\main\java\com\sts\stajyertakipsistem\dao\ReferansDAO.java
+C:\Users\kadir\OneDrive\Belgeler\NetBeansProjects\StajyerTakipSistem\src\main\java\com\sts\stajyertakipsistem\dao\StajUygunlukBelgeDAO.java
 C:\Users\kadir\OneDrive\Belgeler\NetBeansProjects\StajyerTakipSistem\src\main\java\com\sts\stajyertakipsistem\dao\StajyerDAO.java
 C:\Users\kadir\OneDrive\Belgeler\NetBeansProjects\StajyerTakipSistem\src\main\java\com\sts\stajyertakipsistem\db\DatabaseConnection.java
 C:\Users\kadir\OneDrive\Belgeler\NetBeansProjects\StajyerTakipSistem\src\main\java\com\sts\stajyertakipsistem\GUI\ChangePasswordPanel.java
@@ -14,6 +15,7 @@ C:\Users\kadir\OneDrive\Belgeler\NetBeansProjects\StajyerTakipSistem\src\main\ja
 C:\Users\kadir\OneDrive\Belgeler\NetBeansProjects\StajyerTakipSistem\src\main\java\com\sts\stajyertakipsistem\model\Izin.java
 C:\Users\kadir\OneDrive\Belgeler\NetBeansProjects\StajyerTakipSistem\src\main\java\com\sts\stajyertakipsistem\model\Okul.java
 C:\Users\kadir\OneDrive\Belgeler\NetBeansProjects\StajyerTakipSistem\src\main\java\com\sts\stajyertakipsistem\model\Referans.java
+C:\Users\kadir\OneDrive\Belgeler\NetBeansProjects\StajyerTakipSistem\src\main\java\com\sts\stajyertakipsistem\model\StajUygunlukBelge.java
 C:\Users\kadir\OneDrive\Belgeler\NetBeansProjects\StajyerTakipSistem\src\main\java\com\sts\stajyertakipsistem\model\Stajyer.java
 C:\Users\kadir\OneDrive\Belgeler\NetBeansProjects\StajyerTakipSistem\src\main\java\com\sts\stajyertakipsistem\service\BelgeService.java
 C:\Users\kadir\OneDrive\Belgeler\NetBeansProjects\StajyerTakipSistem\src\main\java\com\sts\stajyertakipsistem\service\EvrakService.java
