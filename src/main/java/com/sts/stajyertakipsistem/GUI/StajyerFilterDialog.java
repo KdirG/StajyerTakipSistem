@@ -14,8 +14,8 @@ import javax.swing.JOptionPane;
 
 public class StajyerFilterDialog extends JDialog {
 
-    // Tarih formatımız YYYY.MM.DD
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy.MM.dd");
+    
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
      // Bu Tarihte Aktif Staj filtresi için
 
@@ -517,7 +517,7 @@ public class StajyerFilterDialog extends JDialog {
         activeDateFilterResult = null; // Aktif tarih filtresi sonucunu da sıfırla
     }
 
-    /**
+   /**
      * Verilen tarih stringini "yyyy.MM.dd" formatında parse ederek LocalDate nesnesine çevirir.
      * Geçersiz format durumunda null döner ve kullanıcıya uyarı mesajı gösterir.
      */
@@ -528,7 +528,7 @@ public class StajyerFilterDialog extends JDialog {
         try {
             return LocalDate.parse(dateString, DATE_FORMATTER);
         } catch (DateTimeParseException e) {
-            JOptionPane.showMessageDialog(this, "Geçersiz tarih formatı: " + dateString + ". Lütfen YYYY.MM.DD formatını kullanın.", "Tarih Formatı Hatası", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Geçersiz tarih formatı: " + dateString + ". Lütfen DD.MM.YYYY formatını kullanın.", "Tarih Formatı Hatası", JOptionPane.WARNING_MESSAGE);
             return null;
         }
     }

@@ -45,7 +45,7 @@
       </Properties>
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-          <AbsoluteConstraints x="418" y="176" width="-1" height="-1"/>
+          <AbsoluteConstraints x="420" y="210" width="-1" height="-1"/>
         </Constraint>
       </Constraints>
     </Component>
@@ -58,7 +58,7 @@
     </Component>
     <Component class="javax.swing.JButton" name="jButton2">
       <Properties>
-        <Property name="text" type="java.lang.String" value="&#xc7;&#x131;k&#x131;&#x15f; Yap"/>
+        <Property name="text" type="java.lang.String" value="Geri D&#xf6;n"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton2ActionPerformed"/>

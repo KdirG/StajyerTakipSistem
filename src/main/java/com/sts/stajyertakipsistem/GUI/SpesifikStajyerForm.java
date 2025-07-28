@@ -704,10 +704,10 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
         add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 47, -1, -1));
 
         jLabel1.setText("Evrakları Buraya Sürükleyip Bırakabilirsiniz");
-        add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(418, 176, -1, -1));
+        add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(420, 210, -1, -1));
         add(jSeparator3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 31, 1006, 10));
 
-        jButton2.setText("Çıkış Yap");
+        jButton2.setText("Geri Dön");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton2ActionPerformed(evt);
@@ -1195,13 +1195,6 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
         add(verticalScrollBar, new org.netbeans.lib.awtextra.AbsoluteConstraints(990, 104, -1, 700));
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        
-          SwingUtilities.getWindowAncestor(this).dispose();
-                                      
-
-    }//GEN-LAST:event_jButton2ActionPerformed
-
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
     saveStajyerAndEvrak();
     }//GEN-LAST:event_jButton1ActionPerformed
@@ -1412,6 +1405,12 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
     private void jTextField12ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField12ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextField12ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+
+        SwingUtilities.getWindowAncestor(this).dispose();
+
+    }//GEN-LAST:event_jButton2ActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

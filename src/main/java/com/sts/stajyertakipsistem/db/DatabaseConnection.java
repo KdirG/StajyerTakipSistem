@@ -11,7 +11,7 @@ import java.sql.SQLException;
    
 
 public class DatabaseConnection {
-    private static final String DB_URL = "jdbc:firebirdsql://localhost:3050/C:/Users/kadir/OneDrive/Belgeler/NetBeansProjects/StajyerTakipSistem/data/STAJ.FDB";
+    private static final String DB_URL = "jdbc:firebirdsql://localhost:3050/C:/Users/kadir/OneDrive/Belgeler/NetBeansProjects/StajyerTakipSistem/data/STAJ25.FDB";
     private static final String USER = "SYSDBA"; // Varsayılan Firebird kullanıcı adı
     private static final String PASSWORD = "masterkey"; // Varsayılan Firebird parolası
 

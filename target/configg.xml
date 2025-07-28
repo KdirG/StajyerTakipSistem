@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch4jConfig>
+  <dontWrapJar>false</dontWrapJar>
+  <headerType>gui</headerType>
+  <jar>C:\Users\kadir\OneDrive\Belgeler\NetBeansProjects\StajyerTakipSistem\target\StajyerTakipSistem-1.0-SNAPSHOT.jar</jar>
+  <outfile>C:\Users\kadir\OneDrive\Belgeler\NetBeansProjects\StajyerTakipSistem\dist\StajyerTakipSistem.exe</outfile>
+  <errTitle></errTitle>
+  <cmdLine></cmdLine>
+  <chdir>.</chdir>
+  <priority>normal</priority>
+  <downloadUrl></downloadUrl>
+  <supportUrl></supportUrl>
+  <stayAlive>false</stayAlive>
+  <restartOnCrash>false</restartOnCrash>
+  <manifest></manifest>
+  <icon></icon>
+  <classPath>
+    <mainClass>com.sts.stajyertakipsistem.StajyerTakipSistem</mainClass>
+    <cp>C:\Users\kadir\OneDrive\Belgeler\NetBeansProjects\StajyerTakipSistem\target\StajyerTakipSistem-1.0-SNAPSHOT.jar</cp>
+    <cp>C:\Users\kadir\OneDrive\Belgeler\NetBeansProjects\StajyerTakipSistem\lib\flatlaf-3.4.jar</cp>
+  </classPath>
+  <jre>
+    <path>%JAVA_HOME%;%PATH%</path>
+    <requiresJdk>false</requiresJdk>
+    <requires64Bit>false</requires64Bit>
+    <minVersion></minVersion>
+    <maxVersion></maxVersion>
+  </jre>
+</launch4jConfig>
