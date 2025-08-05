@@ -3,7 +3,7 @@
  * Click nbfs:
  */
 package com.sts.stajyertakipsistem.GUI;
-
+import java.awt.Window;
 import com.sts.stajyertakipsistem.service.UserManager;  
 import javax.swing.JOptionPane; 
 import javax.swing.JFrame; 
@@ -21,6 +21,7 @@ public class LoginPanel extends javax.swing.JPanel {
      */
     public LoginPanel() {
         initComponents();
+          
         usernamefield.setText("");
         jPasswordField1.setText("");
         jPasswordField1.setOpaque(true);

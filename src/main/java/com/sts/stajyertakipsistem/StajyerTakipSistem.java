@@ -14,7 +14,7 @@ public class StajyerTakipSistem {
         try {
             // Önce FlatLaf temasını yükle
             UIManager.setLookAndFeel(new FlatIntelliJLaf());
-
+             
             // Sonra renkleri override et
             UIManager.put("Button.background", new Color(173, 216, 230));       // Açık mavi
             UIManager.put("Button.focusedBackground", new Color(135, 206, 250)); // Daha parlak açık mavi
@@ -34,14 +34,15 @@ public class StajyerTakipSistem {
         SwingUtilities.invokeLater(() -> {
             JFrame loginFrame = new JFrame("Stajyer Takip Sistemi - Giriş");
             loginFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            loginFrame.setLocationRelativeTo(null);
-
             LoginPanel loginPanel = new LoginPanel();
             loginPanel.setParentFrame(loginFrame);
-
             loginFrame.setContentPane(loginPanel);
             loginFrame.pack();
             loginFrame.setVisible(true);
+            loginFrame.setLocationRelativeTo(null);
+
+            
+            
         });
     }
 }
