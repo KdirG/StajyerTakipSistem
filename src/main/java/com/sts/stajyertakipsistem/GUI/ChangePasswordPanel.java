@@ -5,8 +5,13 @@
 package com.sts.stajyertakipsistem.GUI;
 import javax.swing.SwingUtilities;
 import com.sts.stajyertakipsistem.service.UserManager; 
+import java.awt.Component;
+import java.awt.KeyEventDispatcher;
+import java.awt.KeyboardFocusManager;
+import java.awt.event.KeyEvent;
 import javax.swing.JOptionPane;
 import javax.swing.JFrame;
+import javax.swing.JTextField;
 /**
  *
  * @author kadir
@@ -25,6 +30,22 @@ public class ChangePasswordPanel extends javax.swing.JPanel {
 public ChangePasswordPanel(String username) {
         this(); 
         this.currentLoggedInUsername = username;
+    KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new KeyEventDispatcher() {
+        @Override
+        public boolean dispatchKeyEvent(KeyEvent e) {
+            if (e.getID() == KeyEvent.KEY_PRESSED && e.getKeyCode() == KeyEvent.VK_ENTER) {
+                Component c = e.getComponent();
+                // Sadece JTextField'larda ve Enter'a basıldığında tetikle
+                if (c instanceof JTextField) {
+                    KeyboardFocusManager.getCurrentKeyboardFocusManager().focusNextComponent();
+                    return true; // Olayı tüket, başka bir şey olmasın
+                }
+            }
+            return false; // Olayın standart şekilde devam etmesine izin ver
+        }
+    });  
+            
+        
     }
 
     /**

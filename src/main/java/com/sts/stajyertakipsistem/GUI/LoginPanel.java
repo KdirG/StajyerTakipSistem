@@ -9,7 +9,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JFrame; 
 import javax.swing.SwingUtilities;
 import java.awt.Color;
-
+import java.awt.KeyboardFocusManager;
+import javax.swing.JButton;
 /**
  *
  * @author kadir
@@ -21,7 +22,7 @@ public class LoginPanel extends javax.swing.JPanel {
      */
     public LoginPanel() {
         initComponents();
-          
+         setupEnterKeyNavigationn(); 
         usernamefield.setText("");
         jPasswordField1.setText("");
         jPasswordField1.setOpaque(true);
@@ -32,6 +33,15 @@ public class LoginPanel extends javax.swing.JPanel {
     }
      public void setParentFrame(JFrame frame) {
         this.parentFrame = frame;
+    }
+     private void setupEnterKeyNavigationn() {
+    // JTextField bileşenleri için Enter tuşu davranışı
+    usernamefield.addActionListener(e -> {
+        KeyboardFocusManager.getCurrentKeyboardFocusManager().focusNextComponent(); });
+    jPasswordField1.addActionListener(e -> {
+        KeyboardFocusManager.getCurrentKeyboardFocusManager().focusNextComponent();    
+
+    });
     }
 
     /**
@@ -209,7 +219,6 @@ public class LoginPanel extends javax.swing.JPanel {
     private void jPasswordField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jPasswordField1ActionPerformed
     
     }//GEN-LAST:event_jPasswordField1ActionPerformed
-
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;

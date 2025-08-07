@@ -7,11 +7,17 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-
+import java.awt.KeyboardFocusManager;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.FocusTraversalPolicy;
+import javax.swing.LayoutFocusTraversalPolicy;
+import javax.swing.JComboBox;
 public class StajyerFilterDialog extends JDialog {
 
     
@@ -42,13 +48,28 @@ public class StajyerFilterDialog extends JDialog {
         this.stajyerService = service;
         this.uniqueBolumler = uniqueBolumler;
         this.uniqueStajDurumlari = uniqueStajDurumlari;
-
+        
         initComponents(); // GUI Builder tarafından oluşturulan metot çağrısı
         setupListeners(); // Kendi listener'larımızı ekliyoruz
         populateComboBoxes(); // ComboBox'ları veri ile dolduruyoruz
         this.pack();
         this.setLocationRelativeTo(parent);
+        setupEnterKeyNavigationn();
+      setFocusTraversalPolicy(new LayoutFocusTraversalPolicy() {
+          @Override
+        public Component getComponentAfter(Container aContainer, Component aComponent) {
+            Component next = super.getComponentAfter(aContainer, aComponent);
+            
+            // Sıradaki bileşen bir JComboBox veya JButton ise, onu atla
+            while (next instanceof JComboBox || next instanceof JButton) {
+                next = super.getComponentAfter(aContainer, next);
+            }
+            return next;
+        }
+    });    
+        
     }
+    
 
 
     @SuppressWarnings("unchecked")
@@ -625,7 +646,38 @@ public class StajyerFilterDialog extends JDialog {
         }
         return false;
     }
+private void setupEnterKeyNavigationn() {
+    // JTextField bileşenleri için Enter tuşu davranışı
+    minendtxt.addActionListener(e -> {
+        KeyboardFocusManager.getCurrentKeyboardFocusManager().focusNextComponent();
+    });
 
+    maxendtxt.addActionListener(e -> {
+        KeyboardFocusManager.getCurrentKeyboardFocusManager().focusNextComponent();
+    });
+
+    minbegintxt.addActionListener(e -> {
+        KeyboardFocusManager.getCurrentKeyboardFocusManager().focusNextComponent();
+    });
+
+    maxbegintxt.addActionListener(e -> {
+        KeyboardFocusManager.getCurrentKeyboardFocusManager().focusNextComponent();
+    });
+
+    jTextField1.addActionListener(e -> {
+        KeyboardFocusManager.getCurrentKeyboardFocusManager().focusNextComponent();
+    });
+
+    txtMinWorkday.addActionListener(e -> {
+        KeyboardFocusManager.getCurrentKeyboardFocusManager().focusNextComponent();
+    });
+
+    txtMaxWorkday.addActionListener(e -> {
+        KeyboardFocusManager.getCurrentKeyboardFocusManager().focusNextComponent();
+    });
+
+   
+}
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton applybutton;
     private javax.swing.JButton btnCancel;

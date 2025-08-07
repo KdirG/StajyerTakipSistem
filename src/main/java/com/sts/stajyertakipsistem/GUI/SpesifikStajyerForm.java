@@ -36,6 +36,11 @@ import com.sts.stajyertakipsistem.model.Okul;
 import com.sts.stajyertakipsistem.service.StajyerService; 
 import java.time.DayOfWeek;
 import com.sts.stajyertakipsistem.model.StajUygunlukBelge;
+import java.awt.FocusTraversalPolicy;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.KeyEventDispatcher;
+import java.awt.event.KeyEvent;
 
 public class SpesifikStajyerForm extends javax.swing.JPanel {
 
@@ -92,7 +97,25 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
             this.currentStajyer = new Stajyer();
             this.currentStajyer.setOkul(new Okul());
             this.currentStajyer.setReferans(new Referans());
+            
         }
+         
+       KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new KeyEventDispatcher() {
+        @Override
+        public boolean dispatchKeyEvent(KeyEvent e) {
+            if (e.getID() == KeyEvent.KEY_PRESSED && e.getKeyCode() == KeyEvent.VK_ENTER) {
+                Component c = e.getComponent();
+                // Sadece JTextField'larda ve Enter'a basıldığında tetikle
+                if (c instanceof JTextField) {
+                    KeyboardFocusManager.getCurrentKeyboardFocusManager().focusNextComponent();
+                    return true; // Olayı tüket, başka bir şey olmasın
+                }
+            }
+            return false; // Olayın standart şekilde devam etmesine izin ver
+        }
+    });  
+        
+        
     }
        private void calculateAndDisplayBusinessDays() {
     LocalDate startDate;
@@ -164,8 +187,7 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
         System.err.println("HATA: calculateAndDisplayBusinessDays() - currentStajyer nesnesi null! İş günü atanamadı.");
     }
 }
-
-    
+   
     private void initializeCustomComponents() {
         
         girisFileListPanel = new JPanel();
@@ -810,6 +832,11 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
         jLabel14.setText("Sınıf:");
 
         jTextField13.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        jTextField13.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextField13ActionPerformed(evt);
+            }
+        });
 
         jLabel15.setText("Okul Türü:");
 
@@ -1048,20 +1075,20 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
                         .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(adddayoffbutton))
                     .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(txtdayoffend, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel23))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(txtdayoffstart, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel22)
-                            .addComponent(jLabel21))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                            .addComponent(jLabel21))))
                 .addGap(16, 16, 16))
             .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(jLabel24)
-                        .addComponent(txtdayoffcause, javax.swing.GroupLayout.PREFERRED_SIZE, 206, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(jLabel23)
-                        .addComponent(txtdayoffend, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel24)
+                    .addComponent(txtdayoffcause, javax.swing.GroupLayout.PREFERRED_SIZE, 206, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(41, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
@@ -1468,6 +1495,10 @@ public class SpesifikStajyerForm extends javax.swing.JPanel {
         SwingUtilities.getWindowAncestor(this).dispose();
 
     }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jTextField13ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField13ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextField13ActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

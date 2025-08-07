@@ -19,7 +19,11 @@ import java.util.Locale;
 import java.util.Map; 
 import java.util.HashMap; 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Font;
+import java.awt.KeyEventDispatcher;
+import java.awt.KeyboardFocusManager;
+import java.awt.event.KeyEvent;
 
 public class StajyerListForm extends javax.swing.JFrame {
 
@@ -59,7 +63,21 @@ public class StajyerListForm extends javax.swing.JFrame {
         this.setLocationRelativeTo(null);
           jTable1.getTableHeader().setBackground(new Color(173, 216, 230));
     jTable1.getTableHeader().setForeground(Color.DARK_GRAY);
-    
+    KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new KeyEventDispatcher() {
+        @Override
+        public boolean dispatchKeyEvent(KeyEvent e) {
+            if (e.getID() == KeyEvent.KEY_PRESSED && e.getKeyCode() == KeyEvent.VK_ENTER) {
+                Component c = e.getComponent();
+                // Sadece JTextField'larda ve Enter'a basıldığında tetikle
+                if (c instanceof JTextField) {
+                    KeyboardFocusManager.getCurrentKeyboardFocusManager().focusNextComponent();
+                    return true; // Olayı tüket, başka bir şey olmasın
+                }
+            }
+            return false; // Olayın standart şekilde devam etmesine izin ver
+        }
+    });  
+          
     }
 
     private void initializeCustomComponents() {
@@ -343,24 +361,9 @@ if (matches && currentMaxWorkdayFilter != null) {
     }
 
   private void openSpesifikStajyerForm(int stajyerId) {
-    // Kontrol: Eğer zaten bir form penceresi açıksa
-    if (spesifikStajyerFormWindow != null && spesifikStajyerFormWindow.isVisible()) {
-        // Mevcut pencereyi öne getir ve odakla - Uyarı mesajı GÖSTERME
-        spesifikStajyerFormWindow.toFront(); // Pencereyi en üste getir
-        spesifikStajyerFormWindow.requestFocus(); // Pencereye odaklanmasını sağla
-        // Buraya ek olarak pencerenin kenarlık rengini değiştirmek gibi
-        // görsel bir vurgu da eklenebilir. Örneğin:
-        // spesifikStajyerFormWindow.setExtendedState(JFrame.NORMAL); // Eğer minimize ise normal boyuta getir
-        // spesifikStajyerFormWindow.toFront(); // Tekrar en üste getir
-        return; // Yeni pencere açma, metottan çık
-    }
-
-    // Eğer açık bir pencere yoksa, yeni bir JFrame oluştur ve referansını sakla
+     // Yeni bir JFrame oluştur
     JFrame detailFrame = new JFrame(stajyerId == 0 ? "Yeni Stajyer Ekle" : "Stajyer Bilgilerini Düzenle");
-    detailFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); 
-
-    // spesifikStajyerFormWindow değişkenini yeni oluşturduğumuz detailFrame'e ata
-    this.spesifikStajyerFormWindow = detailFrame; 
+    detailFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
     // Callback Metodunu Tanımla
     Runnable onSaveCallback = this::loadAllStajyerDataAndApplyFilters;
@@ -373,15 +376,7 @@ if (matches && currentMaxWorkdayFilter != null) {
 
     // Pencereyi Boyutlandır ve Konumlandır
     detailFrame.pack();
-    detailFrame.setLocationRelativeTo(this); 
-
-    // Pencere Kapanış Olayını Dinle
-    detailFrame.addWindowListener(new java.awt.event.WindowAdapter() {
-        @Override
-        public void windowClosed(java.awt.event.WindowEvent e) {
-            spesifikStajyerFormWindow = null; 
-        }
-    });
+    detailFrame.setLocationRelativeTo(this);
 
     // Pencereyi Görünür Yap
     detailFrame.setVisible(true);
@@ -520,28 +515,28 @@ if (matches && currentMaxWorkdayFilter != null) {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(21, 21, 21)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel1)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 1240, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(filterbutton)
-                        .addGap(200, 200, 200)
-                        .addComponent(jButton2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton3)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton4)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton5)))
-                .addContainerGap(21, Short.MAX_VALUE))
             .addComponent(jSeparator1)
             .addComponent(jSeparator2)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(21, 21, 21)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jButton2)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jLabel1)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 1240, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(layout.createSequentialGroup()
+                            .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGap(18, 18, 18)
+                            .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGap(18, 18, 18)
+                            .addComponent(filterbutton)
+                            .addGap(283, 283, 283)
+                            .addComponent(jButton3)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(jButton4)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(jButton5))))
+                .addContainerGap(21, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -555,7 +550,6 @@ if (matches && currentMaxWorkdayFilter != null) {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 29, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton1)
-                    .addComponent(jButton2)
                     .addComponent(jButton3)
                     .addComponent(jButton4)
                     .addComponent(jButton5)
@@ -563,7 +557,9 @@ if (matches && currentMaxWorkdayFilter != null) {
                     .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(71, 71, 71)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 334, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(57, 57, 57))
+                .addGap(18, 18, 18)
+                .addComponent(jButton2)
+                .addGap(16, 16, 16))
         );
 
         pack();
